@@ -74,14 +74,13 @@ public class ParkSlotRenderer : MonoBehaviour
 
         // 设置父对象
         plane.transform.SetParent(gameObject.transform);
-
         // 确保子对象的局部旋转为零
         plane.transform.localRotation = UnityEngine.Quaternion.identity;
 
         // 提高平面的位置
-        //Vector3 position = plane.transform.localPosition;
-        //position.y = 0.02f; // 略微抬高平面
-        //gameObject.transform.localPosition = position;
+        Vector3 position = plane.transform.localPosition;
+        position.z = -0.02f; // 略微抬高平面
+        plane.transform.localPosition = position;
     }
 
 
