@@ -81,6 +81,10 @@ public class ParkSlotRenderer : MonoBehaviour
         Vector3 position = plane.transform.localPosition;
         position.z = -0.02f; // 略微抬高平面
         plane.transform.localPosition = position;
+
+        // 根据yaw角旋转导航线
+        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, -yaw * Mathf.Rad2Deg + 90);
+        gameObject.transform.localRotation = rotation;
     }
 
 

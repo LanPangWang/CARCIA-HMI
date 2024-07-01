@@ -41,15 +41,9 @@ public static class Utils
         float y = (float)(p.Y - c.Y);
         float z = 0f;
         Vector3 relativePos = new Vector3(x, y, z);
-        //// 旋转相对坐标
-        float cosYaw = Mathf.Cos(yaw);
-        float sinYaw = Mathf.Sin(yaw);
-
-        float xNew = relativePos.x * cosYaw - relativePos.y * sinYaw;
-        float yNew = relativePos.x * sinYaw + relativePos.y * cosYaw;
 
         // 返回新的 BEV 坐标
-        return new Vector3(xNew, yNew, relativePos.z);
+        return new Vector3(x, y, relativePos.z);
     }
 
     public static Vector3[] ApplyArrayToCenter(RepeatedField<TrajectoryPoint> points, TrajectoryPoint c, float yaw)

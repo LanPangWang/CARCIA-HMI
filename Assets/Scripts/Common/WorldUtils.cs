@@ -56,14 +56,13 @@ public static class WorldUtils
 
     public static TrajectoryStamped GetGuideLine(SimulationWorld world)
     {
-        TrajectoryStamped guideLine = world.Planning.TrajPoints;
-        return guideLine;
+        return world.Planning?.TrajPoints ?? new TrajectoryStamped();
     }
 
     public static RepeatedField<ParkingSpace> GetSlots(SimulationWorld world)
     {
-        RepeatedField<ParkingSpace> slots = world.Perception.ParkingSlotsAll.ParkingSlots_;
-        return slots;
+
+        return world.Perception?.ParkingSlotsAll?.ParkingSlots_ ?? new RepeatedField<ParkingSpace>();
     }
 
     public static (TrajectoryPoint center, float yaw) GetWorldCenter(SimulationWorld world)
