@@ -1,0 +1,82 @@
+syntax = "proto2";
+import "basics.proto";
+package xviewer;
+
+// ---------------- Map Engine --------------------- //
+
+message PathPlanResult {
+  optional int32 code = 1;
+  optional string reason = 2;
+  repeated PolygonPoint utm_points = 3;
+  repeated PolygonPoint waypoints = 4;
+}
+
+message MapStation {
+  optional string station_id = 1;
+  optional Point pos = 2;
+}
+
+message MapRoad {
+  optional string id = 1;                               // 道路id
+  optional string sectionid = 2;                        // 路段id
+  optional int32 direct = 3;                            // road direct sdmap              
+  optional int32 lanenum = 4;                           // 车道数
+  repeated MapLane lanes = 5;                           // 车道集合
+  optional int32 inter_geofence = 6;                    // 电子围栏
+  repeated Point traffic_light = 7;                     // traffic_light utm
+}
+
+message MapIntersection {
+  optional int32 type = 1;
+  optional double distance = 2;                       // 停止线距离
+  optional int32 dir = 3;                             // 转向
+}
+
+message MapCross {
+  optional uint32 type = 1;                           // 是否在当前路口
+  optional float distance = 2;                        // 到路口距离/到link起始点距离 在路口时dis=0
+  optional uint32 dir = 3;                            // 当前路口导航指令  0：直行，1：左转，2：右转，3：左掉头，4：右掉头，5：提前左转，6：提前右转，7：匝道
+  repeated Point guidepoints = 4;                     // 诱导点
+  repeated uint32 fromlanedir = 5;                    // 进入路口所有车道导流方向
+  repeated uint32 tolanedir = 6;                      // 离开路口所有车道导流方向
+}
+
+message MapRoads {
+  repeated MapRoad roads = 1;                         // 道路结果集合
+  optional MapIntersection intersection = 2;          // 路口信息
+  repeated MapCross crosses = 3;                      // 前方路口信息合集
+}
+
+message MapTrafficObjectType {
+  optional string type1 = 1;                          //#对象1级类型
+  optional string type2 = 2;                          //#对象2级类型
+  optional string type3 = 3;                          //#对象3级类型
+}
+
+message MapTrafficObject {
+  optional string id = 1;                             // 对象id
+  optional MapTrafficObjectType type = 2;             // 对象类型
+  optional string name = 3;                           // 对象名称
+  optional Point position = 4;                        // 对象位置
+}
+
+message MapTrafficObjects{
+  repeated MapTrafficObject objects = 1;              // 对象类型
+  optional int32 distance = 2;                        // 预测距离
+}
+
+message MapLane {
+  optional int32 lane_id = 1;
+  optional uint32 type = 2;                           //车道类型(普通0,1限行,2人行横道,3禁行区域)
+  optional double width = 3;
+  optional uint32 diversion = 4;                      //车道导流方向(直行0, 左转1, 直行+左转2, 右转3, 直行+右转4, 左掉头5, 左转+右转6, 直行+左转+右转7, 右掉头8, 直行+左掉头9, 直行+右掉头10, 左转+左掉头11, 右转+右掉头12 直行+左转+左掉头13 直行+左转+左掉头+右转14 （辅路进主路）15（主路进辅路）16)
+}
+
+// --- 地图 ---
+message MapEngine{
+  optional PathPlanResult   routing_path = 1; 
+  repeated MapStation       map_stations = 2;
+  optional MapRoads         predict_roads = 3;
+  optional MapTrafficObjects predict_objects = 4;
+  optional MapRoads         pub_roads = 5;
+}

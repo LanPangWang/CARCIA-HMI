@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: bd1495a0989654d9080562717c625930
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - LaneLines: {instanceID: 0}
+  - DashLine: {fileID: 4614603116019576737, guid: e300420f584654ac0ac64c698a57cd25, type: 3}
+  - BaseLine: {fileID: 6286287661889759661, guid: b620233db2bc64605af3c08e1a239b80, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

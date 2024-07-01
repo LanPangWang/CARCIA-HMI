@@ -1,0 +1,130 @@
+syntax = "proto2";
+
+package xviewer;
+
+// contains all speed limit related info
+message SpeedLimitInfo {
+  optional float sm_recommend_speed = 1;
+  optional float bp_recommend_speed = 2;
+  optional float map_speed_limit = 3;
+  optional int32 current_driver_command = 4;
+  optional int32 current_navigation_command = 5;
+}
+
+message ReferencePoint {
+  optional double x = 1;
+  optional double y = 2;
+}
+
+message RlDebugInfo {
+  optional int32 index = 1 [default = 0];
+  optional int32 attribute = 2;
+  optional double planning_distance_m = 3;
+  optional double split_distance_m = 4; // mod
+  optional double merging_distance_m = 5;
+  optional int32 virtual_priority = 6; // mod
+  optional bool is_stuck = 7;
+  //optional string lane_turn_type = 8;
+  repeated ReferencePoint reference_line = 9;
+}
+
+message FsmLaneChangeInfo {
+  optional int32 fsm_lane_change_cancel_flag = 1;
+  optional int32 lane_change_turn_light_direction = 2;
+  optional int32 lane_change_direction = 3;
+  optional string lane_change_action = 4; // mod
+  optional string fsm_state_mode = 5;
+  optional string lane_change_type = 6;
+  optional int32 lane_change_cool_down_time = 7;
+  optional double lane_change_priority = 8;
+  optional bool is_fsm_lane_keeping = 9;
+  optional int32 state_running_time = 10;
+  optional bool is_target_lane_crossable = 11;
+  optional bool can_lane_change_be_cancelled = 12;
+  optional bool is_feasible_gap_found = 13;
+  optional int32 highest_priority_rl_index = 14;
+  optional int32 lane_change_counter = 15;
+  optional string debug_string = 16;
+}
+
+message FsmNudgeInfo {
+  optional int32 fsm_nudge_cancel_flag = 1;
+  optional int32 nudge_direction = 2;
+  optional int32 nudge_action = 3;
+  optional int32 fsm_state_mode = 4;
+  optional int32 nudge_type = 5;
+  optional int32 nudge_cool_down_time = 6;
+  optional double nudge_priority = 7;
+  optional bool is_fsm_lane_keeping = 8;
+  optional int32 state_running_time = 9;
+  optional bool is_target_lane_crossable = 10;
+  optional bool can_nudge_be_cancelled = 11;
+  optional bool is_feasible_gap_found = 12;
+  optional int32 nudge_counter = 13;
+  optional string debug_string = 14;
+}
+
+message EgoCarPose {
+  optional double system_current_time_x = 1;
+  optional double system_current_time_y = 2;
+  optional double system_current_time_heading = 3;
+  optional double time_aligned_speed_mps = 4;
+  optional double time_aligned_accel_mps2 = 5;
+  optional double time_aligned_jerk_mps3 = 6;
+}
+
+message BiasInfo {
+  optional bool bias_enable = 1;
+  optional double bias_l = 2;
+  repeated int32 bias_object_id = 3;
+}
+
+message LaneTrafficLightInfo {
+  optional int32 dir = 1;
+  optional int32 color = 2; // 0-black, 1-red, 2-yellow, 3-green
+  optional bool is_this_dir_passable = 3;
+  optional int32 current_color_remaining_time = 4;
+}
+
+message TrafficLightDebugInfo {
+  optional int32 direction = 1;
+  repeated LaneTrafficLightInfo traffic_light = 2;
+}
+
+message TimeConsumption {
+  optional int32 planning_fusion_time_ms = 1;
+  optional int32 behavior_planning_time_ms = 2;
+  optional int32 behavior_frame_time_ms = 3;
+  optional int32 path_planning_time_ms = 4;
+  optional int32 speed_planning_time_ms = 5;
+} 
+
+message EgoRelativePosition {
+  optional double ego_car_distance_to_ego_rl = 1;
+  optional double ego_car_distance_to_ego_lane_boundary = 2;
+  optional double distance_to_closest_intersection_m = 3;
+  optional double ego_heading_and_rl_heading_diff = 4;
+  optional double distance_to_closest_traffic_light_m = 5;
+  optional double distance_to_closest_crosswalk_m = 6;
+  optional double ego_car_distance_to_target_rl = 7;
+  optional bool is_ego_car_within_ego = 8;
+}
+
+message BehaviorDebugMsg {
+  optional TimeConsumption planning_time_consumption = 1; // time_cost
+  optional TrafficLightDebugInfo traffic_light_info = 2; // TFL
+  optional SpeedLimitInfo recommend_speed_mps = 3; // rcmd_speed
+  optional EgoRelativePosition ego_relative_position = 4; // dist
+  optional RlDebugInfo ego_rl_info = 5; // RL-ego data type mod
+  optional RlDebugInfo target_rl_info = 6; // RL-target
+  optional RlDebugInfo left_rl_info = 7; // RL-left
+  optional RlDebugInfo right_rl_info = 8; // RL-right
+  optional FsmLaneChangeInfo fsm_lane_change_info = 9; //FSM-LC,data type mod
+  optional string assigned_dynamic_objects_info = 10;  // former:assigned current: Virtual Wall Building
+  optional string lc_debug_info = 11; // former: plc current: lc debug
+  optional string nudge_debug_info = 12; // former:nlc current: nudge
+  optional string gap_debug_info = 13; // remained
+  optional string action_cancel_reason = 14; // former: cancel reason current: ego rl decision
+  optional string lane_change_general_info = 15; // former: lane change info current: key object info
+  optional FsmNudgeInfo fsm_nudge_info = 16; // not set
+}

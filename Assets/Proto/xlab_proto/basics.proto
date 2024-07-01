@@ -1,0 +1,34 @@
+syntax = "proto2";
+package xviewer;
+
+// ----------------  基础数据类型 消息结构 --------------------//
+message PolygonPoint {
+  optional double x = 1;
+  optional double y = 2;
+  optional double z = 3 [default = 0.0];
+}
+
+message Point {
+  optional double x = 1;
+  optional double y = 2;
+  optional double z = 3;
+}
+
+message Quaternion {
+  optional double x = 1;
+  optional double y = 2;
+  optional double z = 3;
+  optional double w = 4;
+}
+
+message TimeWorld {
+  optional int32 year = 1;              // 年 
+  optional int32 month = 2;             // 月 
+  optional int32 day = 3;               // 日 
+  optional int32 hour = 4;              // 时
+  optional int32 minute = 5;            // 分
+  optional int32 second = 6;            // 秒
+  optional int32 millisecond = 7;       // 毫秒
+  optional int32 sec = 8;               // ros 格式时间 sec
+  optional int32 nanosec = 9;           // ros 格式时间 nanosec
+}

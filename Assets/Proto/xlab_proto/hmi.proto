@@ -1,0 +1,48 @@
+syntax = "proto2";
+import "basics.proto";
+package xviewer;
+
+// ------------------------- Ego Car -------------------------- //
+message EgoCar {
+  // ID
+  optional string id = 1;  // primary identifier for each object
+
+  // Position Info
+  optional double heading = 2;
+  optional double position_x = 3;
+  optional double position_y = 4;
+
+  optional Point speed = 5;               // in m/s, can be negative
+  optional Point speed_acceleration = 6;  // in m/s^2
+
+  optional TimeWorld time = 7;
+}
+
+message RosbagInfo{
+  optional bool rosbag_status = 1;                    // rosbag 当前录制状态， true 录制中， false 非录制中
+  optional string rosbag_folder_name = 2;             // rosbag 文件夹名称
+}
+
+// ----------------  话题信息 消息结构 --------------------//
+message TopicInfo{
+  optional string topic_name = 1;                      // 话题 名称
+  optional bool   topic_status = 2;                    // 话题 接收状态 false 失败, true 正常
+  optional double topic_frequency = 3;                 // 话题 频率 hz
+  optional int32  topic_publisher_num = 4;             // 话题 发布者数量
+}
+
+// ----------------  HMI消息结构 --------------------//
+message Hmi{
+  optional int32 key_choose_carport = 1;               // 选择车位泊车: -1 开始泊车, 0 ~ 20 车位ID
+  optional int32 rosbag_record = 2;                    // rosbag包录制状态: 0 空闲状态, 1 录制中
+  optional int32 user_controlled_actions = 3;          // 用户控制操作: 13 刷新Apa感知信息
+  optional int32 clear = 4;                            // 清空画面: 0 默认, 1 清空
+  optional int32 system_order = 5;                     // 系统模式： 1 自动驾驶模式
+  optional double start_point_x = 6;                   // 行车路径 起始点 x
+  optional double start_point_y = 7;                   // 行车路径 起始点 y
+  optional double target_point_x = 8;                  // 行车路径 目标点 x
+  optional double target_point_y = 9;                  // 行车路径 目标点 y
+  optional int32 current_status = 10;                  // HMI 自定义当前状态: 0 行车 (默认), 1 泊车
+  optional int32 start_up_mode = 11;                   // 启动模式：0 关闭， 1 启动窄车位泊车项目，2 启动园区项目， 3 启动行车项目
+}
+

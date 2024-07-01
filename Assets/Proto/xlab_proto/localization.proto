@@ -1,0 +1,124 @@
+syntax = "proto2";
+import "basics.proto";
+package xviewer;
+
+// ----------------  融合定位消息结构 --------------------//
+message Pose{
+  optional Point position = 1;
+  optional Quaternion orientation = 2;
+}
+
+message TwistAccel{
+  optional Point linear = 1;
+  optional Point angular = 2;
+}
+
+message Localization{
+  optional TimeWorld time = 1;
+  optional string child_frame_id = 2;
+  optional Pose pose = 3;
+  optional TwistAccel velocity = 4;
+  optional TwistAccel acceleration = 5;
+}
+
+message GlobalPoseInfo{
+  optional TimeWorld time = 1;
+  optional Point   blh = 2;
+  optional Point   utm_pos = 3;
+  optional Quaternion  corr_utm_quat = 4;
+}
+
+message LocalPoseInfo{
+  optional TimeWorld time = 1;
+  optional Pose rig_to_local = 2;
+  optional Point rig_att = 3;                     // euler angle: roll, pitch, yaw
+  optional Point vel_in_rig = 4;
+  optional Point acc = 5;
+  optional Point gyro = 6;
+  optional Pose anchor_local_in_ecef = 7;
+  optional Pose cur_anchor_to_prev_anchor = 8;
+
+  optional Point lla_std = 9;                     // lat, lon, alt
+  optional Point rot_std = 10;                    // roll, pitch, yaw
+  optional Point vel_std = 11;                    // east, north, up
+  optional Point acc_bias_std = 12;
+  optional Point gyro_bias_std = 13;
+
+  optional int32 fusion_status = 14;               // 融合状态 0: 初始化; bit0 = 1: INS;  bit1 = 1 : GPS; bit2 = 1 : MC; bit3 = 1 : WIO;  bit4 = 1 : VIO; bit5: ZUPT; bit6: ZARU
+  optional int32 gps_status = 15;                  // GPS状态 0: SINGLE_POINT；1： DGPS；2： SBAS；3：PPP； 4： RTK_float；5: RTK_FIX; 6: OTHER;
+  optional int32 align_status = 16;                // 静止对准，动态对准，粗对准，精确对准
+  optional int32 loc_accuracy_flag = 17;           // 0: 不可用；1：精度下降；2：高精度
+  optional int32 measure_flag = 18;
+
+  repeated float f_reserved = 19;                  // TBD
+  repeated int32 c_reserved = 20;                  // TBD
+
+  optional double s_timestamp = 21;                // imu gps time
+  optional double e_timestamp = 22;                // alg rev ros time
+}
+
+message LocFaultInfo{
+  optional TimeWorld time = 1;
+  optional int32 hardware_fault_info = 2;            // bit0 = 1 : gyro fault; bit1= 1 : acc fault; bit2 = 1 : gnss recv fault;  bit4 = 1 : power too low; bit5 = 1 : power too high; bit6 = 1 : temperature out of operation range
+  optional int32 input_param_fault_info = 3;         // bit0 = 1 : msfl config param invalid;    bit1 = 1: gyro invalid;   bit2 = 1: acc invalid;
+  optional int32 align_fault_info = 4;               // 4G, qianxun, poor gnss environment
+  optional int32 sensor_out_lost_info = 5;
+}
+
+message LocCalibrationInfo{
+  optional TimeWorld time = 1;
+  optional double timestamp = 2;
+  optional double wheel_speed_scale = 3;
+  optional Point imu_to_rig_angle = 4;              // degree
+  optional Pose imu_to_camera = 5;
+  optional Point acc_bias = 6;
+  optional Point gyro_bias = 7;
+  repeated double f_reserved = 8;                  // TBD
+}
+
+message GlobalLocMsg{
+  optional TimeWorld time = 1;
+  optional GlobalPoseInfo global_pose_info = 2;
+  optional LocalPoseInfo local_pose_info = 3;
+  optional LocFaultInfo loc_fault_info = 4;
+  optional LocCalibrationInfo loc_calibration_info = 5;
+}
+
+message OdomPoseInfo{
+
+  optional TimeWorld time = 1;
+  optional Pose rig_to_local = 2;
+  optional Point rig_att = 3;                       // euler angle: roll, pitch, yaw
+  optional Point vel_in_rig = 4;
+
+  optional Point acc = 5;
+  optional Point gyro = 6;
+  optional Point pos_std = 7;
+  optional Point rot_std = 8;                       // roll, pitch, yaw
+  optional Point vel_std = 9;
+  optional Point acc_bias_std = 10;
+  optional Point gyro_bias_std = 11;
+
+  optional int32 fusion_status = 12;                // 融合状态; 0: 初始化; bit0 = 1: INS;  bit1 = 1 : GPS (not used); bit2 = 1 : MC;
+                                                    // bit3 = 1 : WIO;  bit4 = 1 : VIO; bit5: ZUPT; bit6: ZARU
+  optional int32 align_status = 13;                 // 静止对准，动态对准
+  optional int32 loc_accuracy_flag = 14;            // 0: 不可用；1：精度下降；2：高精度
+  optional int32 measure_flag = 15;
+
+  repeated float f_reserved = 16;            
+  repeated int32 c_reserved = 17;              
+
+  optional double s_timestamp = 18;                 // imu gps time
+  optional double e_timestamp = 19;                 // alg rev ros time
+
+}
+
+message OdometryMsg{
+  optional OdomPoseInfo odom_pose_info = 1;
+}
+
+message FusionLocalization{
+  optional GlobalLocMsg msfl = 1;
+  optional OdometryMsg odometry = 2;
+  optional int32 localization_flag = 3;               // localization mode : 1 MSFL , 2 odometry
+}

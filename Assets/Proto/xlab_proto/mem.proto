@@ -1,0 +1,124 @@
+syntax = "proto2";
+import "basics.proto";
+package xviewer;
+
+// ----------------  动态语义环境模块消息结构 --------------------//
+message MemGroundElement{
+  optional uint32 type = 1;                       // 元素类型
+  repeated Point points_utm = 2;                  // 元素位置
+}
+
+message MemTrafficLight{
+  optional uint32 traffic_light_type = 1;         // 红绿灯类型
+  repeated Point traffic_light_points_utm = 2;    // 红绿灯位置
+}
+
+message MemConstructionSection{
+  optional uint32 type = 1;                       // 施工类型 0：无施工 1：临时施工 2：短期施工 3：长期施工
+  repeated Point construction_points_utm = 2;     // 施工地点,第一个点位起始位置，第二个点为结束位置，坐标在utm坐标系下
+}
+
+message MemStopLine{
+  optional uint32 type = 1;                       // 停止线类型
+  repeated Point  stop_line_points_utm = 2;
+}
+
+message MemLaneAttributeContour{
+  optional Point reference_point_utm = 1;		      // 导流属性box的中心点，utm坐标
+  // 目标几何尺寸，宽，高，长
+  optional float width  = 2;
+  optional float height = 3;
+  optional float length = 4;
+  optional float	yaw_angle = 5;		            // box的偏航角
+  repeated Point contour_point_utm = 6;	          // 轮廓点_utm坐标（为后续分割预留接口)
+}
+
+message MemLane{
+  optional int32  lane_id = 1;                    // 车道线id
+  repeated uint32 lane_attributes = 2;            // 一条车道可能存在多个导流属性，比如前段是直行，后段是左转
+  repeated Point  lane_attribute_points_utm = 3;  // 一条车道如有多个属性，对应不同段之间的切分点
+  repeated MemLaneAttributeContour lane_attribute_contours = 4;	
+                                                  // 导流属性边框轮廓 包含：中心点，长宽高，轮廓点信息 数组长度与导流属性数组保持一致
+  optional uint32 lane_other_attribute = 5;
+  optional int32  left_line_id = 6;               // 左车道线id
+  optional int32  right_line_id = 7;              // 右车道线id
+  repeated MemConstructionSection  constructions = 8;// 施工信息集合
+  repeated Point  split_point_utm = 9;            // merge point
+  repeated Point  merge_point_utm = 10;            // split point
+}
+
+message MemLaneLine{
+  optional int32  line_id = 1;                    // 车道线id
+  repeated uint32 type_list = 2;                  // 车道线类型
+  repeated int32  index_list = 3;                 // 一段线如有多个属性，对应不同属性线段之间的切分点
+  repeated Point  line_points_utm = 4;            // 车道线点列表, utm坐标系下
+}
+
+message MemRoad{
+  optional int32 road_id = 1;                   // 道路id
+  repeated MemLaneLine lane_lines = 2;             // 车道线集合
+  repeated MemLane lanes = 3;                      // 车道集合
+  repeated MemStopLine stop_lines = 4;             // 停止线集合
+  repeated MemConstructionSection construction_sections = 5; // 施工路段集合
+  repeated MemTrafficLight traffic_lights = 6;     // 红绿灯集合
+  repeated MemGroundElement ground_elements = 7;   // 地面其他元素集合
+}
+
+message MemReferenceLine{
+  optional int32 id = 1;                        // 引导线id
+  repeated Point way_points_utm = 2;            // 引导线点
+  optional int32 origin_road_id = 3;            // 引导线起点road id
+  optional int32 destination_road_id = 4;       // 引导线终点road id
+}
+
+message MemVirtualLane{
+  optional int32 lane_id = 1;                   // 虚拟车道id
+  optional int32 origin_road_id = 2;            // 虚拟车道连接起点road id
+  optional int32 destination_road_id = 3;       // 虚拟车道连接终点road id
+  optional int32 origin_lane_id = 4;            // 虚拟车道连接起点lane id
+  optional int32 destination_lane_id = 5;       // 虚拟车道连接终点lane id
+  optional int32 left_line_id = 6;              // 左虚拟车道线id
+  optional int32 right_line_id = 7;             // 右虚拟车道线id
+  optional uint32 lane_attribute = 8;           // 车道导流属性
+}
+
+message MemVirtualLine{
+  optional int32 line_id = 1;                   // 虚拟车道线id
+  repeated Point line_points_utm = 2;           // 车道线点_utm
+  optional int32 origin_line_id = 3;            // 虚拟车道线连接起始line id
+  optional int32 destination_line_id = 4;       // 虚拟车道线连接目标line id
+}
+
+message MemIntersection{
+  optional int32 intersection_id = 1;               // 路口id
+  repeated MemVirtualLane virtual_lanes = 2;        // 虚拟车道集合
+  repeated MemVirtualLine virtual_lines = 3;        // 虚拟车道线集合
+  repeated MemReferenceLine reference_lines = 4;    // 引导线集合
+}
+
+message MemCurb{
+  optional int32 curb_id = 1;
+  repeated uint32 type_list = 2;                    // curb类型
+  repeated int32 index_list = 3;                    // 一段线如有多个属性，对应不同属性线段之间的切分点
+  repeated Point curb_points_utm = 4;               // curb线点列表, utm坐标系下
+}
+
+message MemRoadInfo{
+  optional int32  ego_road_id = 1;                  // 车辆所处最近的road id
+  repeated MemRoad   roads = 2;                     // road集合
+  repeated MemIntersection intersections = 3;       // 路口集合
+  repeated MemCurb curbs = 4;                       // 路牙集合
+}
+
+message UserActionMEM{
+  repeated Point construction_points_utm = 1;     // 施工地点 第一个点位起始位置，第二个点为结束位置
+  optional uint64 construction_id = 2;            // 施工路段唯一id
+  optional uint32 lanes_number = 3;               // 所处道路数量
+  repeated uint32 construction_lane_range = 4;    // 施工车道范围
+}
+
+message Mem{
+  optional MemRoadInfo road_info = 1;               // 道路信息集合
+  repeated UserActionMEM all_mem = 2;             // 所有施工路段信息
+}
+

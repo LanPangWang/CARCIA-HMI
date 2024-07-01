@@ -1,0 +1,291 @@
+syntax = "proto2";
+import "basics.proto";
+import "localization.proto";
+package xviewer;
+
+// ----------------  传感器消息结构 --------------------//
+message Image{
+  optional bytes image_fusion = 1;
+  optional bytes image_compressed0 = 2;
+  optional bytes image_compressed1 = 3;
+  optional bytes image_compressed2 = 4;
+  optional bytes image_compressed3 = 5;
+}
+
+message Odometry{
+  optional string child_frame_id = 1;
+  optional Pose pose = 2;
+  optional TwistAccel twist = 3;
+}
+
+message Novatel{
+  optional Odometry odom = 1;
+}
+
+message HardwareSignal{
+  optional Novatel novatel = 1;     
+  optional uint32 lampstatus = 2;         // 0表示无转向灯闪烁，1表示左转灯开启，2表示右转灯开启
+}
+
+// ----------------  工程消息结构 ----------------//
+message DiagnosisBase{
+  optional uint32   level = 1;
+  optional uint32 error_code = 2;
+}
+
+message XDiagnosis{ 
+  optional uint32 node_id = 1;      // 模块ID 0：无效， 1：整车级， 2：vehicle controller， 3：摄像头， 4：激光雷达， 
+                                      // 5：毫米波， 6：USS， 7：RTK， 8：感知， 9：规划决策， 10：地图， 11：定位， 12：控制
+  repeated DiagnosisBase diagnosis_data = 2;
+}
+
+message ModulesHeartbeat{
+  optional uint32 node_id = 1;        // 模块ID 0：无效， 1：整车级， 2：vehicle controller， 3：摄像头， 4：激光雷达， 
+                                      // 5：毫米波， 6：USS， 7：RTK， 8：感知， 9：规划决策， 10：地图， 11：定位， 12：控制
+  optional uint32 status = 2;         // 在线状态，1：在线， 0：离线
+}
+
+message UICommunicate{
+  optional TimeWorld time = 1;
+  repeated XDiagnosis modules_diagnosis = 2;
+  repeated ModulesHeartbeat modules_heartbeat = 3;
+}
+
+message Monitor{
+  optional double cpu_apa_planning = 1;
+  optional double cpu_control = 2;
+  optional double cpu_freespace_fusion = 3;
+  optional double cpu_garcia_map_engine = 4;
+  optional double cpu_garcia_map_local = 5;
+  optional double cpu_parking_slot_fusion = 6;
+  optional double cpu_ros_xviewer = 7;
+  optional double cpu_camera_service = 8;
+
+  optional double mem_apa_planning = 9;
+  optional double mem_control = 10;
+  optional double mem_freespace_fusion = 11;
+  optional double mem_garcia_map_engine = 12;
+  optional double mem_garcia_map_local = 13;
+  optional double mem_parking_slot_fusion = 14;
+  optional double mem_ros_xviewer = 15;
+  optional double mem_camera_service = 16;
+}
+
+message LifecycleState{
+  optional int32 id = 1;
+  optional string label = 2;
+}
+
+message TransitionEvent{
+  optional string node_name = 1;                        // 节点名
+  optional uint32 seq = 2;                              // 帧号
+  optional LifecycleState start_state = 3;             // 起始状态
+  optional LifecycleState goal_state = 4;              // 目标状态
+}
+
+message Guardian{
+  optional int32 guardian_instruct = 1;                 // 状态机，当前状态. 1 MANUAL, 2 STANDBY, 3 ERROR, 4 APA_INIT, 5 APA_ACTIVE,  
+                                                        // 6 PILOT_INIT, 7 PILOT_ACTIVE, 8 PILOT_APA_READY, 9 PILOT_PRE_APA 
+  optional bool guardian_instruct_available = 2;        // 状态机当前状态有效标记, true 有效, false 无效
+  optional int32 current_status = 3;                    // HMI 自定义当前状态, 0 行车 (默认), 1 泊车
+
+  repeated TransitionEvent transition_event_info = 4;  // lifecycle_node生命周期切换事件
+}
+
+
+
+// ----------------  SCU ADCU 消息结构 -----------------//
+
+message Adcu1 {
+  optional double adcu_brake_req = 1;
+  optional double adcu_auto_trq_whl_req = 2;
+  optional uint32 adcu_lng_ctrl_req = 3;                // 0 MANUAL, 1 RESERVED_1, 2 AUTO, 3 RESERVED_3
+  optional uint32 adcu_gear_lvl_req = 4;                // 0 GEAR_NO_REQUEST
+                                                        // 1 GEAR_REQUEST_PARK
+                                                        // 2 GEAR_REQUEST_REVERSE, 
+                                                        // 3 GEAR_REQUEST_NEUTRAL,
+                                                        // 4 GEAR_REQUEST_DRIVE
+                                                        // 5~7  GEAR_REQUEST_RESERVED
+  optional bool adcu_gear_lvl_req_vd = 5;
+  optional bool adcu_brake_vd = 6;                      // 0 ACC_BRAKE, 1 AEB_BRAKE
+}
+
+message Adcu2 {             
+  optional double adcu_steer_ang_req = 2;
+  optional double adcu_brake_req_aeb = 3;
+  optional double adcu_steer_whl_torq_req = 4;
+  optional uint32 adcu_lat_ctrl_req = 5;                // 0 MANUAL, 1 RESERVED_1, 2 AUTO, 3 RESERVED_3
+}
+
+message XControlCommand {
+  optional Adcu1 adcu1 = 1;
+  optional Adcu2 adcu2 = 2;
+}
+
+message Scu1 {
+  optional bool bcs_vdc_fault_st_g = 1;
+  optional bool bcs_tcs_active_st_g = 2;
+  optional bool bcs_tcs_fault_st_g = 3;
+  optional bool bcs_ebd_active_st_g = 4;
+  optional bool bcs_ebd_fault_st_g = 5;
+  optional bool bcs_abs_fault_st_g = 6;
+  optional bool bcs_abs_active_st_g = 7;
+  optional bool bcs_veh_spd_vd_g = 8;
+  optional double bcs_veh_spd_g = 9;
+  optional bool bcs_vdc_active_st_g = 10;
+}
+
+message Scu8 {
+  optional double bcs_act_veh_long_accel_g = 1;
+  optional double bcs_veh_long_accel_offset_g = 2;
+  optional double bcs_act_veh_laltrl_accel_g = 3;
+  optional double bcs_veh_laltrl_accel_offset_g = 4;
+  optional bool bcs_act_veh_laltrl_accel_vd_g = 5;
+  optional bool bcs_act_veh_long_accel_vd_g = 6;
+}
+
+message Scu10 {
+  optional bool eps_steering_angle_spd_vd_g = 1;
+  optional bool eps_warn_lamp_g = 2;
+  optional bool eps_strng_whl_torq_vd_g = 3;
+  optional double eps_steering_angle_g = 4;
+  optional uint32 eps_thermal_st_g = 5;
+  optional double eps_steering_angle_spd_g = 6;
+  optional bool eps_steering_angle_vd_g = 7;
+  optional double eps_strng_whl_torq_g = 8;
+}
+
+message Scu13 {
+  enum Scu13ScuLatCtrlMode {
+    MANUAL = 0;
+    QUIT = 1;
+    AUTO = 2;
+    FAULT = 3;
+  }
+
+  optional bool scu_strng_whl_intv = 1;
+  optional bool vcu_gear_lever_intv = 2;
+  optional bool scu_e_stop_sw_st_vd = 3;
+  optional bool scu_e_stop_sw_st = 4;
+  optional uint32 scu_lat_ctrl_mode = 5;
+  optional uint32 scu_lng_ctrl_mode = 6;
+  optional uint32 scu_lng_quit_report = 7;
+  optional uint32 scu_lat_quit_report = 8;
+  optional uint32 scu_lng_auto_checkl_report = 9;
+  optional uint32 scu_lat_auto_check_report = 10;
+}
+
+message Scu14 {
+  enum Scu14VcuVehDrvModType {
+    INVALID = 0;
+    ECO_PLUS_MODE = 1;
+    ECO_MODE = 2;
+    NORMAL_MODE = 3;
+    DRIVING_MODE = 4;
+    SPORT_MODE = 5;
+  }
+
+  optional double vcu_veh_rng_g = 1;
+  optional uint32 vcu_veh_drv_mod_g = 2;
+  optional bool vcu_veh_rdy_st_g = 3;
+  optional double vcu_dcdc_volt_lv_g = 4;
+  optional double vcu_dcdc_curr_lv_g = 5;
+  optional double vcu_dcdc_temp_g = 6;
+  optional uint32 vcu_dcdc_mode_st_g = 7;
+  optional double vcu_batt_so_c_disp_g = 8;
+}
+
+message Scu15 {
+  enum GearCurrentPosition {
+    GEAR_CURRENT_INVALID = 0;
+    GEAR_CURRENT_DRIVE = 1;
+    GEAR_CURRENT_NEUTRAL = 2;
+    GEAR_CURRENT_REVERSE = 3;
+    GEAR_CURRENT_PARK = 4;
+  }
+
+  optional uint32 vcu_act_recp_torq_st_g = 1;
+  optional double vcu_act_recp_torq_g = 2;
+  optional uint32 vcu_crnt_gear_lvl_g = 3;
+  optional bool vcu_crnt_gear_lvl_vd_g = 4;
+}
+
+// aionlx Scu16
+message Scu16 {
+  optional double vcu_acc_max_recp_decel_g = 1;
+  optional bool vcu_lateral_assist_btn_info_vd_g = 2;
+  optional bool vcu_lateral_assist_btn_info_g = 3;
+  optional bool vcu_acc_max_recp_decel_vd_g = 4;
+  optional double vcu_act_veh_wheel_torq_g = 5;
+}
+
+message Scu19 {
+  optional uint32 scu_vin_data_package_num = 1;
+  optional uint32 scu_vin_byte1 = 2;
+  optional uint32 scu_vin_byte2 = 3;
+  optional uint32 scu_vin_byte3 = 4;
+  optional uint32 scu_vin_byte4 = 5;
+  optional uint32 scu_vin_byte5 = 6;
+  optional uint32 scu_vin_byte6 = 7;
+  optional uint32 scu_vin_byte7 = 8;
+}
+
+message Safety {
+  optional bool is_driver_buckled = 1;
+  optional bool is_passenger_detected = 2;
+  optional bool is_passenger_buckled = 3;
+
+  optional bool is_driver_door_open = 4;
+  optional bool is_passenger_door_open = 5;
+  optional bool is_rearleft_door_open = 6;
+  optional bool is_rearright_door_open = 7;
+}
+
+message ChassisDetail {
+  optional Scu1 scu_1 = 2;
+  optional Scu8 scu_8 = 3;
+  optional Scu10 scu_10 = 4;
+  optional Scu13 scu_13 = 5;
+  optional Scu14 scu_14 = 6;
+  optional Scu15 scu_15 = 7;
+  optional Scu16 scu_16 = 8;
+  optional Scu19 scu_19 = 9;
+
+  optional Safety safety = 10;
+}
+
+message Chassis{
+  optional double bcs_veh_spd_g = 1;                    // from scu_1, actual speed
+
+  optional double bcs_act_veh_laltrl_accel_g = 2;       // from scu_8, actual lat accel
+  optional double bcs_act_veh_long_accel_g = 3;         // from scu_8, actual  lng accel
+
+  optional double eps_steering_angle_g = 4;             // from scu_10, actual steer angle
+  optional double eps_steering_angle_spd_g = 5;         // from scu_10, actual steer angle_speed
+
+  optional uint32 scu_lat_ctrl_mode = 6;                // from scu_13, lat mode
+  optional uint32 scu_lng_ctrl_mode = 7;                // from scu_13, lng mode
+  optional uint32 scu_lat_quit_report = 8;              // from scu_13, Lat quit report 横向
+  optional uint32 scu_lng_quit_report = 9;              // from scu_13, lng quit report 纵向
+
+  optional uint32 vcu_crnt_gear_lvl_g = 10;             // from scu_15, actual gear lvl 0=No request,1=Drive,2=Neutral,3=Reversed,4=Park 
+
+  optional double vcu_act_veh_wheel_torq_g = 11;        // from scu_16, actual Torque
+}
+
+message FatalReport{
+  optional bool             system_failure = 1;             // 系统错误: 正常false，异常true
+  repeated XDiagnosis modules_diagnosis = 2;                // 
+}
+
+message Engineering{
+  optional UICommunicate    ui_communicate = 1;             // 诊断消息
+  optional Monitor          monitor = 2;                    // 性能监控
+  optional uint32           rtk_status = 3;                 // RTK status: 1- abnormal; 2- normal; 3- alert;
+  optional bool             system_failure = 4;             // 系统错误: 正常false，异常true
+  optional Chassis          chassis = 5;                    // SCU VCU
+  optional ChassisDetail    chassis_detail = 6;             // chassis detail
+  optional XControlCommand  control_command = 7;            // ADCU
+  optional Guardian         guardian = 8;                   // 守护系统
+  optional FatalReport      fatal_report = 9;               // 系统错误
+}

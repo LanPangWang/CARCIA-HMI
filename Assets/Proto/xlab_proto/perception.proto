@@ -1,0 +1,367 @@
+syntax = "proto2";
+import "basics.proto";
+import "localization.proto";
+package xviewer;
+
+// ----------------  感知融合消息结构 --------------------//
+message ParkingSpaceObstacle {
+  repeated double obstacle_point = 1;   // 障碍物角点坐标
+  optional int32 type = 2;              // 障碍物类型， 0-限位器，1-地锁（开）
+}
+
+message ParkingSpace {
+  optional int64 id = 1;
+  optional int32 ptype = 2;
+  optional double type_confidence = 3;
+  repeated double parking_slot_point = 4;
+  optional int32 point_coordinate_attribute = 5;
+  optional bool valid = 6;
+  optional int32 src = 7;
+  optional double direction = 8;
+  
+  // 限位器
+  optional bool has_limiting_stopper = 9;
+  repeated ParkingSpaceObstacle limiting_stopper = 10;  // MaxLimitingStopper = 2
+
+  // 地锁
+  optional bool has_parking_lock = 11;
+  repeated ParkingSpaceObstacle parking_lock = 12;      // MaxParkingLock = 1
+}
+
+message ParkingSlots {
+  repeated ParkingSpace parking_slots = 1;
+  optional int32 parking_slots_num = 2;
+}
+
+message ObstacleBoundary{
+  repeated Point boundary = 1;
+  repeated Point box = 2;
+  optional int32 type = 3;
+}
+
+message ConstructionSection{
+  optional uint32 type = 1;                       // 施工类型 0：无施工 1：临时施工 2：短期施工 3：长期施工
+  repeated Point construction_points = 2;         // 施工地点,第一个点位起始位置，第二个点为结束位置，坐标在自车坐标系下
+  repeated Point construction_points_utm = 3;     // 施工地点,第一个点位起始位置，第二个点为结束位置，坐标在utm坐标系下
+}
+
+message LaneAttributeContour{
+  optional Point reference_point_bev = 1;		      //	导流属性box的中心点，bev坐标
+  optional Point reference_point_utm = 2;		      // 导流属性box的中心点，utm坐标
+  // 目标几何尺寸，宽，高，长
+  optional float width  = 3;
+  optional float height = 4;
+  optional float length = 5;
+  optional float	yaw_angle = 6;		            // box的偏航角
+  repeated Point contour_point_bev = 7;		      //	轮廓点_bev坐标（为后续分割预留接口）
+  repeated Point contour_point_utm = 8;	        // 轮廓点_utm坐标（为后续分割预留接口)
+}
+
+// --- 车道线信息 ---
+message Lane{
+  optional int32 lane_id = 1;                     // 车道id:从左到右0、1、2、3（车道级别id）
+  optional int32 lane_relative_id = 2;            // 车道相对id: 自车为0，左车道[...,-2,-1] ,右车道[1,2...]
+  optional int64 lane_global_id = 3;              // 车道绝对id: 地图的路段id + 车道id 最左侧0，从左到右0、1、2、3
+  repeated uint32 lane_attributes = 4;            // 车道属性 //////
+  repeated LaneAttributeContour lane_attribute_contours	 = 5;
+                                                  // 导流属性边框轮廓 包含：中心点，长宽高，角点，轮廓点信息 数组长度与导流属性数组保持一致
+  optional uint32 passable_type = 6;              // 可通行类型
+  repeated int32 remaining_time = 7;              // traffic lights countdown
+  repeated int32 signal_color = 8;                // 颜色（红灯、黄灯、绿灯，无法分辨）
+  repeated int32 signal_is_flashing = 9;          // 是否闪烁，[-1: 不是， 1: 是]
+  repeated Point lane_center_points = 10;          // 车道中心点，基于自车坐标系下的车道中心拟合的车道线点坐标[(x,y,z)]
+  repeated Point lane_center_points_utm = 11;     // 车道中心点，基于utm坐标系下的车道中心拟合的车道线点坐标[(x,y,z)]
+  optional int32 left_line_id = 12;               // 左车道线id
+  optional int32 right_line_id = 13;              // 右车道线id
+  optional uint32 lane_other_attribute = 14;      // 车道其他属性:0(无)、1(待转区)、2(公交专用道)
+  repeated ConstructionSection constructions = 15;// 施工信息集合
+  repeated Point lane_attribute_points_utm = 16;  // 车道导流属性切分点_utm /////
+  repeated Point lane_attribute_points = 17;      // 车道导流属性切分点_bev /////
+  repeated Point  split_point_utm = 18;           // # 车道split点，utm坐标系，少变多等场景
+  repeated Point  merge_point_utm = 19;           // # 车道merge点，utm坐标系，对应多变少等场景
+  repeated Point  split_point_bev = 20;           // # 车道split点，bev坐标系
+  repeated Point  merge_point_bev = 21;           // # 车道merge点，bev坐标系
+  repeated float lane_width = 22;                 // # 车道宽度，数组大小与中心点个数保持一致
+
+}
+
+message LaneLine{
+  optional int32 line_id = 1;                     // 车道线id
+  repeated uint32 type_list = 2;                  // 车道线类型
+  repeated int32 index_list = 3;                  // 一段线如有多个属性，对应不同属性线段之间的切分点
+  optional float confidence = 4;                  // 类型置信度
+  repeated Point line_points = 5;                 // 车道线点列表, 车辆坐标系下 单位M
+  repeated Point line_points_utm = 6;             // 车道线点列表, utm坐标系下 单位M
+  repeated float line_points_score = 7;           // 车道线点confidence
+}
+
+message StopLine{
+  optional uint32 type = 1;                       // 停止线类型
+  optional float confidence = 2;                  // 类型置信度
+  repeated Point stop_line_points = 3;            // 一共两个点、左起点和右起点，左边为第一个点、右边为第二个点[(x1,y1),(x2,y2)]，车辆坐标系下 单位M 
+  repeated Point stop_line_utm_points = 4;        // 一共两个点、左起点和右起点，左边为第一个点、右边为第二个点[(x1,y1),(x2,y2)]，UTM坐标系下 单位M
+}
+
+message LaneLineInfo{
+  optional int32 ego_lane_id = 1;                 // 离自车最近车道的车道id
+  repeated LaneLine lane_lines = 2;               // 车道线集合
+  repeated Lane lanes = 3;                        // 车道集合
+  repeated StopLine stop_lines = 4;               // 停止线集合
+}
+
+// --- 目标信息 ---
+message Dimension{
+  optional float width = 1;                     // 3d box的宽
+  optional float height = 2;                    // 3d box的高
+  optional float length = 3;                    // 3d box 的长
+  repeated float x = 4;                         // 四个角点在bev坐标系的x坐标 顺序依次为[左上角，右上角，右下角，左下角]
+  repeated float y = 5;                         // 四个角点在bev坐标系的y坐标 顺序依次为[左上角，右上角，右下角，左下角]
+}
+
+message PredictionPoint{
+  repeated float position = 1;                  // 预测目标在车辆坐标系下的坐标 (x y)
+  repeated float velocity = 2;                  // 预测目标在车辆坐标系下的速度 (x,y,z)
+  repeated float accel = 3;                     // 预测目标在车辆坐标系下的加速度 (x,y,z)
+  optional float yaw = 4;                       // 预测目标的偏航角
+  repeated double position_utm = 5;             // size为3，预测目标在utm坐标系下的预测坐标点position[0]:x,position[1]:y，position[2]:z
+  repeated float velocity_utm = 6;              // size为3，目标速度在utm坐标系的x、y、z方向上的速度分量velocity[0]:vx,velocity[1]:vy，velocity[2]:vz
+  repeated float accel_utm = 7;                 // size为3，目标加速度在utm车坐标系的x、y、z方向上的加速度分量accel[0]:ax,accel[1]:ay，accel[2]:az
+  optional float yaw_utm = 8;                   // utm坐标系下偏航角
+}
+
+message Prediction{
+  optional bool is_valid_object = 1;            // 是否对目标进行预测，若否，其余值为无效
+  optional int32 future_time = 2;               // 预测时间长度
+  optional float interval_time = 3;             // 预测轨迹点之间的时间间隔
+  repeated PredictionPoint future_points = 4;   // 预测目标点集
+  optional int32 intention_prediction = 5;      // 预测FutureTime时长的变道意图,0:UNKNOWN;1:C_TURN_LEFT2:C_TURN_RIGHT
+  optional float confidence = 6;                // 预测轨迹的置信度
+  optional int32 status_mode = 7;               // 状态值:预测内部使用
+}
+
+message Time{
+  optional int32 sec = 1;                       
+  optional uint32 nanosec = 2;
+}
+
+message Object3D{
+  optional int64 object_id = 1;                 // 物体的id
+  optional bool is_movable = 2;                 // 0：静态物体   1： 动态物 
+  optional int32 object_type = 3;               // 物体类别  1Car小汽车，1Truck卡车，3Bus公共汽车，4Trailer挂车、拖车，5Construction_vehicle施工车辆，6Motorcycle摩托车，7Bicycle自行车，8Pedestrian行人，9Traffic_cone雪糕筒，10Barrier水马等障碍物，11Logistics_car小物流车，12Tricycle三轮车，13rider骑行者（可能会去除）14 红绿灯
+  optional float class_confidence = 4;          // 类别的置信度
+  optional float exist_probability = 5;         // 存在概率，1~100
+  optional Time time_last_seen = 6;             // 目标上次更新时间
+  optional Time time_creation = 7;              // 目标创建时刻
+  optional Time object_age = 8;                 // 目标被跟踪的时间
+  optional float track_quality = 9;             // 跟踪质量
+  repeated Point reference_point = 10;          // 目标包围框中心位置，相对自车坐标系(x,y,z)；长方体质心；
+  repeated Point reference_point_utm = 11;      // 目标包围框中心位置，UTM坐标系(utm_x,utm_y,utm_z)；长方体质心；
+  optional Dimension object_dimension = 12;     // 轮廓信息，车辆坐标系下四个bounding box角点{(x_i, y_i)}, i=0,1,2,3, 其中0和1表示动态目标的头部两个角点，2和3表示动态目标的尾部两个角点 目标几何尺寸，长，宽，高
+  repeated int32 lane_id = 13;                  // 所属车道的id，如果跨车道需要给出两个车道id
+  repeated float lane_left_distance = 14;       // 目标bounding box的左侧两个角点距离左边车道线的偏移量
+  repeated float lane_right_distance = 15;      // 目标bounding box的右侧两个角点距离右边车道线的偏移量
+  repeated float velocity = 16;                 // 目标速度相对自车坐标系 (vx,vy,vz) vz如果没有检测出来，默认为0
+  repeated float object_accel = 17;             // 目标加速度相对自车坐标系 (mx,my,mz)
+  repeated float omega = 18;                    // 车辆坐标系下角速度,rad/s
+  repeated float omega_accel = 19;              // 车辆坐标系下角加速度,rad/s2
+  optional float yaw_angle = 20;                // 车辆坐标系下偏航角 
+  optional Prediction predicition_info = 21;    // 单个目标的预测信息
+  repeated Prediction predict_trajectory_list = 22; // 目标预测的多条轨迹
+  repeated PredictionPoint history_points = 23; // 目标的历史轨迹
+  optional int32 road_id = 24;                  // 所属道路的id
+}
+
+message ObjectInfo{
+  optional TimeWorld time = 1;                  // perc_time: 来源ObjectInfo的Header。
+  repeated Object3D object_list = 2;
+  optional TimeWorld time_fusion = 3;           // 融合数据时间, 来源PercepFusion的Header。
+}
+
+// --- 交通信息 ---
+message TrafficLight{
+  optional int32 id = 1;                        // 红绿灯id
+  optional int32 signal_type = 2;               // 信号灯类型[机动车信号灯，非机动车信号灯，人行道信号灯]
+  optional float type_confidence = 3;		        // 类型置信度，1~100
+  optional int32 signal_shape = 4; 		          // 类型（圆饼，直行、左转、右转、掉头、直行左转、直行右转、允许通行、禁止通行、数字、矩形灯、行人、自行车、无法辨认）
+  optional float shape_confidence = 5; 	        // 符号置信度，0~1
+  optional int32 signal_color = 6; 	   	        // 颜色（红灯、黄灯、绿灯）
+  optional float color_confidence = 7;          // 色彩置信度
+  optional float width = 8; 			              // 交通灯box的宽
+  optional float height = 9;			              // 交通灯box的高
+  optional float depth = 10;			              // 交通灯box的深度
+  optional int32 orientation = 11;		          // 交通灯朝向，[0: 正面， 1：后面，2: 侧面， 3：侧前， 4： 侧后]
+  optional int32 time = 12;			                // 红绿灯读秒, [如有则是实际读数，否则，-1]
+  optional int32 is_normal = 13; 		            // 是否异常, [-1: 不是， 1: 是]
+  optional bool is_3dbox = 14;                  // 是否是3D位置 0：不是 1：是
+  optional int32 is_flashing = 15; 		          // 是否闪烁，[-1: 不是， 1: 是]
+  optional Point position = 16;                 // #是3d位置给出自车坐标系下的3d位置(x,y,z） 不是的话给出图像坐标系(u,v,-1)
+}
+
+message TrafficLightInfo{
+  repeated TrafficLight traffic_light_list = 1;   
+}
+
+message OlmapTrafficLight{
+  optional uint32 traffic_light_type = 1;
+  repeated Point traffic_light_points = 2;
+  repeated Point traffic_light_points_utm = 3;
+}
+
+message GroundElement{
+  optional uint32 type = 1;                       // 元素类型
+  repeated Point points = 2;                      // 元素位置 自车坐标系
+  repeated Point points_utm = 3;                  // 元素位置 utm坐标系
+}
+
+message Road{
+  optional int32 road_id = 1;
+  optional int32 ego_lane_id = 2;                         // #离自车最近车道的车道ID
+  repeated LaneLine lane_lines = 3;
+  repeated Lane lanes = 4;
+  repeated StopLine stop_lines = 5;
+  repeated ConstructionSection construction_sections = 6;
+  repeated OlmapTrafficLight traffic_lights = 7;
+  repeated GroundElement ground_elements = 8;
+}
+
+message ReferenceLine{
+  optional int32 id = 1;                        // 引导线id
+  repeated Point way_points = 2;                // 引导线点
+  repeated Point way_points_utm = 3;            // 引导线点 utm
+  optional int32 origin_road_id = 4;            // 引导线起点road id
+  optional int32 destination_road_id = 5;       // 引导线终点road id
+}
+
+message VirtualLane{
+  optional int32 lane_id = 1;                   // 虚拟车道id
+  optional int32 origin_road_id = 2;            // 虚拟车道连接起点road id
+  optional int32 destination_road_id = 3;       // 虚拟车道连接终点road id
+  optional int32 origin_lane_id = 4;            // 虚拟车道连接起点lane id
+  optional int32 destination_lane_id = 5;       // 虚拟车道连接终点lane id
+  optional int32 left_line_id = 6;              // 左虚拟车道线id
+  optional int32 right_line_id = 7;             // 右虚拟车道线id
+  repeated Point lane_center_points = 8;        // 中心点坐标
+  repeated Point lane_center_points_utm = 9;    // 中心点坐标 utm
+  optional uint32 lane_attribute = 10;          // 车道导流属性
+  repeated float lane_width = 11;             // 车道宽度，数组大小与中心点个数保持一致
+}
+
+message VirtualLine{
+  optional int32 line_id = 1;                   // 虚拟车道线id
+  repeated Point line_points = 2;               // 车道线点
+  repeated Point line_points_utm = 3;           // 车道线点_utm
+  optional int32 origin_line_id = 4;            // 虚拟车道线连接起始line id
+  optional int32 destination_line_id = 5;       // 虚拟车道线连接目标line id
+}
+
+message Intersection{
+  optional int32 intersection_id = 1;            // 路口id
+  repeated VirtualLane virtual_lanes = 2;        // 虚拟车道集合
+  repeated VirtualLine virtual_lines = 3;        // 虚拟车道线集合
+  repeated ReferenceLine reference_lines = 4;    // 引导线集合
+}
+
+message Curb{
+  optional int32 curb_id = 1;
+  repeated uint32 type_list = 2;                    // curb类型
+  repeated int32 index_list = 3;                    // 一段线如有多个属性，对应不同属性线段之间的切分点
+  optional float confidence = 4;		                // 类型置信度，0~100
+  repeated Point curb_points_utm = 5;               // curb线点列表, utm坐标系下
+  repeated Point curb_points = 6;       		        //	基于自车坐标系下的多个路牙线点坐标[(x,y,z)]
+}
+
+message RoadInfo{
+  optional int32 ego_road_id = 1;                         // 车辆所处最近的road id
+  repeated Road roads = 2;                                // road集合
+  repeated Intersection intersections = 3;                // 路口集合
+  repeated Curb curbs = 4;                                // 路牙集合
+}
+
+// ------------ 仿真完美感知消息结构 ---------------//
+message PerceptionFusionVTD{
+  optional RoadInfo         road_info = 1;                 // 车道线/车道集合信息
+  optional ObjectInfo       object_info = 2;               // 目标信息
+}
+
+message PerceptionFusion{
+  optional Localization     rtk_info = 1;                  // 匹配的rtk定位信息
+  optional RoadInfo         road_info = 2;                 // 车道线/车道集合信息
+  optional ObjectInfo       object_info = 3;               // 目标信息
+}
+
+message TrackBox{
+  optional int32 track_id = 1;
+  optional int32 class_label = 2;           // 0 unknown，1 animal，2 car，3 bicycle，4 pedestrian，5 barrier，6 traffic_cone，7 limiting_stopper, 8 parking_lock
+  optional float confidence = 3;
+  optional float track_quality = 4;       // 跟踪质量
+  optional Time time_last_seen = 5;       // 目标上次更新时间
+  optional Time time_creation = 6;        // 目标创建时刻
+  optional Time object_age = 7;           // 目标被跟踪的时间
+  optional float cx = 8; 
+  optional float cy = 9;
+  optional float cz = 10;
+  optional float w = 11;
+  optional float l = 12;
+  optional float h = 13;
+  optional float yaw = 14;
+  repeated float velocity = 15;            // 目标速度相对自车坐标系 (vx,vy,vz) vz如果没有检测出来，默认为0
+  repeated float object_accel = 16;        // 目标加速度相对自车坐标系 (mx,my,mz)
+  repeated float omega = 17;               // 车辆坐标系下角速度,rad/s
+  repeated float omega_accel = 18;         // 车辆坐标系下角加速度,rad/s2
+  optional float cx_global = 19;           // 全局坐标系下坐标 
+  optional float cy_global = 20;           // 全局坐标系下坐标 
+  optional float cz_global = 21;           // 全局坐标系下坐标 
+  optional float yaw_global = 22;          // 全局坐标系下角度
+  repeated float velocity_global = 23;     // 目标速度相对全局标系 (vx,vy,vz) vz如果没有检测出来，默认为0
+  repeated float object_accel_global = 24; // 目标加速度相对全局坐标系 (mx,my,mz)
+  repeated float omega_global = 25;        // 全局坐标系下角速度,rad/s
+  repeated float omega_accel_global = 26;  // 全局坐标系下角加速度,rad/s24 track_id
+  optional int32 motion_state = 27;        // 运动状态， 0-静态目标静止状态  1-动态目标静止状态  2-动态目标运动状态
+}
+
+message TrackBoxList{
+  optional TimeWorld time = 1;
+  repeated TrackBox track_box_list = 2;
+  optional TimeWorld rtk_time = 3;
+  optional Pose pose = 4;
+  optional TwistAccel velocity = 5;
+  optional TwistAccel acceleration = 6;
+}
+
+message TargetTrajectory{
+  optional uint32 index = 1;                   //航迹编号 
+  optional int32 rx = 2;                       //纵向距离bev  + 自车x
+  optional int32 ry = 3;                       //横向距离bev  + 自车y
+  optional int32 height = 4;                   //目标高度  0.5
+  optional int32 length = 5;                   //目标长度  0.5
+  optional int32 width = 6;                    //目标宽度  0.5
+  optional int32 cross_speed = 7;              //横向速度bev  + 自车y
+  optional int32 longitu_speed = 8;            //纵向速度bev + 自车x
+  optional uint32 tar_type = 9;                //目标状态 
+  optional uint32 obstacle = 10;               //障碍物概率 
+  optional int32 yaw = 11;                     //航向角  
+}
+
+// -------------------- 感知消息 -------------------------//
+message Perception{
+  repeated Point            free_space = 1;                 // 泊车 可行驶区域
+  repeated Point            perc_free_space = 2;            // 行车 可行驶区域
+  optional ParkingSlots     parking_slots_all = 3;          // 泊车位
+  repeated ObstacleBoundary obstacle_boundarys = 4;         // 泊车 障碍物边界
+  repeated ObstacleBoundary perc_obstacle_boundarys = 5;    // 行车 障碍物边界
+
+  optional PerceptionFusion fusion_pilot = 6;              // 行车融合感知
+  optional PerceptionFusion fusion_pilot_vtd = 7;          // vtd完美感知
+  optional TrafficLightInfo traffic_light_info = 8;        // 交通信息
+
+  optional LaneLineInfo     lane_line_info_map_engine = 9; // 车道线信息 MapEngine 
+  optional LaneLineInfo     lane_line_info_hmi = 10;       // 车道线信息 HMI       
+  optional LaneLineInfo     lane_line_info_hdmap = 11;     // 车道线信息 HDMAP    
+  optional LaneLineInfo     lane_line_info = 12;           // 车道线信息 Perception 
+  optional RoadInfo         lane_line_road_info = 13;      // 使用RoadInfo消息格式的感知车道线 
+
+  optional TrackBoxList     apa_perception_object = 14;    // 泊车 障碍物
+  optional PerceptionFusion fusion_pilot_hdmap = 15;       // hdmap 模拟感知信息
+  repeated double           collision_distance_info = 16;  // 碰撞预警距离 m
+  repeated TargetTrajectory radar_target_trajectory = 17;  // 毫米波雷达目标轨迹
+}

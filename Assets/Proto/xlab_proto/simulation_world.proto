@@ -1,0 +1,54 @@
+syntax = "proto2";
+import "basics.proto";
+import "localization.proto";
+import "engineering.proto";
+import "perception.proto";
+import "pnc.proto";
+import "mem.proto";
+import "map_engine.proto";
+import "hmi.proto";
+package xviewer;
+
+// ---------------  World 总消息结构 ----------------//
+
+// Next-id: 31
+message SimulationWorld {
+  // --- 系统信息 ---
+  optional double           timestamp = 1;                      // Timestamp in milliseconds
+
+  // --- 软件版本 ---
+  optional string           software_version = 2;
+
+  // --- 自动驾驶车辆 ---
+  optional EgoCar           auto_driving_car = 3;     
+
+  // --- 传感器硬件信号 ---
+  optional HardwareSignal   hardware_signal = 4;
+
+  // --- 工程 ---
+  optional Engineering      engineering = 5;
+
+  // --- 融合定位 --- 
+  optional FusionLocalization fusion_localization = 6;
+
+  // --- 感知信息 ---
+  optional Perception       perception = 7;
+  
+  // --- 决策规划 ---
+  optional Planning         planning = 8;
+
+  // --- 控制消息 ---
+  optional Controling       controling = 9;
+
+  // --- map engine ---
+  optional MapEngine        map_engine = 10;
+
+  // --- MEM ---
+  optional Mem              semantic_environment = 11;
+
+  // --- 话题信息 ---
+  repeated TopicInfo        topic_info = 12;
+
+  // --- rosbag ---
+  optional RosbagInfo       rosbag_info = 13;
+}

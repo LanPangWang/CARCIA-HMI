@@ -1,0 +1,139 @@
+syntax = "proto2";
+import "basics.proto";
+import "behavior_debug.proto";
+import "planner_debug.proto";
+package xviewer;
+
+// ------------  决策规划消息结构 ----------------//
+message OneCurve {
+  optional double wheel_angle = 1;       
+  optional float lenght = 2;             
+  optional int32 type = 3;            
+  optional float expected_speed = 4;
+}
+
+message Curves {
+  repeated OneCurve curves = 1;
+  optional double travel = 2;         
+  optional bool change_path = 3;
+  optional float dy = 4;
+}
+
+// 轨迹点
+message TrajectoryPoint {
+  optional double x = 1;
+  optional double y = 2;
+  optional double s = 3;					
+  optional double t = 4;					
+  optional double curvature = 5;
+  optional double yaw_angle = 6;
+  optional double expected_speed = 7;
+  optional double expected_acceleration = 8;
+}
+
+// 轨迹标记
+message TrajectoryStamped {
+  repeated TrajectoryPoint traj_points = 1;
+  optional int32 scenario_desc = 2;		
+  optional uint32 coor_sys = 3;                 // 0:utm_coordinate_system   1:vehicle_coordinate_system
+  optional int32 replanning_reason = 4;         // 重规划原因 0:没有重规划，1:引导点处重新规划，2:控制误差大请求重规划，3:AEB停车后请求重规划，4:感知偏差大重新规划，5:避障后重新规
+  repeated int32 traj_state = 5;                // traj_state[0]: 最后一段轨迹标志位，“0”表示不是最后一段轨迹，“1”表示是最后一段轨迹；    
+                                                // traj_state[1]: AEB碰撞标志位，“0”表示未触发AEB碰撞，“1”表示触发AEB碰撞；
+                                                // traj_state[2]: 动态障碍物避障标志位，“0”表示未触发动态障碍物避障，“1”表示触发动态障碍物避障
+                                                // traj_state[3]: 靠近障碍物限速标志位，“0”表示不限速，“1”表示靠近障碍物限速；
+  optional int32 expect_gear = 6;               // 0:UNSPECIFIT,  1:PARK,  2:REVERSE,  3:NEUTRAL,  4:DRIVE, 2024-4-29新增
+}
+
+message PathBound {
+  repeated Point point_array = 1;               // 一系列3D坐标点构成一条规划边界线或规划轨迹线 用UTM坐标系表示
+  optional string debug_name = 2;               // 规划边界或规划轨迹具体标签
+}
+
+message TimeConsume{
+  // ############# 模块间通讯时间延迟 #############
+  optional float decision_delay_time = 1;         // 决策到规划通讯时延  
+  optional float chassis_msg_delay_time = 2;      // 车辆状态到规划通讯时延  
+  optional float ego_vehicle_loc_delay_time = 3;  // 定位到规划通讯时延
+  // ############# 模块内部耗时（含通讯时延）#############
+  optional float decision_delta_time = 4;         // 决策内部耗时（含通讯时延）
+  optional float chassis_msg_delta_time = 5;      // 车辆状态内部耗时（含通讯时延）
+  optional float ego_vehicle_loc_delta_time = 6;  // 定位内部耗时（含通讯时延）
+  optional float perception_delta_time = 7;       // 感知内部耗时（含通讯时延）
+  // ############# 其他耗时 #############
+  optional float capture_delta_time = 8;          // 感知输入到规划输入总耗时
+  optional float get_st_time = 9;                 // 计算ST边界总时间
+  optional float plannning_total_time = 10;       // 规划内部耗时
+}
+
+message DebugPath{
+  repeated PathBound path_bounds = 1;           // 多条规划边界线和规划轨迹线
+  optional PathBound path_data = 2;             // 路径规划，2023-12-4新增
+  optional PathBound reference_path = 3;        // 参考路径，2023-12-4新增
+  repeated Point lateral_potential_vec = 4;     // 横向势场, 2024-4-16新增
+}
+
+message ApaPlanningState{
+  optional int32 plan_state = 1;                // 规划状态，0:初始化，1:规划中，2:规划成功，3:规划失败
+  optional uint32 plan_dir = 2;                 // 泊车规划方向，0:初始化，1:车尾泊入，2:车头泊入，3:车头泊出，4:车尾泊出
+  optional int32 traj_for_spot_id = 3;          // 当前规划的轨迹对应的车位id
+  repeated Avaliableslot avaliable_slots = 4;   // 可泊入车位
+  repeated int32 avaliable_dir = 5;             // 泊出：“0”表示不可泊，“1”表示可泊
+  optional int32 apa_scene = 6;                 // APA场景描述，0:默认值，1:泊入，2:车头泊出，3:车尾泊出
+}
+
+message Avaliableslot{
+  optional int32 parking_slot_id = 1;           // 可泊入车位的id
+  optional uint32 parking_dir = 2;               // 可泊车位泊入方向，0:车头车尾均不可泊入，1:只车尾可泊入，2:只车头可泊入，3:车尾和车头均可泊入
+}
+
+message Planning{
+  optional Curves curves = 1;                   // 规划曲率
+  optional TrajectoryStamped traj_points = 2;   // 规划路径
+  optional int32 lock_carport_id = 3;           // 决策规划锁定车位id号
+  optional int32 state = 4;                     // 泊车状态  0 初始化， 1 可泊车位搜索，2 锁定车位ID，3 泊车进行，4 泊车成功，5 泊车失败，6 人工接管
+  repeated int64 highlighted_object_id = 5;     // 高亮显示目标物体id [0]是ego车道正前方物体id,［1］是target车道正前方物体id, 
+                                                //［2]是target车道正后方物体id, id值为-1则说明前方或者后方没有物体
+  optional BehaviorDebugMsg behavior_debug = 6; // behavior debug
+  optional STPubInfo planner_debug = 7;         // 规划 debug
+  optional int32 pilot_state = 8;               // 行车状态， 0 未激活， 1 激活中
+  optional int32 nudge_state = 9;               // 避障标志位 0 未激活，1 避障中， 2 避障成功， 3 避障取消， 4 避障接管
+  optional int32 parking_pause = 10;            // 障碍物导致泊车暂停, 0 没有动态障碍物入侵，1 动态障碍物导致泊车暂停
+
+  repeated double parking_pose = 11;            // 泊车成功后, 车辆与感知车位的相对位姿关系
+  repeated int32 avaliable_parking_slots = 12;  // 决策规划可泊车位 
+  optional int32 park_auto_pilot_system_status = 13;  // dnp 行泊状态 0 默认状态, 1-3 行车, 4-6 泊车
+  optional TimeConsume time_consume = 14;       // 耗时
+
+  optional DebugPath debug_path = 15;           // 路径调试相关信息
+  optional int64 debug_key = 16;                // 默认值为MP debug msg = 0001，path_bounds打开 0010， bounds算法边界打开 0100，2023-12-4新增
+  optional ApaPlanningState apa_plan_state = 17;    // APA规划状态
+}
+
+// ----------------  控制消息结构 -----------------//
+message ControlPoint{
+  optional double x = 1;
+  optional double y = 2;
+  optional double yaw_angle = 3;
+  optional double speed = 4;
+}
+
+message ControlVisual{
+  repeated ControlPoint ref_points = 1;
+  repeated ControlPoint prv_points = 2;
+  repeated OneCurve curves = 3;
+  optional double wheel_angle = 4;
+  optional double e_psi = 5;
+  optional double cte = 6;
+  optional double e_v = 7;
+  optional double e_s = 8;
+}
+
+message TravelStatus{
+  repeated int32 travelstatus = 1;   //  travelstatus[0]: 轨迹行驶状态，“0”表示未结束，“1”表示结束；    后续保留
+}
+
+message Controling{
+  optional ControlVisual    control_visual = 1;        
+  optional TravelStatus     control_travel = 2; 
+  optional ControlVisual    control_debug = 3;
+}
