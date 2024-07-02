@@ -15,11 +15,7 @@ Material:
   m_InvalidKeywords: []
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
-<<<<<<< Updated upstream
-  m_DoubleSidedGI: 0
-=======
   m_DoubleSidedGI: 1
->>>>>>> Stashed changes
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
