@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Google.Protobuf.Collections;
+using System.Reflection;
 using UnityEngine;
 using System.Linq;
 using Xviewer;
@@ -34,11 +35,27 @@ public static class Utils
         return result;
     }
 
-    public static Vector3 ApplyCenter(TrajectoryPoint p, TrajectoryPoint c, float yaw)
+    public static Vector3 ApplyCenter<T>(T p, TrajectoryPoint c)
     {
+        // 获取类型T的X和Y属性
+        PropertyInfo xProp = typeof(T).GetProperty("X");
+        PropertyInfo yProp = typeof(T).GetProperty("Y");
+
+        // 检查是否存在这些属性
+        if (xProp == null || yProp == null)
+        {
+            Debug.LogError("对象必须包含 X 和 Y 属性。");
+            return new Vector3();
+        }
+
         // 计算相对坐标
-        float x = (float)(p.X - c.X);
-        float y = (float)(p.Y - c.Y);
+        double px = (double)xProp.GetValue(p);
+        double py = (double)yProp.GetValue(p);
+        double cx = (double)xProp.GetValue(c);
+        double cy = (double)yProp.GetValue(c);
+
+        float x = (float)(px - cx);
+        float y = (float)(py - cy);
         float z = 0f;
         Vector3 relativePos = new Vector3(x, y, z);
 
@@ -46,7 +63,7 @@ public static class Utils
         return new Vector3(x, y, relativePos.z);
     }
 
-    public static Vector3[] ApplyArrayToCenter(RepeatedField<TrajectoryPoint> points, TrajectoryPoint c, float yaw)
+    public static Vector3[] ApplyArrayToCenter<T>(RepeatedField<T> points, TrajectoryPoint c)
     {
         Vector3[] newPoints = new Vector3[0];
         if (double.IsNaN(c.X) || double.IsNaN(c.Y))
@@ -54,13 +71,15 @@ public static class Utils
             Debug.LogError("Vector3 'c' contains NaN value in x or y component.");
             return newPoints;
         }
+
         // 检查points是否是一个Vector3数组
-        if (points == null || !(points is RepeatedField<TrajectoryPoint>))
+        if (points == null || !(points is RepeatedField<T>))
         {
-            Debug.LogError("Vector3 'c' contains NaN value in x or y component.");
+            Debug.LogError("Points 集合必须是 RepeatedField<T> 类型。");
             return newPoints;
         }
-        newPoints = points.Select(p => ApplyCenter(p, c, yaw)).ToArray();
+
+        newPoints = points.Select(p => ApplyCenter(p, c)).ToArray();
         return newPoints;
     }
 

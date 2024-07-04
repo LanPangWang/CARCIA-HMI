@@ -41,7 +41,7 @@ public class GuideLineRenderer : MonoBehaviour
     void MakeGuideLine(TrajectoryStamped guideLine)
     {
         RepeatedField<TrajectoryPoint> points = guideLine.TrajPoints;
-        Vector3[] ps = Utils.ApplyArrayToCenter(points, center, yaw);
+        Vector3[] ps = Utils.ApplyArrayToCenter(points, center);
         GameObject newLine = Instantiate(GuideLineBase);
         LineRenderer lineRenderer = newLine.GetComponent<LineRenderer>();
 

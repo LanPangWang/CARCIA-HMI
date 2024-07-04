@@ -76,4 +76,10 @@ public static class WorldUtils
 
         return (center, yaw);
     }
+
+    public static RepeatedField<Object3D> GetObstacleList(SimulationWorld world)
+    {
+        RepeatedField<Object3D> ObstacleList = world?.Perception?.FusionPilot?.ObjectInfo.ObjectList ?? new RepeatedField<Object3D>();
+        return ObstacleList;
+    }
 }

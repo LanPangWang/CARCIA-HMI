@@ -1,6 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public interface IPoint
+{
+    double X { get; }
+    double Y { get; }
+}
+
 public class CameraPreset
 {
     public Vector3 position;

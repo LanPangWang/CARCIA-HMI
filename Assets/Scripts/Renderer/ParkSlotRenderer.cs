@@ -58,7 +58,7 @@ public class ParkSlotRenderer : MonoBehaviour
             };
             points.Add(p);
         }
-        Vector3[] ps = Utils.ApplyArrayToCenter(points, center, yaw);
+        Vector3[] ps = Utils.ApplyArrayToCenter(points, center);
         return ps;
     }
 
