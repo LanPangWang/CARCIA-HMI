@@ -39,7 +39,6 @@ public class WebSocketNet : MonoBehaviour
     {
         if (isConnecting) return; // 如果已经在尝试连接，则返回
         isConnecting = true;
-
         while (WS == null || WS.State != WebSocketState.Open) // 持续尝试连接直到成功
         {
             if (WS != null)
@@ -51,6 +50,7 @@ public class WebSocketNet : MonoBehaviour
             try
             {
                 Debug.Log("尝试连接WebSocket服务器...");
+                Debug.Log(url);
                 await WS.ConnectAsync(new Uri(url), CancellationToken.None); // 连接到指定的WebSocket服务器
 
                 // 连接成功后，启动WebSocket监听循环
@@ -103,6 +103,7 @@ public class WebSocketNet : MonoBehaviour
                 string receivedMessage = Encoding.UTF8.GetString(receiveBuffer, 0, receiveResult.Count);
                 world = SimulationWorld.Parser.ParseFrom(receiveBuffer, 0, receiveResult.Count);
                 (center, yaw) = WorldUtils.GetWorldCenter(world);
+                Debug.Log(yaw);
                 await SendMessageWebSocket("{\"type\":\"RequestSimulationWorld\",\"planning\":false}");
             }
         }

@@ -7,6 +7,7 @@ public class LaneLineRenderer : MonoBehaviour
 {
     public GameObject DashLine;
     public GameObject BaseLine;
+    private float yaw = 0;
 
     private SimulationWorld world;
 
@@ -17,7 +18,11 @@ public class LaneLineRenderer : MonoBehaviour
     void Update()
     {
         ClearLaneLines();
+        yaw = WebSocketNet.Instance.yaw;
         world = WebSocketNet.Instance.world;
+        // 根据yaw角旋转导航线
+        //UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, 0);
+        //gameObject.transform.localRotation = rotation;
         (
             RepeatedField<LaneLine> laneLines,
             RepeatedField<RepeatedField<LaneLine>> otherLines,
@@ -127,6 +132,7 @@ public class LaneLineRenderer : MonoBehaviour
 
         lineRenderer.positionCount = points.Length;
         lineRenderer.SetPositions(points);
-        newLine.transform.parent = gameObject.transform;
+        newLine.transform.SetParent(gameObject.transform);
+        newLine.transform.localRotation = UnityEngine.Quaternion.identity;
     }
 }
