@@ -1,4 +1,4 @@
-Shader "Unlit/transparentCommon"
+Shader "Unlit/alphaClipCommon"
 {
     Properties
     {
@@ -13,7 +13,7 @@ Shader "Unlit/transparentCommon"
     }
     SubShader
     {
-        Tags {"RenderType"="transparent" "QUEUE"="transparent" "PerformanceChecks"="False"}
+        Tags {"RenderType"="Opaque" "QUEUE"="Alphatest" "PerformanceChecks"="False"}
         LOD 100
 
 		ZWrite [_ZWriteMode]
@@ -64,6 +64,7 @@ Shader "Unlit/transparentCommon"
             {
                 // sample the texture
                 fixed4 col = tex2Dlod(_MainTex, float4(i.uv, 0, 0));
+                clip(col.a - 0.4);
                 col *= _Color * i.color;
                 return col;
             }
