@@ -102,7 +102,7 @@ public class ObstacleRenderer : MonoBehaviour
         {
             Vector3 p = new Vector3((float)(position.X), (float)(position.Y), 0f);
             float heading = obj.YawAngle;
-            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(-90, (heading + yaw) * Mathf.Rad2Deg, 0);
+            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler((-heading + yaw) * Mathf.Rad2Deg, 90, -90);
             instance.transform.localRotation = rotation;
             instance.transform.localPosition = p;
         }
