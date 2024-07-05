@@ -30,8 +30,6 @@ public class ObstacleRenderer : MonoBehaviour
         yaw = WebSocketNet.Instance.yaw;
         ClearObstacles();
         RepeatedField<Object3D> obstacles = WorldUtils.GetObstacleList(world);
-        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, 90);
-        gameObject.transform.localRotation = rotation;
         foreach (Object3D obj in obstacles)
         {
             RenderObstacle(obj);
@@ -102,8 +100,8 @@ public class ObstacleRenderer : MonoBehaviour
         {
             Vector3 p = new Vector3((float)(position.X), (float)(position.Y), 0f);
             float heading = obj.YawAngle;
-            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler((-heading + yaw) * Mathf.Rad2Deg, 90, -90);
-            instance.transform.localRotation = rotation;
+            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0, -heading * Mathf.Rad2Deg, 0);
+            instance.transform.rotation = rotation;
             instance.transform.localPosition = p;
         }
     }
