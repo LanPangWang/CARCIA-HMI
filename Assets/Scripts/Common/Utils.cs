@@ -51,11 +51,9 @@ public static class Utils
         // 计算相对坐标
         double px = (double)xProp.GetValue(p);
         double py = (double)yProp.GetValue(p);
-        double cx = (double)xProp.GetValue(c);
-        double cy = (double)yProp.GetValue(c);
 
-        float x = (float)(px - cx);
-        float y = (float)(py - cy);
+        float x = (float)(px - c.X);
+        float y = (float)(py - c.Y);
         float z = 0f;
         Vector3 relativePos = new Vector3(x, y, z);
 

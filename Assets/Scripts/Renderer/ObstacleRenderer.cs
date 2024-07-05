@@ -12,6 +12,7 @@ public class ObstacleRenderer : MonoBehaviour
     public GameObject Truck;
 
     private SimulationWorld world;
+    private float yaw;
     public TrajectoryPoint center = new TrajectoryPoint();
     private Dictionary<string, int> obstacleInstances = new Dictionary<string, int>();
 
@@ -26,8 +27,11 @@ public class ObstacleRenderer : MonoBehaviour
     {
         world = WebSocketNet.Instance.world;
         center = WebSocketNet.Instance.center;
+        yaw = WebSocketNet.Instance.yaw;
         ClearObstacles();
         RepeatedField<Object3D> obstacles = WorldUtils.GetObstacleList(world);
+        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, 90);
+        gameObject.transform.localRotation = rotation;
         foreach (Object3D obj in obstacles)
         {
             RenderObstacle(obj);
@@ -68,25 +72,40 @@ public class ObstacleRenderer : MonoBehaviour
     void RenderObstacle(Object3D obj)
     {
         int type = obj.ObjectType;
-        long objId = obj.ObjectId;
         string name = GetObjectName(obj);
-        Point position = obj.ReferencePointUtm?[0];
         GameObject prefab = GetPrefabForType(type);
         if (obstacleInstances.ContainsKey(name))
         {
+            foreach (Transform child in gameObject.transform)
+            {
+                if (child.gameObject.name == name)
+                {
+                    GameObject instance = child.gameObject;
+                    SetObjstaclePosition(instance, obj);
+                }
+            }
+
         }
         else if (prefab != null)
         {
             GameObject instance = Instantiate(prefab);
-            instance.name = objId.ToString();
+            instance.name = GetObjectName(obj);
             instance.transform.SetParent(gameObject.transform);
-            Debug.Log(name);
+            SetObjstaclePosition(instance, obj);
         }
     }
 
-    void SetObjstaclePosition(GameObject obj, Point position)
+    void SetObjstaclePosition(GameObject instance, Object3D obj)
     {
-        Vector3 p = Utils.ApplyCenter(position, center);
+        Point position = obj.ReferencePoint?[0];
+        if (position is Point)
+        {
+            Vector3 p = new Vector3((float)(position.X), (float)(position.Y), 0f);
+            float heading = obj.YawAngle;
+            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(-90, (heading + yaw) * Mathf.Rad2Deg, 0);
+            instance.transform.localRotation = rotation;
+            instance.transform.localPosition = p;
+        }
     }
 
     GameObject GetPrefabForType(int type)
