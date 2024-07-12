@@ -65,17 +65,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AABBClipSize: 1
     - _BlurMaskScale: 0.1
     - _BlurOffset: 1
-    - _BlurPixels: 3.8
+    - _BlurPixels: 3
     - _BlurSkip: 1
     - _BlurStrenth: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EdgeOffset: 10
-    - _EdgeThreshold: 2.8
+    - _EdgeOffset: 1
+    - _EdgeThreshold: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -84,11 +85,11 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Sigma: 0.77
+    - _Sigma: 0.1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TAAAVG: 0.1
+    - _TAAAVG: 0.05
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

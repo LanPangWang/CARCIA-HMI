@@ -523,7 +523,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!120 &232014878
 LineRenderer:
   serializedVersion: 2
@@ -750,7 +750,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &360788837
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -972,7 +972,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &829309635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1020,7 +1020,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!120 &868506426
 LineRenderer:
   serializedVersion: 2
@@ -1396,10 +1396,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5df2d91b9b12e847bf609e487b0f067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TAARandOffset: 0.5
+  TAAJitterOffset: 1
   mainCamera: {fileID: 963194227}
   _blitMat: {fileID: 2100000, guid: fcd0921d02d86ef4b9f2c3a1ce808fa7, type: 2}
   _RTPre: {fileID: 8400000, guid: a8112b2552a7017498940d72415bd13a, type: 2}
+  HaltonCount: 16
+  HaltonFactor1: 2
+  HaltonFactor2: 3
 --- !u!1001 &1277828910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1640,7 +1643,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!120 &1822914940
 LineRenderer:
   serializedVersion: 2

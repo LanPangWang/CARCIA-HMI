@@ -3,12 +3,13 @@ Shader "Unlit/postProcessShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _TAAAVG ("TAA avg frames", Range(0.01, 1)) = 0.1
+        _TAAAlpha ("TAA alpha", Range(0.01, 1)) = 0.1
+        _AABBClipSize ("AABB Clip Size", Range(0, 1)) = 1
 		// _BlurMask("Blur Mask", 2D) = "white"{}
-		// _BlurPixels ("Blur Pixels", Range(1,21)) = 1
-        // _EdgeOffset ("Edge Offset", Range(0, 10)) = 1
-        // _EdgeThreshold ("Edge Threshold", Range(-10, 10)) = 0
-        // _Sigma ("Sigma", Range(0.1, 10)) = 1
+		_BlurPixels ("Blur Pixels", Range(1,21)) = 1
+        _EdgeOffset ("Edge Offset", Range(0, 10)) = 1
+        _EdgeThreshold ("Edge Threshold", Range(-10, 10)) = 0
+        _Sigma ("Sigma", Range(0.1, 10)) = 1
         // _LplsOffset ("lpls offset", Range(1, 16)) = 1
     }
 
@@ -35,7 +36,8 @@ Shader "Unlit/postProcessShader"
     float4x4 _MainCameraInvProjection;
     sampler2D _MainCameraRGBAPre;
     float4 _MainCameraRGBAPre_TexelSize;
-    fixed _TAAAVG;
+    fixed _TAAAlpha;
+    fixed _AABBClipSize;
     // sampler2D _MainCameraOceanDepth;
     // float _SSRDistance;
     
@@ -113,10 +115,10 @@ Shader "Unlit/postProcessShader"
         // return YCbCr;
     }
 
-    fixed3 ClipAABB(fixed3 AABBMin, fixed3 AABBMax, fixed3 src, fixed3 dst)
+    float3 ClipAABB(float3 AABBMin, float3 AABBMax, float3 src, float3 dst)
     {
-        fixed3 dir = dst - src;
-        fixed3 clip = dst;
+        float3 dir = dst - src;
+        float3 clip = dst;
         clip = clip.x < AABBMin.x ? smoothstep(clip.x, src.x, AABBMin.x) * dir + src : clip;
         clip = clip.x > AABBMax.x ? smoothstep(src.x, clip.x, AABBMax.x) * dir + src : clip;
         clip = clip.y < AABBMin.y ? smoothstep(clip.y, src.y, AABBMin.y) * dir + src : clip;
@@ -242,22 +244,24 @@ Shader "Unlit/postProcessShader"
         }
         lastUV = (lastUV.xy + 1) / 2;
         fixed4 final = tex2Dlod(_MainTex, float4(lastUV, 0, 0));
+        // return final;
         // float4 final = float4(1, finalEncoded.x % 1, 1, finalEncoded.y % 1);
         // final.x = (finalEncoded.x - final.y) / 255;
         // final.z = (finalEncoded.z - final.w) / 255;
         // final.yw *= 2;
         fixed4 inputFinal = tex2Dlod(_MainTex, float4(i.uv, 0, 0));
-        final = (final * (1 - _TAAAVG)) + (inputFinal * _TAAAVG);
+        // return inputFinal;
+        return final;
         
-        fixed3 AABBMin = RGBtoYCbCr(inputFinal.rgb);
-        fixed3 AABBMax = AABBMin;
-        fixed3 avgYCbCr = fixed3(0, 0, 0);
+        float3 AABBMin = RGBtoYCbCr(inputFinal.rgb);
+        float3 AABBMax = AABBMin;
+        float3 avgYCbCr = fixed3(0, 0, 0);
 
         for (int j = -1; j < 2; j += 1)
         {
             for (int k = -1; k < 2; k += 1)
             {
-                fixed3 C = RGBtoYCbCr(tex2Dlod(_MainTex, float4(i.uv + _MainTex_TexelSize.xy * float2(j, k), 0, 0)).rgb);
+                float3 C = RGBtoYCbCr(tex2Dlod(_MainTex, float4(i.uv + _MainTex_TexelSize.xy * float2(j, k), 0, 0)).rgb);
                 AABBMin = min(AABBMin, C);
                 AABBMax = max(AABBMax, C);
                 avgYCbCr += C;
@@ -265,14 +269,15 @@ Shader "Unlit/postProcessShader"
         }
         
         avgYCbCr /= 9;
-        fixed3 AABBavg = (AABBMin + AABBMax) / 2;
-        fixed3 AABBDiv = ((AABBMax - AABBMin) / 2);
+        float3 AABBavg = (AABBMin + AABBMax) / 2;
+        float3 AABBDiv = ((AABBMax - AABBMin) / 2) * _AABBClipSize;
 
-        fixed3 finalYCbCr = RGBtoYCbCr(final.rgb);
+        float3 finalYCbCr = RGBtoYCbCr(final.rgb);
         // float3 outYCbCr =  clamp(finalYCbCr, AABBavg - AABBDiv, AABBavg + AABBDiv);
-        fixed3 outYCbCr = ClipAABB(AABBavg - AABBDiv, AABBavg + AABBDiv, avgYCbCr, finalYCbCr);
+        float3 outYCbCr = ClipAABB(AABBavg - AABBDiv, AABBavg + AABBDiv, avgYCbCr, finalYCbCr);
         
         final.rgb = YCbCrtoRGB(outYCbCr);
+        final = (final * (1 - _TAAAlpha)) + (inputFinal * _TAAAlpha);
         
         return final;
     }
