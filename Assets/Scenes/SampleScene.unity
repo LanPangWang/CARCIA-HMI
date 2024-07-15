@@ -1396,7 +1396,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5df2d91b9b12e847bf609e487b0f067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TAAJitterOffset: 1
+  TAAJitterScale: 1
+  TAAJitterClamp: 0.5
   mainCamera: {fileID: 963194227}
   _blitMat: {fileID: 2100000, guid: fcd0921d02d86ef4b9f2c3a1ce808fa7, type: 2}
   _RTPre: {fileID: 8400000, guid: a8112b2552a7017498940d72415bd13a, type: 2}

@@ -6,7 +6,8 @@ using UnityEngine.Rendering;
 
 public class postProcessTAA : MonoBehaviour
 {
-    public float TAAJitterOffset;
+    public float TAAJitterScale;
+    public float TAAJitterClamp;
 	public Camera mainCamera;
     public Material _blitMat;
     public RenderTexture _RTPre;
@@ -29,7 +30,7 @@ public class postProcessTAA : MonoBehaviour
         isFirstFrame = true;
         HaltonGenerate();
         // beforeGbuffer.SetViewProjectionMatrices(mainCamera.transform.worldToLocalMatrix, preProj);
-        // _TAAJitterArray.Add(new Vector2(TAAJitterOffset * , TAAJitterOffset));
+        // _TAAJitterArray.Add(new Vector2(TAAJitterScale * , TAAJitterScale));
     }
     void OnDestroy()
     {
@@ -58,7 +59,10 @@ public class postProcessTAA : MonoBehaviour
         HaltonList.Clear();
         for (int i = 1; i < HaltonCount + 1; i += 1)
         {
-            HaltonList.Add(new Vector2(ItoHalton(i, ref HaltonFactor1), ItoHalton(i, ref HaltonFactor2)));
+            HaltonList.Add(new Vector2(
+                ItoHalton(i, ref HaltonFactor1) * 2f - 1f,
+                ItoHalton(i, ref HaltonFactor2) * 2f - 1f
+            ));
         }
     }
 
@@ -66,8 +70,10 @@ public class postProcessTAA : MonoBehaviour
     {
         // mainCamera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, beforeGbuffer);
         preProj = mainCamera.projectionMatrix;
-        preProj.m02 += TAAJitterOffset * (HaltonList[haltonFrames].x * 2 - 1) / mainCamera.pixelWidth;
-        preProj.m12 += TAAJitterOffset * (HaltonList[haltonFrames].y * 2 - 1) / mainCamera.pixelHeight;
+        preProj.m02 += TAAJitterScale * Mathf.Clamp(HaltonList[haltonFrames].x, -TAAJitterClamp, TAAJitterClamp) / mainCamera.pixelWidth;
+        preProj.m12 += TAAJitterScale * Mathf.Clamp(HaltonList[haltonFrames].y, -TAAJitterClamp, TAAJitterClamp) / mainCamera.pixelHeight;
+        // preProj.m02 += TAAJitterScale * HaltonList[haltonFrames].x / mainCamera.pixelWidth;
+        // preProj.m12 += TAAJitterScale * HaltonList[haltonFrames].y / mainCamera.pixelHeight;
         // mainCamera.AddCommandBuffer (CameraEvent.BeforeGBuffer, beforeGbuffer);
         // context.ExecuteCommandBuffer(beforeGbuffer);
         mainCamera.projectionMatrix = preProj;
