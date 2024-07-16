@@ -10,7 +10,9 @@ public class postProcessTAA : MonoBehaviour
     public float TAAJitterClamp;
 	public Camera mainCamera;
     public Material _blitMat;
+    public Shader _getDepthShader;
     public RenderTexture _RTPre;
+    public RenderTexture _RTDepth;
 
     public int HaltonCount;
     public float HaltonFactor1;
@@ -20,15 +22,21 @@ public class postProcessTAA : MonoBehaviour
 
     private Matrix4x4 _MainCameraProjection;
     private Matrix4x4 preProj;
+    private Matrix4x4 lastWorldToLocalMatrix;
     private bool isFirstFrame;
+    private bool renderingDepth;
+    private bool renderedDepth;
     // Start is called before the first frame update
     void Start()
     {
         // _MainCameraProjection = mainCamera.projectionMatrix;
 		Shader.SetGlobalTexture("_MainCameraRGBAPre", _RTPre);
+		Shader.SetGlobalTexture("_CameraDepthTexture", _RTDepth);
         // Debug.Log(_MainCameraProjection);
         isFirstFrame = true;
         HaltonGenerate();
+        Debug.Log(mainCamera.renderingPath);
+        // mainCamera.depthTextureMode = DepthTextureMode.Depth;
         // beforeGbuffer.SetViewProjectionMatrices(mainCamera.transform.worldToLocalMatrix, preProj);
         // _TAAJitterArray.Add(new Vector2(TAAJitterScale * , TAAJitterScale));
     }
@@ -94,14 +102,27 @@ public class postProcessTAA : MonoBehaviour
     {
 		if (Screen.height != _RTPre.height || Screen.width != _RTPre.width) {
 			ResizeRT(ref _RTPre, new Vector2(Screen.width, Screen.height));
+			ResizeRT(ref _RTDepth, new Vector2(Screen.width, Screen.height));
             
             isFirstFrame = true;
             haltonFrames = 0;
 		}
 		_blitMat.SetMatrix ("_MainCameraToWorld", mainCamera.transform.localToWorldMatrix);
+		// _blitMat.SetMatrix ("_MainWorldToCamera", lastWorldToLocalMatrix);
+        // Debug.Log(mainCamera.transform.localToWorldMatrix);
+        // Debug.Log(lastWorldToLocalMatrix);
+        // Debug.Log("-=-=-====");
+
 		_blitMat.SetMatrix ("_MainCameraProjection", mainCamera.projectionMatrix);
+        _blitMat.SetMatrix ("_MainCameraInvProjection", mainCamera.projectionMatrix.inverse);
         UpdateProjMatrix();
-		_blitMat.SetMatrix ("_MainCameraInvProjection", mainCamera.projectionMatrix.inverse);
+        renderingDepth = true;
+        mainCamera.renderingPath = RenderingPath.Forward;
+        mainCamera.clearFlags = CameraClearFlags.SolidColor;
+        mainCamera.RenderWithShader(_getDepthShader, "RenderType");
+        mainCamera.renderingPath = RenderingPath.DeferredShading;
+        mainCamera.clearFlags = CameraClearFlags.Skybox;
+        // mainCamera.ResetReplacementShader();
     }
 
 	void OnPreRender() {
@@ -112,24 +133,35 @@ public class postProcessTAA : MonoBehaviour
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        _blitMat.SetTexture("_MainTex", source);
-        if (!isFirstFrame)
+        // Graphics.Blit(source, destination);
+        if (!renderingDepth)
         {
-            Graphics.Blit(source, _RTPre, _blitMat, 2);
+            _blitMat.SetTexture("_MainTex", source);
+            if (!isFirstFrame)
+            {
+                Graphics.Blit(source, _RTPre, _blitMat, 2);
+            }
+            else
+            {
+                Graphics.Blit(source, _RTPre);
+                isFirstFrame = false;
+                Debug.Log("PreRGBA Inited");
+            }
+            // _blitMat.SetTexture("_MainTex", destination);
+            Graphics.Blit(_RTPre, destination);
+
+            lastWorldToLocalMatrix = mainCamera.transform.worldToLocalMatrix;
+            _blitMat.SetMatrix ("_MainWorldToCamera", lastWorldToLocalMatrix);
+            mainCamera.projectionMatrix = Matrix4x4.Perspective(mainCamera.fieldOfView, mainCamera.aspect, mainCamera.nearClipPlane, mainCamera.farClipPlane);
         }
         else
         {
-            Graphics.Blit(source, _RTPre);
-            isFirstFrame = false;
-            Debug.Log("PreRGBA Inited");
+            Graphics.Blit(source, _RTDepth);
+            renderingDepth = false;
         }
-        // _blitMat.SetTexture("_MainTex", destination);
-        Graphics.Blit(_RTPre, destination);
     }
 	void OnPostRender()
 	{
-		_blitMat.SetMatrix ("_MainWorldToCamera", mainCamera.transform.worldToLocalMatrix);
-        mainCamera.projectionMatrix = Matrix4x4.Perspective(mainCamera.fieldOfView, mainCamera.aspect, mainCamera.nearClipPlane, mainCamera.farClipPlane);
         // mainCamera.projectionMatrix = _MainCameraProjection;
 	}
 }

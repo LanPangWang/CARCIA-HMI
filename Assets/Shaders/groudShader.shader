@@ -88,7 +88,6 @@ Shader "Unlit/groudShader"
             fixed4 frag (v2f i) : SV_Target
             {
                 // float2 srcPosFrac = i.scrPos.xy / i.scrPos.w;
-
 				fixed3 worldNormal = normalize(i.worldNormal);
 				fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
 				fixed3 worldViewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));

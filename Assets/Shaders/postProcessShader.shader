@@ -35,6 +35,7 @@ Shader "Unlit/postProcessShader"
     float4x4 _MainCameraProjection;
     float4x4 _MainCameraInvProjection;
     sampler2D _MainCameraRGBAPre;
+    sampler2D _CameraDepthTexture;
     float4 _MainCameraRGBAPre_TexelSize;
     fixed _TAAAlpha;
     fixed _AABBClipSize;
@@ -119,12 +120,12 @@ Shader "Unlit/postProcessShader"
     {
         float3 dir = dst - src;
         float3 clip = dst;
-        clip = clip.x < AABBMin.x ? smoothstep(clip.x, src.x, AABBMin.x) * dir + src : clip;
-        clip = clip.x > AABBMax.x ? smoothstep(src.x, clip.x, AABBMax.x) * dir + src : clip;
-        clip = clip.y < AABBMin.y ? smoothstep(clip.y, src.y, AABBMin.y) * dir + src : clip;
-        clip = clip.y > AABBMax.y ? smoothstep(src.y, clip.y, AABBMax.y) * dir + src : clip;
-        clip = clip.z < AABBMin.z ? smoothstep(clip.z, src.z, AABBMin.z) * dir + src : clip;
-        clip = clip.z > AABBMax.z ? smoothstep(src.z, clip.z, AABBMax.z) * dir + src : clip;
+        clip = clip.x < AABBMin.x ? (smoothstep(clip.x, src.x, AABBMin.x) * dir + src) : clip;
+        clip = clip.x > AABBMax.x ? (smoothstep(src.x, clip.x, AABBMax.x) * dir + src) : clip;
+        clip = clip.y < AABBMin.y ? (smoothstep(clip.y, src.y, AABBMin.y) * dir + src) : clip;
+        clip = clip.y > AABBMax.y ? (smoothstep(src.y, clip.y, AABBMax.y) * dir + src) : clip;
+        clip = clip.z < AABBMin.z ? (smoothstep(clip.z, src.z, AABBMin.z) * dir + src) : clip;
+        clip = clip.z > AABBMax.z ? (smoothstep(src.z, clip.z, AABBMax.z) * dir + src) : clip;
         return clip;
     }
 
@@ -224,8 +225,10 @@ Shader "Unlit/postProcessShader"
 
     fixed4 frag_TAA(v2f i) : SV_Target
     {
+        // return fixed4(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv), 0, 0, 1);
         // float thisDepth = m_DecodeFloatRG(tex2Dlod(_MainCameraOceanDepth, float4(i.uv.xy, 0, 0)));
-        float thisDepth = 1;
+        float thisDepth = tex2Dlod(_CameraDepthTexture, float4(i.uv.xy, 0, 0)).r;
+        // float thisDepth = 1;
         // float thisDepth = (tex2Dlod(_MainCameraOceanDepth, float4(i.uv.xy, 0, 0)).x - 1) / _SSRDistance;
         float2 thisNdcPos = i.uv.xy * 2 - 1;
         float3 thisClipVec = float3(thisNdcPos.x, thisNdcPos.y, -1);
@@ -240,10 +243,11 @@ Shader "Unlit/postProcessShader"
         float2 lastUV = float2(lastViewVec.x / width, lastViewVec.y / height);
         if (abs(lastUV.x) > 1 || abs(lastUV.y) > 1)
         {
-            return fixed4(0, 0, 0, 0);
+            return tex2Dlod(_MainTex, float4(i.uv, 0, 0));
         }
         lastUV = (lastUV.xy + 1) / 2;
-        fixed4 final = tex2Dlod(_MainTex, float4(lastUV, 0, 0));
+        fixed4 final = tex2Dlod(_MainCameraRGBAPre, float4(lastUV, 0, 0));
+        // return fixed4(lastUV.xy > 0.5, 0, 1);
         // return final;
         // float4 final = float4(1, finalEncoded.x % 1, 1, finalEncoded.y % 1);
         // final.x = (finalEncoded.x - final.y) / 255;
@@ -251,34 +255,46 @@ Shader "Unlit/postProcessShader"
         // final.yw *= 2;
         fixed4 inputFinal = tex2Dlod(_MainTex, float4(i.uv, 0, 0));
         // return inputFinal;
-        return final;
+        // return final;
         
         float3 AABBMin = RGBtoYCbCr(inputFinal.rgb);
+        // float3 AABBMin = inputFinal.rgb;
         float3 AABBMax = AABBMin;
-        float3 avgYCbCr = fixed3(0, 0, 0);
+        // float3 avgYCbCr = fixed3(0, 0, 0);
 
         for (int j = -1; j < 2; j += 1)
         {
             for (int k = -1; k < 2; k += 1)
             {
                 float3 C = RGBtoYCbCr(tex2Dlod(_MainTex, float4(i.uv + _MainTex_TexelSize.xy * float2(j, k), 0, 0)).rgb);
+                // float3 C = tex2Dlod(_MainTex, float4(i.uv + _MainTex_TexelSize.xy * float2(j, k), 0, 0)).rgb;
                 AABBMin = min(AABBMin, C);
                 AABBMax = max(AABBMax, C);
-                avgYCbCr += C;
+                // avgYCbCr += C;
             }
         }
         
-        avgYCbCr /= 9;
+        // avgYCbCr /= 9;
         float3 AABBavg = (AABBMin + AABBMax) / 2;
         float3 AABBDiv = ((AABBMax - AABBMin) / 2) * _AABBClipSize;
 
         float3 finalYCbCr = RGBtoYCbCr(final.rgb);
-        // float3 outYCbCr =  clamp(finalYCbCr, AABBavg - AABBDiv, AABBavg + AABBDiv);
-        float3 outYCbCr = ClipAABB(AABBavg - AABBDiv, AABBavg + AABBDiv, avgYCbCr, finalYCbCr);
+        // float3 finalYCbCr = final.rgb;
+        float3 outYCbCr =  clamp(finalYCbCr, AABBavg - AABBDiv, AABBavg + AABBDiv);
+        // float3 outYCbCr = ClipAABB(AABBavg - AABBDiv, AABBavg + AABBDiv, RGBtoYCbCr(inputFinal.rgb), finalYCbCr);
         
         final.rgb = YCbCrtoRGB(outYCbCr);
+        // final.rgb = outYCbCr;
         final = (final * (1 - _TAAAlpha)) + (inputFinal * _TAAAlpha);
         
+        return final;
+    }
+
+    fixed4 frag_MSAA(v2f i) : SV_Target
+    {
+        fixed4 final = tex2Dlod(_MainCameraRGBAPre, float4(i.uv, 0, 0));
+        fixed4 inputFinal = tex2Dlod(_MainTex, float4(i.uv, 0, 0));
+        final = (final * (1 - _TAAAlpha)) + (inputFinal * _TAAAlpha);
         return final;
     }
 	ENDCG
@@ -321,7 +337,6 @@ Shader "Unlit/postProcessShader"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag_TAA
-      		#include "UnityCG.cginc"
 			ENDCG
 		}
         Pass
@@ -333,13 +348,7 @@ Shader "Unlit/postProcessShader"
  
 			CGPROGRAM
 			#pragma vertex vert
-			#pragma fragment frag
-      		#include "UnityCG.cginc"
-
-			fixed4 frag(v2f i) : SV_Target
-			{
-				return tex2Dlod(_MainTex, float4(i.uv, 0, 0));
-			}
+			#pragma fragment frag_MSAA
 			ENDCG
         }
     }

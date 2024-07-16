@@ -1277,6 +1277,7 @@ GameObject:
   - component: {fileID: 963194229}
   - component: {fileID: 963194230}
   - component: {fileID: 963194231}
+  - component: {fileID: 963194232}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1302,7 +1303,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1336,8 +1337,8 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
+  m_HDR: 0
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -1400,8 +1401,31 @@ MonoBehaviour:
   TAAJitterClamp: 0.5
   mainCamera: {fileID: 963194227}
   _blitMat: {fileID: 2100000, guid: fcd0921d02d86ef4b9f2c3a1ce808fa7, type: 2}
+  _getDepthShader: {fileID: 4800000, guid: a9603558b86971b48b8a7eccebfc85a5, type: 3}
+  _RTPre: {fileID: 8400000, guid: a8112b2552a7017498940d72415bd13a, type: 2}
+  _RTDepth: {fileID: 8400000, guid: a10d3c8299702454b8eb7c4254392973, type: 2}
+  HaltonCount: 8
+  HaltonFactor1: 2
+  HaltonFactor2: 3
+--- !u!114 &963194232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffca39a04be19f543bdee0a2091ed224, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TAAJitterScale: 1
+  TAAJitterClamp: 1
+  mainCamera: {fileID: 963194227}
+  _blitMat: {fileID: 2100000, guid: fcd0921d02d86ef4b9f2c3a1ce808fa7, type: 2}
   _RTPre: {fileID: 8400000, guid: a8112b2552a7017498940d72415bd13a, type: 2}
   HaltonCount: 16
+  MSAATimes: 8
   HaltonFactor1: 2
   HaltonFactor2: 3
 --- !u!1001 &1277828910
