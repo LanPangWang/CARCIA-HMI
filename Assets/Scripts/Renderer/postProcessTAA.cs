@@ -125,10 +125,6 @@ public class postProcessTAA : MonoBehaviour
         // mainCamera.renderingPath = RenderingPath.DeferredShading;
         // mainCamera.clearFlags = CameraClearFlags.Skybox;
         // mainCamera.ResetReplacementShader();
-        mainCamera.Render();
-        mainCamera.Render();
-        mainCamera.Render();
-        mainCamera.Render();
     }
 
 	void OnPreRender() {
