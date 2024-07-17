@@ -31,11 +31,12 @@ public class postProcessTAA : MonoBehaviour
     {
         // _MainCameraProjection = mainCamera.projectionMatrix;
 		Shader.SetGlobalTexture("_MainCameraRGBAPre", _RTPre);
-		Shader.SetGlobalTexture("_CameraDepthTexture", _RTDepth);
+		Shader.SetGlobalTexture("_MainCameraDepthTexture", _RTDepth);
         // Debug.Log(_MainCameraProjection);
         isFirstFrame = true;
         HaltonGenerate();
         Debug.Log(mainCamera.renderingPath);
+        // mainCamera.enabled = false;
         // mainCamera.depthTextureMode = DepthTextureMode.Depth;
         // beforeGbuffer.SetViewProjectionMatrices(mainCamera.transform.worldToLocalMatrix, preProj);
         // _TAAJitterArray.Add(new Vector2(TAAJitterScale * , TAAJitterScale));
@@ -115,14 +116,19 @@ public class postProcessTAA : MonoBehaviour
 
 		_blitMat.SetMatrix ("_MainCameraProjection", mainCamera.projectionMatrix);
         _blitMat.SetMatrix ("_MainCameraInvProjection", mainCamera.projectionMatrix.inverse);
+        _blitMat.SetFloat("_MainCameraFarClip", mainCamera.farClipPlane);
         UpdateProjMatrix();
-        renderingDepth = true;
-        mainCamera.renderingPath = RenderingPath.Forward;
-        mainCamera.clearFlags = CameraClearFlags.SolidColor;
-        mainCamera.RenderWithShader(_getDepthShader, "RenderType");
-        mainCamera.renderingPath = RenderingPath.DeferredShading;
-        mainCamera.clearFlags = CameraClearFlags.Skybox;
+        renderingDepth = false;
+        // mainCamera.renderingPath = RenderingPath.Forward;
+        // mainCamera.clearFlags = CameraClearFlags.SolidColor;
+        // // mainCamera.RenderWithShader(_getDepthShader, "RenderType");
+        // mainCamera.renderingPath = RenderingPath.DeferredShading;
+        // mainCamera.clearFlags = CameraClearFlags.Skybox;
         // mainCamera.ResetReplacementShader();
+        mainCamera.Render();
+        mainCamera.Render();
+        mainCamera.Render();
+        mainCamera.Render();
     }
 
 	void OnPreRender() {

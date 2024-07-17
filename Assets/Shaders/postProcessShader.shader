@@ -35,8 +35,10 @@ Shader "Unlit/postProcessShader"
     float4x4 _MainCameraProjection;
     float4x4 _MainCameraInvProjection;
     sampler2D _MainCameraRGBAPre;
-    sampler2D _CameraDepthTexture;
     float4 _MainCameraRGBAPre_TexelSize;
+    sampler2D _MainCameraDepthTexture;
+    sampler2D _CameraDepthTexture;
+    float _MainCameraFarClip;
     fixed _TAAAlpha;
     fixed _AABBClipSize;
     // sampler2D _MainCameraOceanDepth;
@@ -225,21 +227,25 @@ Shader "Unlit/postProcessShader"
 
     fixed4 frag_TAA(v2f i) : SV_Target
     {
-        // return fixed4(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv), 0, 0, 1);
+        // return fixed4(SAMPLE_DEPTH_TEXTURE(_MainCameraDepthTexture, i.uv), 0, 0, 1);
         // float thisDepth = m_DecodeFloatRG(tex2Dlod(_MainCameraOceanDepth, float4(i.uv.xy, 0, 0)));
-        float thisDepth = tex2Dlod(_CameraDepthTexture, float4(i.uv.xy, 0, 0)).r;
+        // float thisDepth = tex2Dlod(_MainCameraDepthTexture, float4(i.uv.xy, 0, 0)).r;
+        float thisDepth = Linear01Depth(tex2Dlod(_CameraDepthTexture, float4(i.uv.xy, 0, 0)).r);
         // float thisDepth = 1;
         // float thisDepth = (tex2Dlod(_MainCameraOceanDepth, float4(i.uv.xy, 0, 0)).x - 1) / _SSRDistance;
         float2 thisNdcPos = i.uv.xy * 2 - 1;
         float3 thisClipVec = float3(thisNdcPos.x, thisNdcPos.y, -1);
         float3 thisViewVec = mul(_MainCameraInvProjection, thisClipVec.xyzz).xyz;
-        float3 thisViewPos = thisViewVec * 1000 * thisDepth;
+        float3 thisViewPos = thisViewVec * _MainCameraFarClip * thisDepth;
         float3 thisWorldPos = mul(_MainCameraToWorld, float4(thisViewPos, 1)).xyz;
+        // return fixed4(thisWorldPos.xyz > 0, 1);
         // thisWroldPos = thisWroldPos - _WorldSpaceCameraPos.xyz;
+
         float3 lastViewVec = 2 * mul(_MainWorldToCamera, float4(thisWorldPos, 1)).xyz;
         // lastViewVec.z *= -1;
         fixed height = lastViewVec.z / _MainCameraProjection._m11;
         fixed width = _ScreenParams.x / _ScreenParams.y * height;
+
         float2 lastUV = float2(lastViewVec.x / width, lastViewVec.y / height);
         if (abs(lastUV.x) > 1 || abs(lastUV.y) > 1)
         {
@@ -254,8 +260,6 @@ Shader "Unlit/postProcessShader"
         // final.z = (finalEncoded.z - final.w) / 255;
         // final.yw *= 2;
         fixed4 inputFinal = tex2Dlod(_MainTex, float4(i.uv, 0, 0));
-        // return inputFinal;
-        // return final;
         
         float3 AABBMin = RGBtoYCbCr(inputFinal.rgb);
         // float3 AABBMin = inputFinal.rgb;
