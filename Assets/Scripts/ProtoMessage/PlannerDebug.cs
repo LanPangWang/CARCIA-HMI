@@ -79,7 +79,7 @@ namespace Xviewer {
             "ZRIeCgZvYl9tYXAYCCABKAsyDi54dmlld2VyLk9iTWFwEigKEHZpcnR1YWxf",
             "ZWRnZV9tYXAYCSABKAsyDi54dmlld2VyLk9iTWFwEioKG3ZpcnR1YWxfZW1l",
             "cmdlbmN5X3pvbmVfZmxhZxgKIAEoCDoFZmFsc2USJQoWbGFzdF9pc19pbl9z",
-            "bG93X2N1dF9pbhgLIAEoCDoFZmFsc2Ui+AMKB1NURGVidWcSIAoHc3RfcGF0",
+            "bG93X2N1dF9pbhgLIAEoCDoFZmFsc2UilAQKB1NURGVidWcSIAoHc3RfcGF0",
             "aBgBIAEoCzIPLnh2aWV3ZXIuU1RQYXRoEisKDHN0X2luZm9fbGlzdBgCIAMo",
             "CzIVLnh2aWV3ZXIuU1RPYmplY3RJbmZvEj4KDnZlaGljbGVfc3RhdHVzGAMg",
             "ASgLMiYueHZpZXdlci5TVFJlZmluZWRWZWhpY2xlU3RhdHVzU3RhbXBlZBIq",
@@ -90,37 +90,40 @@ namespace Xviewer {
             "bmluZ19kZXRhaWwYCSABKAsyHC54dmlld2VyLlNwZWVkUGxhbm5pbmdEZXRh",
             "aWwSEQoJdGltZXN0YW1wGAogASgBEi0KEWNydWlzZV9zcGVlZF9saXN0GAsg",
             "ASgLMhIueHZpZXdlci5TcGVlZERhdGESGwoTbGF0ZXJhbF9wb2xpY3lfdHlw",
-            "ZRgMIAEoBRIaChJsYW5lX2NoYW5nZV9zdGF0dXMYDSABKAUiRAoKU3BlZWRQ",
-            "b2ludBIJCgFzGAEgASgCEgkKAXYYAiABKAISCQoBYRgDIAEoAhIKCgJkYRgE",
-            "IAEoAhIJCgF0GAUgASgCIjYKCVNwZWVkRGF0YRIpCgxzcGVlZF9wb2ludHMY",
-            "ASADKAsyEy54dmlld2VyLlNwZWVkUG9pbnQiHwoHU1ZQb2ludBIJCgFzGAEg",
-            "ASgCEgkKAXYYAiABKAIiOgoKU3BlZWRMaW1pdBIsChJzcGVlZF9saW1pdF9w",
-            "b2ludHMYASADKAsyEC54dmlld2VyLlNWUG9pbnQidgoNRmVhc2libGVQb2lu",
-            "dBINCgVzX21pbhgBIAEoAhINCgVzX21heBgCIAEoAhINCgV2X21pbhgDIAEo",
-            "AhINCgV2X21heBgEIAEoAhINCgVhX21pbhgFIAEoAhINCgVhX21heBgGIAEo",
-            "AhILCgN0X3MYByABKAIiPwoMRmVhc2libGVEYXRhEi8KD2ZlYXNpYmxlX3Bv",
-            "aW50cxgBIAMoCzIWLnh2aWV3ZXIuRmVhc2libGVQb2ludCJbCg5WaXJ0dWFs",
-            "T2JzRGF0YRIKCgJpZBgBIAEoBRInCgtib3hfY29ybmVycxgCIAMoCzISLnh2",
-            "aWV3ZXIuU1RQb2ludDNEEgkKAXcYAyABKAISCQoBbBgEIAEoAiJHCg9EZXNp",
-            "cmVkQWNjUG9pbnQSGQoRYWNjZWxfbWF4X2Rlc2lyZWQYASABKAISGQoRYWNj",
-            "ZWxfbWluX2Rlc2lyZWQYAiABKAIiSwoTRGVzaXJlZEFjY2VsZXJhdGlvbhI0",
-            "ChJkZXNpcmVkX2FjY19wb2ludHMYASADKAsyGC54dmlld2VyLkRlc2lyZWRB",
-            "Y2NQb2ludCKmBQoJU1RQdWJJbmZvEiIKCHN0X2RlYnVnGAEgASgLMhAueHZp",
-            "ZXdlci5TVERlYnVnEhwKFHN0X3BsYW5uaW5nX2Vycl9jb2RlGAIgASgFEjAK",
-            "DXN0X2JvdW5kYXJpZXMYAyABKAsyGS54dmlld2VyLlNUT2JqZWN0Qm91bmRh",
-            "cnkSLwoTc3BlZWRfZGF0YV9mYWxsYmFjaxgEIAEoCzISLnh2aWV3ZXIuU3Bl",
-            "ZWREYXRhEikKDXNwZWVkX2RhdGFfZHAYBSABKAsyEi54dmlld2VyLlNwZWVk",
-            "RGF0YRIpCg1zcGVlZF9kYXRhX3FwGAYgASgLMhIueHZpZXdlci5TcGVlZERh",
-            "dGESFAoMc3RfdHJhal90eXBlGAcgASgFEiAKGHN0X3BsYW5uaW5nX2Vycl9j",
-            "b2RlX3N0chgIIAEoCRIoCgtzcGVlZF9saW1pdBgJIAEoCzITLnh2aWV3ZXIu",
-            "U3BlZWRMaW1pdBIsCg1mZWFzaWJsZV9kYXRhGAogASgLMhUueHZpZXdlci5G",
-            "ZWFzaWJsZURhdGESEQoJdGltZXN0YW1wGAsgASgBEjMKFHN0X2luZm9fbGlz",
-            "dF92aXJ0dWFsGAwgAygLMhUueHZpZXdlci5TVE9iamVjdEluZm8SFwoPaW50",
-            "ZW50aW9uX29iX2lkGA0gAygEEhcKD2Nyb3NzYWJsZV9vYl9pZBgOIAMoBBIx",
-            "ChB2aXJ0dWFsX29ic19kYXRhGA8gAygLMhcueHZpZXdlci5WaXJ0dWFsT2Jz",
-            "RGF0YRIxCgtkZXNpcmVkX2FjYxgQIAEoCzIcLnh2aWV3ZXIuRGVzaXJlZEFj",
-            "Y2VsZXJhdGlvbhIVCg1zX21heF9kZXNpcmVkGBEgAygCEhcKD3JlZmVyZW5j",
-            "ZV9zcGVlZBgSIAMoAg=="));
+            "ZRgMIAEoBRIaChJsYW5lX2NoYW5nZV9zdGF0dXMYDSABKAUSGgoSbWluX3N0",
+            "YXRpY19vYnNfZGlzGA4gASgBIkQKClNwZWVkUG9pbnQSCQoBcxgBIAEoAhIJ",
+            "CgF2GAIgASgCEgkKAWEYAyABKAISCgoCZGEYBCABKAISCQoBdBgFIAEoAiI2",
+            "CglTcGVlZERhdGESKQoMc3BlZWRfcG9pbnRzGAEgAygLMhMueHZpZXdlci5T",
+            "cGVlZFBvaW50Ih8KB1NWUG9pbnQSCQoBcxgBIAEoAhIJCgF2GAIgASgCIjoK",
+            "ClNwZWVkTGltaXQSLAoSc3BlZWRfbGltaXRfcG9pbnRzGAEgAygLMhAueHZp",
+            "ZXdlci5TVlBvaW50InYKDUZlYXNpYmxlUG9pbnQSDQoFc19taW4YASABKAIS",
+            "DQoFc19tYXgYAiABKAISDQoFdl9taW4YAyABKAISDQoFdl9tYXgYBCABKAIS",
+            "DQoFYV9taW4YBSABKAISDQoFYV9tYXgYBiABKAISCwoDdF9zGAcgASgCIj8K",
+            "DEZlYXNpYmxlRGF0YRIvCg9mZWFzaWJsZV9wb2ludHMYASADKAsyFi54dmll",
+            "d2VyLkZlYXNpYmxlUG9pbnQiWwoOVmlydHVhbE9ic0RhdGESCgoCaWQYASAB",
+            "KAUSJwoLYm94X2Nvcm5lcnMYAiADKAsyEi54dmlld2VyLlNUUG9pbnQzRBIJ",
+            "CgF3GAMgASgCEgkKAWwYBCABKAIiRwoPRGVzaXJlZEFjY1BvaW50EhkKEWFj",
+            "Y2VsX21heF9kZXNpcmVkGAEgASgCEhkKEWFjY2VsX21pbl9kZXNpcmVkGAIg",
+            "ASgCIksKE0Rlc2lyZWRBY2NlbGVyYXRpb24SNAoSZGVzaXJlZF9hY2NfcG9p",
+            "bnRzGAEgAygLMhgueHZpZXdlci5EZXNpcmVkQWNjUG9pbnQiKgoPT2JzSW50",
+            "ZW50aW9uUGVyEgoKAmlkGAEgAygEEgsKA3BlchgCIAMoASLoBQoJU1RQdWJJ",
+            "bmZvEiIKCHN0X2RlYnVnGAEgASgLMhAueHZpZXdlci5TVERlYnVnEhwKFHN0",
+            "X3BsYW5uaW5nX2Vycl9jb2RlGAIgASgFEjAKDXN0X2JvdW5kYXJpZXMYAyAB",
+            "KAsyGS54dmlld2VyLlNUT2JqZWN0Qm91bmRhcnkSLwoTc3BlZWRfZGF0YV9m",
+            "YWxsYmFjaxgEIAEoCzISLnh2aWV3ZXIuU3BlZWREYXRhEikKDXNwZWVkX2Rh",
+            "dGFfZHAYBSABKAsyEi54dmlld2VyLlNwZWVkRGF0YRIpCg1zcGVlZF9kYXRh",
+            "X3FwGAYgASgLMhIueHZpZXdlci5TcGVlZERhdGESFAoMc3RfdHJhal90eXBl",
+            "GAcgASgFEiAKGHN0X3BsYW5uaW5nX2Vycl9jb2RlX3N0chgIIAEoCRIoCgtz",
+            "cGVlZF9saW1pdBgJIAEoCzITLnh2aWV3ZXIuU3BlZWRMaW1pdBIsCg1mZWFz",
+            "aWJsZV9kYXRhGAogASgLMhUueHZpZXdlci5GZWFzaWJsZURhdGESEQoJdGlt",
+            "ZXN0YW1wGAsgASgBEjMKFHN0X2luZm9fbGlzdF92aXJ0dWFsGAwgAygLMhUu",
+            "eHZpZXdlci5TVE9iamVjdEluZm8SFwoPaW50ZW50aW9uX29iX2lkGA0gAygE",
+            "EhcKD2Nyb3NzYWJsZV9vYl9pZBgOIAMoBBIxChB2aXJ0dWFsX29ic19kYXRh",
+            "GA8gAygLMhcueHZpZXdlci5WaXJ0dWFsT2JzRGF0YRIxCgtkZXNpcmVkX2Fj",
+            "YxgQIAEoCzIcLnh2aWV3ZXIuRGVzaXJlZEFjY2VsZXJhdGlvbhIVCg1zX21h",
+            "eF9kZXNpcmVkGBEgAygCEhcKD3JlZmVyZW5jZV9zcGVlZBgSIAMoAhIpCgdv",
+            "YnNfcGVyGBMgASgLMhgueHZpZXdlci5PYnNJbnRlbnRpb25QZXISFQoNc19t",
+            "aW5fZGVzaXJlZBgUIAMoAg=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -137,7 +140,7 @@ namespace Xviewer {
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.ChassisDynoLimits), global::Xviewer.ChassisDynoLimits.Parser, new[]{ "MaxNormalAcceleration", "MaxNormalDeceleration", "AebDeceleration", "MaxRadialAcceleration", "MaxChangeLaneAcceleration" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.ChassisInfo), global::Xviewer.ChassisInfo.Parser, new[]{ "Length", "Width", "WheelBase", "GpsToHead", "DynoLimits" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.SpeedPlanningDetail), global::Xviewer.SpeedPlanningDetail.Parser, new[]{ "BrakeStatus", "LastIsInFollow", "InLowerDec", "LongCarFollowNearMode", "CarFollowNearMode", "AddVirtualObMode", "IsInDynamicEmergencyZone", "ObMap", "VirtualEdgeMap", "VirtualEmergencyZoneFlag", "LastIsInSlowCutIn" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.STDebug), global::Xviewer.STDebug.Parser, new[]{ "StPath", "StInfoList", "VehicleStatus", "ChassisInfo", "LocalRecommendSpeed", "InChangeLane", "CruiseSpeed", "RoadSpeedLimit", "SpeedPlanningDetail", "Timestamp", "CruiseSpeedList", "LateralPolicyType", "LaneChangeStatus" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.STDebug), global::Xviewer.STDebug.Parser, new[]{ "StPath", "StInfoList", "VehicleStatus", "ChassisInfo", "LocalRecommendSpeed", "InChangeLane", "CruiseSpeed", "RoadSpeedLimit", "SpeedPlanningDetail", "Timestamp", "CruiseSpeedList", "LateralPolicyType", "LaneChangeStatus", "MinStaticObsDis" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.SpeedPoint), global::Xviewer.SpeedPoint.Parser, new[]{ "S", "V", "A", "Da", "T" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.SpeedData), global::Xviewer.SpeedData.Parser, new[]{ "SpeedPoints" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.SVPoint), global::Xviewer.SVPoint.Parser, new[]{ "S", "V" }, null, null, null, null),
@@ -147,7 +150,8 @@ namespace Xviewer {
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.VirtualObsData), global::Xviewer.VirtualObsData.Parser, new[]{ "Id", "BoxCorners", "W", "L" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.DesiredAccPoint), global::Xviewer.DesiredAccPoint.Parser, new[]{ "AccelMaxDesired", "AccelMinDesired" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.DesiredAcceleration), global::Xviewer.DesiredAcceleration.Parser, new[]{ "DesiredAccPoints" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.STPubInfo), global::Xviewer.STPubInfo.Parser, new[]{ "StDebug", "StPlanningErrCode", "StBoundaries", "SpeedDataFallback", "SpeedDataDp", "SpeedDataQp", "StTrajType", "StPlanningErrCodeStr", "SpeedLimit", "FeasibleData", "Timestamp", "StInfoListVirtual", "IntentionObId", "CrossableObId", "VirtualObsData", "DesiredAcc", "SMaxDesired", "ReferenceSpeed" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.ObsIntentionPer), global::Xviewer.ObsIntentionPer.Parser, new[]{ "Id", "Per" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Xviewer.STPubInfo), global::Xviewer.STPubInfo.Parser, new[]{ "StDebug", "StPlanningErrCode", "StBoundaries", "SpeedDataFallback", "SpeedDataDp", "SpeedDataQp", "StTrajType", "StPlanningErrCodeStr", "SpeedLimit", "FeasibleData", "Timestamp", "StInfoListVirtual", "IntentionObId", "CrossableObId", "VirtualObsData", "DesiredAcc", "SMaxDesired", "ReferenceSpeed", "ObsPer", "SMinDesired" }, null, null, null, null)
           }));
     }
     #endregion
@@ -4517,6 +4521,7 @@ namespace Xviewer {
       cruiseSpeedList_ = other.cruiseSpeedList_ != null ? other.cruiseSpeedList_.Clone() : null;
       lateralPolicyType_ = other.lateralPolicyType_;
       laneChangeStatus_ = other.laneChangeStatus_;
+      minStaticObsDis_ = other.minStaticObsDis_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -4745,6 +4750,30 @@ namespace Xviewer {
       _hasBits0 &= ~32;
     }
 
+    /// <summary>Field number for the "min_static_obs_dis" field.</summary>
+    public const int MinStaticObsDisFieldNumber = 14;
+    private readonly static double MinStaticObsDisDefaultValue = 0D;
+
+    private double minStaticObsDis_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double MinStaticObsDis {
+      get { if ((_hasBits0 & 64) != 0) { return minStaticObsDis_; } else { return MinStaticObsDisDefaultValue; } }
+      set {
+        _hasBits0 |= 64;
+        minStaticObsDis_ = value;
+      }
+    }
+    /// <summary>Gets whether the "min_static_obs_dis" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasMinStaticObsDis {
+      get { return (_hasBits0 & 64) != 0; }
+    }
+    /// <summary>Clears the value of the "min_static_obs_dis" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearMinStaticObsDis() {
+      _hasBits0 &= ~64;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as STDebug);
@@ -4771,6 +4800,7 @@ namespace Xviewer {
       if (!object.Equals(CruiseSpeedList, other.CruiseSpeedList)) return false;
       if (LateralPolicyType != other.LateralPolicyType) return false;
       if (LaneChangeStatus != other.LaneChangeStatus) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(MinStaticObsDis, other.MinStaticObsDis)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -4790,6 +4820,7 @@ namespace Xviewer {
       if (cruiseSpeedList_ != null) hash ^= CruiseSpeedList.GetHashCode();
       if (HasLateralPolicyType) hash ^= LateralPolicyType.GetHashCode();
       if (HasLaneChangeStatus) hash ^= LaneChangeStatus.GetHashCode();
+      if (HasMinStaticObsDis) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(MinStaticObsDis);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -4852,6 +4883,10 @@ namespace Xviewer {
         output.WriteRawTag(104);
         output.WriteInt32(LaneChangeStatus);
       }
+      if (HasMinStaticObsDis) {
+        output.WriteRawTag(113);
+        output.WriteDouble(MinStaticObsDis);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -4896,6 +4931,9 @@ namespace Xviewer {
       }
       if (HasLaneChangeStatus) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(LaneChangeStatus);
+      }
+      if (HasMinStaticObsDis) {
+        size += 1 + 8;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -4962,6 +5000,9 @@ namespace Xviewer {
       }
       if (other.HasLaneChangeStatus) {
         LaneChangeStatus = other.LaneChangeStatus;
+      }
+      if (other.HasMinStaticObsDis) {
+        MinStaticObsDis = other.MinStaticObsDis;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -5042,6 +5083,10 @@ namespace Xviewer {
           }
           case 104: {
             LaneChangeStatus = input.ReadInt32();
+            break;
+          }
+          case 113: {
+            MinStaticObsDis = input.ReadDouble();
             break;
           }
         }
@@ -6848,6 +6893,149 @@ namespace Xviewer {
 
   }
 
+  public sealed partial class ObsIntentionPer : pb::IMessage<ObsIntentionPer> {
+    private static readonly pb::MessageParser<ObsIntentionPer> _parser = new pb::MessageParser<ObsIntentionPer>(() => new ObsIntentionPer());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ObsIntentionPer> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Xviewer.PlannerDebugReflection.Descriptor.MessageTypes[23]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ObsIntentionPer() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ObsIntentionPer(ObsIntentionPer other) : this() {
+      id_ = other.id_.Clone();
+      per_ = other.per_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ObsIntentionPer Clone() {
+      return new ObsIntentionPer(this);
+    }
+
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 1;
+    private static readonly pb::FieldCodec<ulong> _repeated_id_codec
+        = pb::FieldCodec.ForUInt64(8);
+    private readonly pbc::RepeatedField<ulong> id_ = new pbc::RepeatedField<ulong>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<ulong> Id {
+      get { return id_; }
+    }
+
+    /// <summary>Field number for the "per" field.</summary>
+    public const int PerFieldNumber = 2;
+    private static readonly pb::FieldCodec<double> _repeated_per_codec
+        = pb::FieldCodec.ForDouble(17);
+    private readonly pbc::RepeatedField<double> per_ = new pbc::RepeatedField<double>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<double> Per {
+      get { return per_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ObsIntentionPer);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ObsIntentionPer other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!id_.Equals(other.id_)) return false;
+      if(!per_.Equals(other.per_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= id_.GetHashCode();
+      hash ^= per_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      id_.WriteTo(output, _repeated_id_codec);
+      per_.WriteTo(output, _repeated_per_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += id_.CalculateSize(_repeated_id_codec);
+      size += per_.CalculateSize(_repeated_per_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ObsIntentionPer other) {
+      if (other == null) {
+        return;
+      }
+      id_.Add(other.id_);
+      per_.Add(other.per_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10:
+          case 8: {
+            id_.AddEntriesFrom(input, _repeated_id_codec);
+            break;
+          }
+          case 18:
+          case 17: {
+            per_.AddEntriesFrom(input, _repeated_per_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
   public sealed partial class STPubInfo : pb::IMessage<STPubInfo> {
     private static readonly pb::MessageParser<STPubInfo> _parser = new pb::MessageParser<STPubInfo>(() => new STPubInfo());
     private pb::UnknownFieldSet _unknownFields;
@@ -6857,7 +7045,7 @@ namespace Xviewer {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Xviewer.PlannerDebugReflection.Descriptor.MessageTypes[23]; }
+      get { return global::Xviewer.PlannerDebugReflection.Descriptor.MessageTypes[24]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6893,6 +7081,8 @@ namespace Xviewer {
       desiredAcc_ = other.desiredAcc_ != null ? other.desiredAcc_.Clone() : null;
       sMaxDesired_ = other.sMaxDesired_.Clone();
       referenceSpeed_ = other.referenceSpeed_.Clone();
+      obsPer_ = other.obsPer_ != null ? other.obsPer_.Clone() : null;
+      sMinDesired_ = other.sMinDesired_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -7147,6 +7337,27 @@ namespace Xviewer {
       get { return referenceSpeed_; }
     }
 
+    /// <summary>Field number for the "obs_per" field.</summary>
+    public const int ObsPerFieldNumber = 19;
+    private global::Xviewer.ObsIntentionPer obsPer_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Xviewer.ObsIntentionPer ObsPer {
+      get { return obsPer_; }
+      set {
+        obsPer_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "s_min_desired" field.</summary>
+    public const int SMinDesiredFieldNumber = 20;
+    private static readonly pb::FieldCodec<float> _repeated_sMinDesired_codec
+        = pb::FieldCodec.ForFloat(165);
+    private readonly pbc::RepeatedField<float> sMinDesired_ = new pbc::RepeatedField<float>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<float> SMinDesired {
+      get { return sMinDesired_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as STPubInfo);
@@ -7178,6 +7389,8 @@ namespace Xviewer {
       if (!object.Equals(DesiredAcc, other.DesiredAcc)) return false;
       if(!sMaxDesired_.Equals(other.sMaxDesired_)) return false;
       if(!referenceSpeed_.Equals(other.referenceSpeed_)) return false;
+      if (!object.Equals(ObsPer, other.ObsPer)) return false;
+      if(!sMinDesired_.Equals(other.sMinDesired_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -7202,6 +7415,8 @@ namespace Xviewer {
       if (desiredAcc_ != null) hash ^= DesiredAcc.GetHashCode();
       hash ^= sMaxDesired_.GetHashCode();
       hash ^= referenceSpeed_.GetHashCode();
+      if (obsPer_ != null) hash ^= ObsPer.GetHashCode();
+      hash ^= sMinDesired_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -7269,6 +7484,11 @@ namespace Xviewer {
       }
       sMaxDesired_.WriteTo(output, _repeated_sMaxDesired_codec);
       referenceSpeed_.WriteTo(output, _repeated_referenceSpeed_codec);
+      if (obsPer_ != null) {
+        output.WriteRawTag(154, 1);
+        output.WriteMessage(ObsPer);
+      }
+      sMinDesired_.WriteTo(output, _repeated_sMinDesired_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -7319,6 +7539,10 @@ namespace Xviewer {
       }
       size += sMaxDesired_.CalculateSize(_repeated_sMaxDesired_codec);
       size += referenceSpeed_.CalculateSize(_repeated_referenceSpeed_codec);
+      if (obsPer_ != null) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(ObsPer);
+      }
+      size += sMinDesired_.CalculateSize(_repeated_sMinDesired_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -7396,6 +7620,13 @@ namespace Xviewer {
       }
       sMaxDesired_.Add(other.sMaxDesired_);
       referenceSpeed_.Add(other.referenceSpeed_);
+      if (other.obsPer_ != null) {
+        if (obsPer_ == null) {
+          ObsPer = new global::Xviewer.ObsIntentionPer();
+        }
+        ObsPer.MergeFrom(other.ObsPer);
+      }
+      sMinDesired_.Add(other.sMinDesired_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -7505,6 +7736,18 @@ namespace Xviewer {
           case 146:
           case 149: {
             referenceSpeed_.AddEntriesFrom(input, _repeated_referenceSpeed_codec);
+            break;
+          }
+          case 154: {
+            if (obsPer_ == null) {
+              ObsPer = new global::Xviewer.ObsIntentionPer();
+            }
+            input.ReadMessage(ObsPer);
+            break;
+          }
+          case 162:
+          case 165: {
+            sMinDesired_.AddEntriesFrom(input, _repeated_sMinDesired_codec);
             break;
           }
         }
