@@ -55,6 +55,20 @@ public class PlaneFromPoints : MonoBehaviour
         mesh.uv = uv;
 
         // Recalculate normals for proper lighting
-        mesh.RecalculateNormals();
+        mesh.RecalculateNormals();// Load the texture from the Resources folder
+        Texture2D texture = Resources.Load<Texture2D>($"Images/Slots/validSlot");
+        if (texture == null)
+        {
+            Debug.LogError($"Texture validSlot not found in Resources/Images/Slots");
+            return;
+        }
+
+        // Create a new material with the loaded texture
+        Material material = new Material(Shader.Find("Unlit/Transparent"));
+        material.mainTexture = texture;
+
+        // Apply the material to the renderer
+        Renderer renderer = GetComponent<Renderer>();
+        renderer.material = material;
     }
 }
