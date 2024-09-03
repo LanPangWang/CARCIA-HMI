@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4341423, g: 0.4810813, b: 0.5620145, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -901,7 +901,7 @@ Light:
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
-    m_Bias: 0.05
+    m_Bias: 0.04
     m_NormalBias: 0.4
     m_NearPlane: 0.2
     m_CullingMatrixOverride:
@@ -1404,6 +1404,7 @@ MonoBehaviour:
   _getDepthShader: {fileID: 4800000, guid: a9603558b86971b48b8a7eccebfc85a5, type: 3}
   _RTPre: {fileID: 8400000, guid: a8112b2552a7017498940d72415bd13a, type: 2}
   _RTDepth: {fileID: 8400000, guid: a10d3c8299702454b8eb7c4254392973, type: 2}
+  _RTDevide: {fileID: 8400000, guid: 0ee3ad3038b47de4da340607855f4aa2, type: 2}
   HaltonCount: 8
   HaltonFactor1: 2
   HaltonFactor2: 3

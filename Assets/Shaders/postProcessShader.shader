@@ -11,6 +11,8 @@ Shader "Unlit/postProcessShader"
         _EdgeThreshold ("Edge Threshold", Range(-10, 10)) = 0
         _Sigma ("Sigma", Range(0.1, 10)) = 1
         // _LplsOffset ("lpls offset", Range(1, 16)) = 1
+
+        _AvmDevideOffset ("AVM Devide Offset", Range(-1, 1)) = 0
     }
 
     CGINCLUDE
@@ -28,6 +30,7 @@ Shader "Unlit/postProcessShader"
     fixed _EdgeThreshold;
     fixed _Sigma;
     fixed _LplsOffset;
+    float _AvmDevideOffset;
 
 
     float4x4 _MainWorldToCamera;
@@ -301,6 +304,15 @@ Shader "Unlit/postProcessShader"
         final = (final * (1 - _TAAAlpha)) + (inputFinal * _TAAAlpha);
         return final;
     }
+
+    fixed4 frag_AVM_devide(v2f i) : SV_Target
+    {
+        float2 uvDevide = i.uv;
+        float devideClip = 0.5 * abs(_AvmDevideOffset);
+        uvDevide.x -= _AvmDevideOffset * 0.5;
+        fixed4 final = uvDevide.x <= (1 - devideClip) ? (uvDevide.x >= devideClip ? tex2Dlod(_MainTex, float4(uvDevide, 0, 0)) : fixed4(0, 0, 0, 1)) : fixed4(0, 0, 0, 1);
+        return final;
+    }
 	ENDCG
     SubShader
     {
@@ -353,6 +365,18 @@ Shader "Unlit/postProcessShader"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag_MSAA
+			ENDCG
+        }
+        Pass
+        {
+			ZTest Off
+			Cull Off
+			ZWrite Off
+			Fog{ Mode Off }
+ 
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag_AVM_devide
 			ENDCG
         }
     }

@@ -6,6 +6,8 @@ using UnityEngine.Rendering;
 
 public class postProcessTAA : MonoBehaviour
 {
+    [Range(-1f, 1f)]
+    public float _AvmDevideOffset;
     public float TAAJitterScale;
     public float TAAJitterClamp;
 	public Camera mainCamera;
@@ -13,6 +15,7 @@ public class postProcessTAA : MonoBehaviour
     public Shader _getDepthShader;
     public RenderTexture _RTPre;
     public RenderTexture _RTDepth;
+    public RenderTexture _RTDevide;
 
     public int HaltonCount;
     public float HaltonFactor1;
@@ -24,8 +27,8 @@ public class postProcessTAA : MonoBehaviour
     private Matrix4x4 preProj;
     private Matrix4x4 lastWorldToLocalMatrix;
     private bool isFirstFrame;
-    private bool renderingDepth;
-    private bool renderedDepth;
+    // private bool renderingDepth;
+    // private bool renderedDepth;
     // Start is called before the first frame update
     void Start()
     {
@@ -104,6 +107,7 @@ public class postProcessTAA : MonoBehaviour
 		if (Screen.height != _RTPre.height || Screen.width != _RTPre.width) {
 			ResizeRT(ref _RTPre, new Vector2(Screen.width, Screen.height));
 			ResizeRT(ref _RTDepth, new Vector2(Screen.width, Screen.height));
+			ResizeRT(ref _RTDevide, new Vector2(Screen.width, Screen.height));
             
             isFirstFrame = true;
             haltonFrames = 0;
@@ -118,7 +122,7 @@ public class postProcessTAA : MonoBehaviour
         _blitMat.SetMatrix ("_MainCameraInvProjection", mainCamera.projectionMatrix.inverse);
         _blitMat.SetFloat("_MainCameraFarClip", mainCamera.farClipPlane);
         UpdateProjMatrix();
-        renderingDepth = false;
+        // renderingDepth = false;
         // mainCamera.renderingPath = RenderingPath.Forward;
         // mainCamera.clearFlags = CameraClearFlags.SolidColor;
         // // mainCamera.RenderWithShader(_getDepthShader, "RenderType");
@@ -136,7 +140,7 @@ public class postProcessTAA : MonoBehaviour
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         // Graphics.Blit(source, destination);
-        if (!renderingDepth)
+        // if (!renderingDepth)
         {
             _blitMat.SetTexture("_MainTex", source);
             if (!isFirstFrame)
@@ -150,17 +154,22 @@ public class postProcessTAA : MonoBehaviour
                 Debug.Log("PreRGBA Inited");
             }
             // _blitMat.SetTexture("_MainTex", destination);
-            Graphics.Blit(_RTPre, destination);
+
+            _blitMat.SetTexture("_MainTex", _RTPre);
+            _blitMat.SetFloat("_AvmDevideOffset", _AvmDevideOffset);
+            Graphics.Blit(_RTPre, _RTDevide, _blitMat, 4);
 
             lastWorldToLocalMatrix = mainCamera.transform.worldToLocalMatrix;
             _blitMat.SetMatrix ("_MainWorldToCamera", lastWorldToLocalMatrix);
             mainCamera.projectionMatrix = Matrix4x4.Perspective(mainCamera.fieldOfView, mainCamera.aspect, mainCamera.nearClipPlane, mainCamera.farClipPlane);
+
+            Graphics.Blit(_RTDevide, destination);
         }
-        else
-        {
-            Graphics.Blit(source, _RTDepth);
-            renderingDepth = false;
-        }
+        // else
+        // {
+        //     Graphics.Blit(source, _RTDepth);
+        //     renderingDepth = false;
+        // }
     }
 	void OnPostRender()
 	{
