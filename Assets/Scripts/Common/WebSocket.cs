@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI; // 引入UI命名空间
+using TMPro; // 引入TextMeshPro命名空间
 using System.Net.WebSockets;
 using System;
 using System.Threading;
@@ -15,16 +17,40 @@ public class WebSocketNet : MonoBehaviour
     private ClientWebSocket WS; // WebSocket 客户端实例
     private bool isConnecting = false; // 标识是否正在尝试连接
 
+    public TMP_InputField wsInputField; // 引用UI中的InputField
+    public Button connectButton; // 引用UI中的Button
+    public GameObject panel; // 引用Panel或其他你想隐藏的UI组件
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Optional: if you want this instance to persist across scenes
+            DontDestroyOnLoad(gameObject); // 如果需要在场景切换时保持此实例，则使用此选项
         }
         else
         {
             Destroy(gameObject);
+        }
+
+        // 为按钮点击事件添加监听器
+        connectButton.onClick.AddListener(OnConnectButtonClicked);
+    }
+
+    // 当用户点击连接按钮时触发
+    private async void OnConnectButtonClicked()
+    {
+        string wsUrl = wsInputField.text; // 获取用户输入的WebSocket地址
+        string url = $"ws://{wsUrl}:8888/websocket";
+        if (!string.IsNullOrEmpty(wsUrl))
+        {
+            // 隐藏Panel
+            panel.SetActive(false);
+            await ConnectWebSocket(url);
+        }
+        else
+        {
+            Debug.LogWarning("WebSocket地址不能为空");
         }
     }
 

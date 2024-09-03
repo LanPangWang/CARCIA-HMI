@@ -48,8 +48,6 @@ public class GuideLineRenderer : MonoBehaviour
         lineRenderer.positionCount = ps.Length;
         lineRenderer.SetPositions(ps);
         newLine.transform.SetParent(gameObject.transform);
-        // 确保子对象的局部旋转为零
-        newLine.transform.localRotation = UnityEngine.Quaternion.identity;
         // 根据yaw角旋转导航线
         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0, 0, -yaw * Mathf.Rad2Deg + 90);
         newLine.transform.localRotation = rotation;

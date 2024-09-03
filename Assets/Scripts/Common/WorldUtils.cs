@@ -82,4 +82,10 @@ public static class WorldUtils
         RepeatedField<Object3D> ObstacleList = world?.Perception?.FusionPilot?.ObjectInfo.ObjectList ?? new RepeatedField<Object3D>();
         return ObstacleList;
     }
+
+    public static RepeatedField<Point> GetFreeSpace(SimulationWorld world)
+    {
+        RepeatedField<Point> spacePoints = world?.Perception?.FreeSpace;
+        return spacePoints ?? new RepeatedField<Point>();
+    }
 }

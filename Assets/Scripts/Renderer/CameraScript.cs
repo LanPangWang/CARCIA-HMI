@@ -90,7 +90,7 @@ public class CameraScript : MonoBehaviour
         {
             lastTouchTime = Time.time; // 更新上次触摸时间
             isMoved = true;
-            if (Input.touchCount == 1)
+             if (Input.touchCount == 1)
             {
                 Touch touch = Input.GetTouch(0);
                 if (touch.phase == TouchPhase.Moved)
