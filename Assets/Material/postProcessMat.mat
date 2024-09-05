@@ -48,7 +48,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 8400000, guid: a8112b2552a7017498940d72415bd13a, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -66,6 +66,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AABBClipSize: 1
+    - _AvmDevideOffset: -0.5
     - _BlurMaskScale: 0.1
     - _BlurOffset: 1
     - _BlurPixels: 3
