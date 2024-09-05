@@ -23,6 +23,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _AVMRaw:
+        m_Texture: {fileID: 2800000, guid: 6835c8abbac34b04e89af06eac5e858f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AVMTex:
+        m_Texture: {fileID: 8400000, guid: a85477bfbb2d69f4d8990940c1971715, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BlurMask:
         m_Texture: {fileID: 2800000, guid: b77c3a35ceaaf9f40ad96d39f2942c50, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -66,7 +74,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AABBClipSize: 1
-    - _AvmDevideOffset: -0.5
+    - _AvmDevideOffset: -0.46153846
     - _BlurMaskScale: 0.1
     - _BlurOffset: 1
     - _BlurPixels: 3

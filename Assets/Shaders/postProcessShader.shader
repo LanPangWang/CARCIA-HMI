@@ -3,6 +3,8 @@ Shader "Unlit/postProcessShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _AVMTex ("Texture", 2D) = "white" {}
+        _AVMRaw ("Texture", 2D) = "white" {}
         _TAAAlpha ("TAA alpha", Range(0.01, 1)) = 0.1
         _AABBClipSize ("AABB Clip Size", Range(0, 1)) = 1
 		// _BlurMask("Blur Mask", 2D) = "white"{}
@@ -23,6 +25,10 @@ Shader "Unlit/postProcessShader"
 
 	sampler2D _MainTex;
 	float4 _MainTex_TexelSize;
+	sampler2D _AVMTex;
+	float4 _AVMTex_TexelSize;
+	sampler2D _AVMRaw;
+	float4 _AVMRaw_TexelSize;
 	sampler2D _BlurMask;
 	fixed4 _BlurMask_TexelSize;
 	fixed _BlurPixels;
@@ -310,8 +316,31 @@ Shader "Unlit/postProcessShader"
         float2 uvDevide = i.uv;
         float devideClip = 0.5 * abs(_AvmDevideOffset);
         uvDevide.x -= _AvmDevideOffset * 0.5;
-        fixed4 final = uvDevide.x <= (1 - devideClip) ? (uvDevide.x >= devideClip ? tex2Dlod(_MainTex, float4(uvDevide, 0, 0)) : fixed4(0, 0, 0, 1)) : fixed4(0, 0, 0, 1);
+
+        float2 uvAVML = i.uv;
+        uvAVML.x -= _AvmDevideOffset * 0.5 + 0.5;
+
+        float2 uvAVMR = i.uv;
+        uvAVMR.x -= _AvmDevideOffset * 0.5 - 0.5;
+
+        fixed4 final = uvDevide.x <= (1 - devideClip) ? (
+            uvDevide.x >= devideClip ? 
+                tex2Dlod(_MainTex, float4(uvDevide, 0, 0)) : 
+                tex2Dlod(_AVMTex, float4(uvAVMR, 0, 0))
+            ) : tex2Dlod(_AVMTex, float4(uvAVML, 0, 0));
         return final;
+    }
+
+    fixed4 frag_AVM_Blend(v2f i) : SV_Target
+    {
+        fixed4 RTCol = tex2Dlod(_AVMTex, float4(i.uv, 0, 0));
+
+        float2 uvRaw = i.uv;
+        float scaleSize = _AVMTex_TexelSize.y / _AVMTex_TexelSize.x;
+        uvRaw.x = i.uv.x * scaleSize - ((scaleSize - 1) / 2);
+        fixed4 RawCol = tex2Dlod(_AVMRaw, float4(uvRaw, 0, 0));
+        fixed3 final = fixed3(RTCol.rgb * RTCol.a + RawCol.rgb * (1 - RTCol.a));
+        return fixed4(final, 1);
     }
 	ENDCG
     SubShader
@@ -377,6 +406,18 @@ Shader "Unlit/postProcessShader"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag_AVM_devide
+			ENDCG
+        }
+        Pass
+        {
+			ZTest Off
+			Cull Off
+			ZWrite Off
+			Fog{ Mode Off }
+ 
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag_AVM_Blend
 			ENDCG
         }
     }

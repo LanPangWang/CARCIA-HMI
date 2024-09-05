@@ -11,11 +11,15 @@ public class postProcessTAA : MonoBehaviour
     public float TAAJitterScale;
     public float TAAJitterClamp;
 	public Camera mainCamera;
+    public Camera AVMCamera;
     public Material _blitMat;
     public Shader _getDepthShader;
     public RenderTexture _RTPre;
     public RenderTexture _RTDepth;
     public RenderTexture _RTDevide;
+    public RenderTexture _RTAVM;
+    public RenderTexture _RTAVMBlend;
+    public Texture2D _AVMRaw;
 
     public int HaltonCount;
     public float HaltonFactor1;
@@ -32,6 +36,7 @@ public class postProcessTAA : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ResizeAllRT();
         // _MainCameraProjection = mainCamera.projectionMatrix;
 		Shader.SetGlobalTexture("_MainCameraRGBAPre", _RTPre);
 		Shader.SetGlobalTexture("_MainCameraDepthTexture", _RTDepth);
@@ -94,6 +99,20 @@ public class postProcessTAA : MonoBehaviour
         haltonFrames = haltonFrames >= HaltonCount ? 0 : haltonFrames;
     }
 
+    void ResizeAllRT()
+    {
+        float largeSlide = Mathf.Max(Screen.width, Screen.height);
+        float smallSlide = Mathf.Min(Screen.width, Screen.height);
+        _AvmDevideOffset = -(smallSlide / largeSlide);
+
+        ResizeRT(ref _RTPre, new Vector2(Screen.width, Screen.height));
+        ResizeRT(ref _RTDepth, new Vector2(Screen.width, Screen.height));
+        ResizeRT(ref _RTDevide, new Vector2(Screen.width, Screen.height));
+        // float AVMSize = Mathf.Min(Screen.height, Screen.width);
+        // ResizeRT(ref _RTAVM, new Vector2(AVMSize, AVMSize));
+        ResizeRT(ref _RTAVM, new Vector2(Screen.width, Screen.height));
+        ResizeRT(ref _RTAVMBlend, new Vector2(Screen.width, Screen.height));
+    }
 	void ResizeRT(ref RenderTexture rtIN, Vector2 Size)
 	{
 		rtIN.Release ();
@@ -105,10 +124,7 @@ public class postProcessTAA : MonoBehaviour
     void Update()
     {
 		if (Screen.height != _RTPre.height || Screen.width != _RTPre.width) {
-			ResizeRT(ref _RTPre, new Vector2(Screen.width, Screen.height));
-			ResizeRT(ref _RTDepth, new Vector2(Screen.width, Screen.height));
-			ResizeRT(ref _RTDevide, new Vector2(Screen.width, Screen.height));
-            
+            ResizeAllRT();
             isFirstFrame = true;
             haltonFrames = 0;
 		}
@@ -155,8 +171,13 @@ public class postProcessTAA : MonoBehaviour
             }
             // _blitMat.SetTexture("_MainTex", destination);
 
+            _blitMat.SetTexture("_AVMTex", _RTAVM);
+            _blitMat.SetTexture("_AVMRaw", _AVMRaw);
+            Graphics.Blit(_RTAVM, _RTAVMBlend, _blitMat, 5);
+
             _blitMat.SetTexture("_MainTex", _RTPre);
             _blitMat.SetFloat("_AvmDevideOffset", _AvmDevideOffset);
+            _blitMat.SetTexture("_AVMTex", _RTAVMBlend);
             Graphics.Blit(_RTPre, _RTDevide, _blitMat, 4);
 
             lastWorldToLocalMatrix = mainCamera.transform.worldToLocalMatrix;
