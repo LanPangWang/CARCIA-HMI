@@ -10,6 +10,7 @@ public class CameraScript : MonoBehaviour
     private Vector3 startPosition; // 起始位置
     private Quaternion startRotation; // 起始旋转
     private Coroutine currentCoroutine; // 当前运行的协程
+    private postProcessTAA postProcess; // 后处理
 
     private float lastTouchTime; // 上次触摸时间
     private float touchTimeout = 2.0f; // 超时时间
@@ -24,6 +25,7 @@ public class CameraScript : MonoBehaviour
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         lastTouchTime = Time.time; // 初始化上次触摸时间
+        postProcess = gameObject.GetComponent<postProcessTAA>();
     }
 
     // Update is called once per frame
@@ -88,41 +90,60 @@ public class CameraScript : MonoBehaviour
     {
         if (Input.touchCount > 0)
         {
-            lastTouchTime = Time.time; // 更新上次触摸时间
-            isMoved = true;
-             if (Input.touchCount == 1)
+            // 获取当前触摸点的屏幕坐标
+            Vector2 touchPosition = Input.GetTouch(0).position;
+
+            // 检查触摸是否在当前相机的视口内
+            if (IsTouchInCameraViewport(touchPosition))
             {
-                Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Moved)
+                lastTouchTime = Time.time; // 更新上次触摸时间
+                isMoved = true;
+                if (Input.touchCount == 1)
                 {
-                    Vector3 deltaPosition = touch.deltaPosition;
-                    transform.Translate(-deltaPosition.x * 0.01f, -deltaPosition.y * 0.01f, 0);
+                    Touch touch = Input.GetTouch(0);
+                    if (touch.phase == TouchPhase.Moved)
+                    {
+                        Vector3 deltaPosition = touch.deltaPosition;
+                        transform.Translate(-deltaPosition.x * 0.01f, -deltaPosition.y * 0.01f, 0);
 
-                    // 在拖动时LookAt (0, 0, 0)
-                    transform.LookAt(new Vector3(0, 0, 10.66f));
+                        // 在拖动时LookAt (0, 0, 0)
+                        transform.LookAt(new Vector3(0, 0, 10.66f));
+                    }
                 }
-            }
-            else if (Input.touchCount == 2)
-            {
-                Touch touch1 = Input.GetTouch(0);
-                Touch touch2 = Input.GetTouch(1);
-
-                if (touch1.phase == TouchPhase.Began || touch2.phase == TouchPhase.Began)
+                else if (Input.touchCount == 2)
                 {
-                    initialDistance = Vector2.Distance(touch1.position, touch2.position);
-                }
-                else if (touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved)
-                {
-                    float currentDistance = Vector2.Distance(touch1.position, touch2.position);
-                    float scaleFactor = currentDistance / initialDistance;
+                    Touch touch1 = Input.GetTouch(0);
+                    Touch touch2 = Input.GetTouch(1);
 
-                    Vector3 newPosition = initialPosition * scaleFactor;
-                    newPosition.z = transform.position.z; // 保持Z轴不变
+                    if (touch1.phase == TouchPhase.Began || touch2.phase == TouchPhase.Began)
+                    {
+                        initialDistance = Vector2.Distance(touch1.position, touch2.position);
+                    }
+                    else if (touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved)
+                    {
+                        float currentDistance = Vector2.Distance(touch1.position, touch2.position);
+                        float scaleFactor = currentDistance / initialDistance;
 
-                    transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * 2);
+                        Vector3 newPosition = initialPosition * scaleFactor;
+                        newPosition.z = transform.position.z; // 保持Z轴不变
+
+                        transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * 2);
+                    }
                 }
             }
         }
+    }
+
+    // 判断触摸点是否在当前相机的视口内
+    private bool IsTouchInCameraViewport(Vector2 touchPosition)
+    {
+        // 将屏幕坐标转换为相机的视口坐标 (0-1 的范围)
+        Vector3 viewportPoint = Camera.main.ScreenToViewportPoint(touchPosition);
+        // 触摸坐标要计算是否处于Main Camera中
+        float AvmOffset = postProcess._AvmDevideOffset;
+        float realX = viewportPoint.x - AvmOffset;
+        // 视口坐标 x 和 y 的范围应该在 0 到 1 之间
+        return realX >= 0 && realX <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1;
     }
 
     // 触发动画的方法

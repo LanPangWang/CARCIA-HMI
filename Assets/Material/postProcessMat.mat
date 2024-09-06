@@ -74,7 +74,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AABBClipSize: 1
-    - _AvmDevideOffset: -0.46153846
+    - _AvmDevideOffset: -0.46632123
     - _BlurMaskScale: 0.1
     - _BlurOffset: 1
     - _BlurPixels: 3
