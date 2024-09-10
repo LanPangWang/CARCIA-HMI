@@ -3,9 +3,15 @@ using UnityEngine;
 public class AvmCameraScript : MonoBehaviour
 {
     public GameObject MainCamera;
+    public GameObject CustomSlot;
+    public GameObject DirRotateButton;
+    public GameObject SlotRotateButton;
+    private MeshCollider SlotCollider; // 当前被选中的模型的collider
+    private float SlotYaw;
 
     private Camera avmCamera; // 绑定AvmCamera相机
     private GameObject selectedObject; // 当前被选中的模型
+    private Bounds Border; 
     private Vector3 offset; // 点击位置和模型位置的偏移量
     private Plane dragPlane; // 用于计算拖动的平面
     private postProcessTAA postProcess;
@@ -16,12 +22,19 @@ public class AvmCameraScript : MonoBehaviour
     {
         // 查找名为 "AvmCamera" 的正交相机
         avmCamera = GameObject.Find("AvmCamera").GetComponent<Camera>();
+        SlotCollider = CustomSlot.GetComponent<MeshCollider>();
+        SlotYaw = 0f;
 
         // 确保该相机是正交模式
         if (avmCamera != null && !avmCamera.orthographic)
         {
             Debug.LogError("AvmCamera must be set to orthographic mode!");
         }
+
+        // 初始化边界
+        Border = new Bounds();
+        Border.center = this.transform.position;
+        Border.extents = new Vector3(avmCamera.orthographicSize, 1, avmCamera.orthographicSize);
 
         // 初始化拖动平面
         dragPlane = new Plane(Vector3.forward, Vector3.zero); // 假设模型处于XZ平面（Z轴向前）
@@ -84,16 +97,43 @@ public class AvmCameraScript : MonoBehaviour
         // 真实的中心坐标
         Vector3 center = new Vector3(touchPosition.x - offset.x, selectedObject.transform.position.y, touchPosition.z - offset.z);
         // 后轴中心到车模型中心的Y轴距离是1.4795
-        Vector2 center2 = new Vector2(center.x, center.z - 1.4795f);
+        // Vector2 center2 = new Vector2(center.x, center.z - 1.4795f);
         // 车位的4个顶点
-        Vector2[] vertexs = GetRectangleVertices(center2, 2.3f, 5.2f, r);
-
-        if (CheckBorder(vertexs))
+        // Vector2[] vertexs = GetRectangleVertices(center2, 2.3f, 5.2f, r);
+        if (selectedObject.GetInstanceID() == CustomSlot.GetInstanceID())
         {
-            selectedObject.transform.position = center;
+            CustomSlot.transform.parent.position = BorderFix(center);
+        }
+        else if (selectedObject.GetInstanceID() == SlotRotateButton.GetInstanceID())
+        {
+            SlotYaw = Vector3.Angle(Vector3.forward, center - CustomSlot.transform.parent.position);
+            SlotYaw *= center.x > CustomSlot.transform.parent.position.x ? -1f : 1f;
+            CustomSlot.transform.localRotation = Quaternion.AngleAxis(SlotYaw, Vector3.forward);
+            CustomSlot.transform.parent.position = BorderFix(CustomSlot.transform.parent.position);
+            // Debug.Log(SlotYaw);
         }
     }
 
+    private Vector3 BorderFix(Vector3 center)
+    {
+        Vector3[] vertices = GetRectangleVertices(center, 0f);
+        Vector3 min = vertices[0];
+        Vector3 max = vertices[0];
+        for (int i = 1; i < vertices.Length; i++)
+        {
+            min.x = Mathf.Min(min.x, vertices[i].x);
+            min.z = Mathf.Min(min.z, vertices[i].z);
+            max.x = Mathf.Max(max.x, vertices[i].x);
+            max.z = Mathf.Max(max.z, vertices[i].z);
+        }
+        Vector3 borderOffset = center;
+        borderOffset.x += min.x < Border.min.x ? (Border.min.x - min.x) : 0;
+        borderOffset.x -= max.x > Border.max.x ? (max.x - Border.max.x) : 0;
+        borderOffset.z += min.z < Border.min.z ? (Border.min.z - min.z) : 0;
+        borderOffset.z -= max.z > Border.max.z ? (max.z - Border.max.z) : 0;
+        borderOffset.y = 0f;
+        return borderOffset;
+    }
     // 计算后处理前的位置
     private Vector2 CalRealPosition(Vector2 p)
     {
@@ -104,13 +144,13 @@ public class AvmCameraScript : MonoBehaviour
         return realPosition;
     }
 
-    bool CheckBorder(Vector2[] vertices)
+    bool CheckBorder(Vector3[] vertices)
     {
         // 遍历所有顶点
-        foreach (Vector2 vertex in vertices)
+        foreach (Vector3 vertex in vertices)
         {
             // 检查x和y坐标是否都在范围内
-            if (vertex.x < -8 || vertex.x > 8 || vertex.y < -8 || vertex.y > 8)
+            if (vertex.x < -8 || vertex.x > 8 || vertex.z < this.transform.position.z - 8 || vertex.z > this.transform.position.z + 8)
             {
                 return false; // 只要有一个点超出范围，立即返回false
             }
@@ -119,35 +159,25 @@ public class AvmCameraScript : MonoBehaviour
     }
 
     // 获取长方形的四个顶点
-    Vector2[] GetRectangleVertices(Vector2 center, float width, float height, float rotationAngle)
+    Vector3[] GetRectangleVertices(Vector3 center, float angle)
     {
         // 未旋转时的顶点相对于中心的坐标
-        Vector2 topLeft = new Vector2(-width / 2, height / 2);
-        Vector2 topRight = new Vector2(width / 2, height / 2);
-        Vector2 bottomLeft = new Vector2(-width / 2, -height / 2);
-        Vector2 bottomRight = new Vector2(width / 2, -height / 2);
+        Vector3 topLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[0]);
+        Vector3 topRight = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[1]);
+        Vector3 bottomLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[2]);
+        Vector3 bottomRight = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[3]);
 
-        // 将旋转角度从度数转换为弧度
-        float radians = rotationAngle * Mathf.Deg2Rad;
+        // transform.RotateAround(topLeft, Vector3.up, angle);
+        // transform.RotateAround(topRight, Vector3.up, angle);
+        // transform.RotateAround(bottomLeft, Vector3.up, angle);
+        // transform.RotateAround(bottomRight, Vector3.up, angle);
 
-        // 计算旋转矩阵的正弦和余弦
-        float cos = Mathf.Cos(radians);
-        float sin = Mathf.Sin(radians);
+        topLeft += center;
+        topRight += center;
+        bottomLeft += center;
+        bottomRight += center;
 
-        // 旋转每个顶点
-        topLeft = RotatePoint(topLeft, cos, sin) + center;
-        topRight = RotatePoint(topRight, cos, sin) + center;
-        bottomLeft = RotatePoint(bottomLeft, cos, sin) + center;
-        bottomRight = RotatePoint(bottomRight, cos, sin) + center;
-
-        return new Vector2[] { topLeft, topRight, bottomLeft, bottomRight };
+        return new Vector3[] { topLeft, topRight, bottomLeft, bottomRight };
     }
 
-    // 旋转顶点的方法
-    Vector2 RotatePoint(Vector2 point, float cos, float sin)
-    {
-        float xNew = point.x * cos - point.y * sin;
-        float yNew = point.x * sin + point.y * cos;
-        return new Vector2(xNew, yNew);
-    }
 }
