@@ -13,10 +13,7 @@ public class AvmCameraScript : MonoBehaviour
     private GameObject selectedObject; // 当前被选中的模型
     private Bounds Border; 
     private Vector3 offset; // 点击位置和模型位置的偏移量
-    private Plane dragPlane; // 用于计算拖动的平面
     private postProcessTAA postProcess;
-    private float minX, maxX, minZ, maxZ; // 拖动模型的边界
-    private float r; // 自定义车位的旋转
 
     void Start()
     {
@@ -36,8 +33,6 @@ public class AvmCameraScript : MonoBehaviour
         Border.center = this.transform.position;
         Border.extents = new Vector3(avmCamera.orthographicSize, 1, avmCamera.orthographicSize);
 
-        // 初始化拖动平面
-        dragPlane = new Plane(Vector3.forward, Vector3.zero); // 假设模型处于XZ平面（Z轴向前）
         postProcess = MainCamera.GetComponent<postProcessTAA>();
     }
 
@@ -106,11 +101,17 @@ public class AvmCameraScript : MonoBehaviour
         }
         else if (selectedObject.GetInstanceID() == SlotRotateButton.GetInstanceID())
         {
-            SlotYaw = Vector3.Angle(Vector3.forward, center - CustomSlot.transform.parent.position);
-            SlotYaw *= center.x > CustomSlot.transform.parent.position.x ? -1f : 1f;
-            CustomSlot.transform.localRotation = Quaternion.AngleAxis(SlotYaw, Vector3.forward);
+
+            // 使用 Atan2 来计算角度，避免 x=0 时的跳变
+            Vector3 direction = center - CustomSlot.transform.parent.position;
+            float angleRadians = Mathf.Atan2(direction.z, direction.x);  // 使用 Z 和 X 计算角度
+            float angleDegrees = angleRadians * Mathf.Rad2Deg - 90;           // 转换为角度
+
+            // 将旋转应用到 CustomSlot
+            CustomSlot.transform.localRotation = Quaternion.Euler(0, 0, angleDegrees);
+
+            // 保持位置不变，应用边界修正
             CustomSlot.transform.parent.position = BorderFix(CustomSlot.transform.parent.position);
-            // Debug.Log(SlotYaw);
         }
     }
 
