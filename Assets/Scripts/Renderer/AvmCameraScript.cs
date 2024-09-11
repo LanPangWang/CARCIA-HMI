@@ -7,7 +7,6 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject DirRotateButton;
     public GameObject SlotRotateButton;
     private MeshCollider SlotCollider; // 当前被选中的模型的collider
-    private float SlotYaw;
 
     private Camera avmCamera; // 绑定AvmCamera相机
     private GameObject selectedObject; // 当前被选中的模型
@@ -20,7 +19,6 @@ public class AvmCameraScript : MonoBehaviour
         // 查找名为 "AvmCamera" 的正交相机
         avmCamera = GameObject.Find("AvmCamera").GetComponent<Camera>();
         SlotCollider = CustomSlot.GetComponent<MeshCollider>();
-        SlotYaw = 0f;
 
         // 确保该相机是正交模式
         if (avmCamera != null && !avmCamera.orthographic)
@@ -102,13 +100,12 @@ public class AvmCameraScript : MonoBehaviour
         else if (selectedObject.GetInstanceID() == SlotRotateButton.GetInstanceID())
         {
 
-            // 使用 Atan2 来计算角度，避免 x=0 时的跳变
+            // 使用四元数避免反三角函数以提高计算效率
             Vector3 direction = center - CustomSlot.transform.parent.position;
-            float angleRadians = Mathf.Atan2(direction.z, direction.x);  // 使用 Z 和 X 计算角度
-            float angleDegrees = angleRadians * Mathf.Rad2Deg - 90;           // 转换为角度
-
-            // 将旋转应用到 CustomSlot
-            CustomSlot.transform.localRotation = Quaternion.Euler(0, 0, angleDegrees);
+            direction.y = 0f;
+            Quaternion tgtRot = new Quaternion();
+            tgtRot.SetFromToRotation(Vector3.forward, direction);
+            CustomSlot.transform.parent.rotation = tgtRot;
 
             // 保持位置不变，应用边界修正
             CustomSlot.transform.parent.position = BorderFix(CustomSlot.transform.parent.position);
