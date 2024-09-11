@@ -112,6 +112,8 @@ public class postProcessTAA : MonoBehaviour
         // ResizeRT(ref _RTAVM, new Vector2(AVMSize, AVMSize));
         ResizeRT(ref _RTAVM, new Vector2(Screen.width, Screen.height));
         ResizeRT(ref _RTAVMBlend, new Vector2(Screen.width, Screen.height));
+        AVMCamera.enabled = false;
+        AVMCamera.enabled = true;
     }
 	void ResizeRT(ref RenderTexture rtIN, Vector2 Size)
 	{
