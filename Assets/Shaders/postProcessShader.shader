@@ -339,7 +339,7 @@ Shader "Unlit/postProcessShader"
         float scaleSize = _AVMTex_TexelSize.y / _AVMTex_TexelSize.x;
         uvRaw.x = i.uv.x * scaleSize - ((scaleSize - 1) / 2);
         fixed4 RawCol = tex2Dlod(_AVMRaw, float4(uvRaw, 0, 0));
-        fixed3 final = fixed3(RTCol.rgb * RTCol.a + RawCol.rgb * (1 - RTCol.a));
+        fixed3 final = fixed3(RTCol.rgb + RawCol.rgb * (1 - RTCol.a));
         return fixed4(final, 1);
     }
 	ENDCG
