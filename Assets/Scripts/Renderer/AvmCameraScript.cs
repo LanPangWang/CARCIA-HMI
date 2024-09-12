@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class AvmCameraScript : MonoBehaviour
 {
@@ -60,7 +61,10 @@ public class AvmCameraScript : MonoBehaviour
             // 当触摸结束时，取消选择
             if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
             {
-                selectedObject = null;
+                if (selectedObject)
+                {
+                    OnTouchEnd(touch);
+                }
             }
         }
     }
@@ -84,15 +88,7 @@ public class AvmCameraScript : MonoBehaviour
 
     private void OnTouchMove (Touch touch)
     {
-        Vector2 realPosition = CalRealPosition(touch.position);
-        // 对于正交相机，直接使用屏幕坐标来更新模型的位置
-        Vector3 touchPosition = avmCamera.ScreenToWorldPoint(new Vector3(realPosition.x, realPosition.y, avmCamera.nearClipPlane));
-        // 真实的中心坐标
-        Vector3 center = new Vector3(touchPosition.x - offset.x, selectedObject.transform.position.y, touchPosition.z - offset.z);
-        // 后轴中心到车模型中心的Y轴距离是1.4795
-        // Vector2 center2 = new Vector2(center.x, center.z - 1.4795f);
-        // 车位的4个顶点
-        // Vector2[] vertexs = GetRectangleVertices(center2, 2.3f, 5.2f, r);
+        Vector3 center = GetCenter(touch);
         if (selectedObject.GetInstanceID() == CustomSlot.GetInstanceID())
         {
             CustomSlot.transform.parent.position = BorderFix(center);
@@ -112,9 +108,46 @@ public class AvmCameraScript : MonoBehaviour
         }
     }
 
+    private async void OnTouchEnd (Touch touch)
+    {
+        Vector3 center = GetCenter(touch);
+        Vector3[] vertices = GetRectangleVertices(center);
+        List<string> points = new List<string>();
+        foreach (Vector3 p in vertices)
+        {
+            points.Add(p.x.ToString("F5"));
+            points.Add(p.y.ToString("F5"));
+            points.Add(p.z.ToString("F5"));
+        }
+        uint frameId = StateManager.Instance.GetFrameId();
+        selectedObject = null;
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "custom_parking_dir", 1 },
+                    { "custom_parking_slotPoints", points.ToArray() },
+                    { "custom_parking_frameId", frameId },
+                }
+            }
+        };
+        await HmiSocket.Instance.Send(paramsDict);
+    }
+
+    private Vector3 GetCenter(Touch touch)
+    {
+        Vector2 realPosition = CalRealPosition(touch.position);
+        // 对于正交相机，直接使用屏幕坐标来更新模型的位置
+        Vector3 touchPosition = avmCamera.ScreenToWorldPoint(new Vector3(realPosition.x, realPosition.y, avmCamera.nearClipPlane));
+        // 真实的中心坐标
+        Vector3 center = new Vector3(touchPosition.x - offset.x, selectedObject.transform.position.y, touchPosition.z - offset.z);
+        return center;
+    }
+
     private Vector3 BorderFix(Vector3 center)
     {
-        Vector3[] vertices = GetRectangleVertices(center, 0f);
+        Vector3[] vertices = GetRectangleVertices(center);
         Vector3 min = vertices[0];
         Vector3 max = vertices[0];
         for (int i = 1; i < vertices.Length; i++)
@@ -132,6 +165,7 @@ public class AvmCameraScript : MonoBehaviour
         borderOffset.y = 0f;
         return borderOffset;
     }
+
     // 计算后处理前的位置
     private Vector2 CalRealPosition(Vector2 p)
     {
@@ -157,12 +191,12 @@ public class AvmCameraScript : MonoBehaviour
     }
 
     // 获取长方形的四个顶点
-    Vector3[] GetRectangleVertices(Vector3 center, float angle)
+    Vector3[] GetRectangleVertices(Vector3 center)
     {
         // 未旋转时的顶点相对于中心的坐标
-        Vector3 topLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[0]);
-        Vector3 topRight = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[1]);
-        Vector3 bottomLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[2]);
+        Vector3 bottomLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[0]);
+        Vector3 topLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[1]);
+        Vector3 topRight = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[2]);
         Vector3 bottomRight = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[3]);
 
         // transform.RotateAround(topLeft, Vector3.up, angle);
@@ -175,7 +209,7 @@ public class AvmCameraScript : MonoBehaviour
         bottomLeft += center;
         bottomRight += center;
 
-        return new Vector3[] { topLeft, topRight, bottomLeft, bottomRight };
+        return new Vector3[] { topLeft, bottomLeft, bottomRight, topRight };
     }
 
 }

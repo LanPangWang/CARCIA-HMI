@@ -84,4 +84,12 @@ public static class Constants
         { 102, new LineTypePreSet(new List<bool>{DASH}, RED, BOLD_WIDTH) },
         { 103, new LineTypePreSet(new List<bool>{DASH}, RED, BOLD_WIDTH) },
     };
+
+    public enum GearTypes
+    {
+        D = 1,
+        N,
+        R,
+        P,
+    }
 }

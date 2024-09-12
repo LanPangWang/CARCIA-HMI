@@ -92,4 +92,10 @@ public static class Utils
         float y = y1 + (y2 - y1) * (x - x1) / (x2 - x1);
         return y;
     }
+
+    public static string GetUrl(string ip, string type)
+    {
+        string url = $"ws://{ip}:8888/{type}";
+        return url;
+    }
 }

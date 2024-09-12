@@ -88,4 +88,16 @@ public static class WorldUtils
         RepeatedField<Point> spacePoints = world?.Perception?.FreeSpace;
         return spacePoints ?? new RepeatedField<Point>();
     }
+
+    public static uint GetGear(SimulationWorld world)
+    {
+        uint gear = world?.Engineering?.Chassis?.VcuCrntGearLvlG ?? 0;
+        return gear;
+    }
+
+    public static int GetSpeed(SimulationWorld world)
+    {
+        double speed = world?.Engineering?.Chassis?.BcsVehSpdG * 1.13f ?? 0;
+        return (int)Math.Floor(speed);
+    }
 }

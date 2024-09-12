@@ -19,7 +19,7 @@ public class WebSocketNet : MonoBehaviour
 
     public TMP_InputField wsInputField; // 引用UI中的InputField
     public Button connectButton; // 引用UI中的Button
-    public GameObject panel; // 引用Panel或其他你想隐藏的UI组件
+    public GameObject panel;
 
     private void Awake()
     {
@@ -41,10 +41,9 @@ public class WebSocketNet : MonoBehaviour
     private async void OnConnectButtonClicked()
     {
         string wsUrl = wsInputField.text; // 获取用户输入的WebSocket地址
-        string url = $"ws://{wsUrl}:8888/websocket";
+        string url = Utils.GetUrl(wsUrl, "websocket");
         if (!string.IsNullOrEmpty(wsUrl))
         {
-            // 隐藏Panel
             panel.SetActive(false);
             await ConnectWebSocket(url);
         }
@@ -55,10 +54,10 @@ public class WebSocketNet : MonoBehaviour
     }
 
     // 在启动时连接WebSocket服务器并发送初始消息
-    private async void Start()
-    {
-        await ConnectWebSocket("ws://192.168.8.71:8888/websocket");
-    }
+    //private async void Start()
+    //{
+    //    await ConnectWebSocket("ws://192.168.8.71:8888/websocket");
+    //}
 
     // 连接WebSocket服务器
     private async Task ConnectWebSocket(string url)

@@ -101,9 +101,6 @@ public class postProcessTAA : MonoBehaviour
 
     void ResizeAllRT()
     {
-        float largeSlide = Mathf.Max(Screen.width, Screen.height);
-        float smallSlide = Mathf.Min(Screen.width, Screen.height);
-        _AvmDevideOffset = -(smallSlide / largeSlide);
 
         ResizeRT(ref _RTPre, new Vector2(Screen.width, Screen.height));
         ResizeRT(ref _RTDepth, new Vector2(Screen.width, Screen.height));

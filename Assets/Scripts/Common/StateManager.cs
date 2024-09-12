@@ -8,6 +8,8 @@ public class StateManager : MonoBehaviour
 
     public bool AvmOpen { get; private set; }
 
+    public uint frameId { get; private set; }
+
     private void Awake()
     {
         if (Instance == null)
@@ -25,5 +27,12 @@ public class StateManager : MonoBehaviour
     {
         AvmOpen = open;
         // 处理暂停状态的逻辑，例如暂停游戏，显示暂停菜单等
+    }
+
+    public uint GetFrameId()
+    {
+        uint id = frameId;
+        frameId += 1;
+        return id;
     }
 }

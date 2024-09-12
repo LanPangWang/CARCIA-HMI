@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class AvmLayout : MonoBehaviour
 {
-    public GameObject AvmLayer;
     public GameObject MainCamera;
 
     private bool Open = false;
@@ -15,19 +14,10 @@ public class AvmLayout : MonoBehaviour
 
     void Start()
     {
-        RectTransform rectTransform = AvmLayer.GetComponent<RectTransform>();
-
-        // 设置宽度为屏幕的一半
-        rectTransform.sizeDelta = new Vector2(Screen.width / 2, 0);
-
-        // 将 Panel 的位置设置为右半边
-        rectTransform.anchoredPosition = new Vector2(Screen.width / 4, 0);
-
-        // 锚点设置为右侧
-        rectTransform.anchorMin = new Vector2(0.5f, 0);
-        rectTransform.anchorMax = new Vector2(1, 1);
-
         postProcess = MainCamera.GetComponent<postProcessTAA>();
+        float largeSlide = Mathf.Max(Screen.width, Screen.height);
+        float smallSlide = Mathf.Min(Screen.width, Screen.height);
+        targetOffset = -(smallSlide / largeSlide);
     }
 
     void Update()
@@ -35,7 +25,6 @@ public class AvmLayout : MonoBehaviour
         if (!Open && StateManager.Instance.AvmOpen)
         {
             Open = true;
-            AvmLayer.SetActive(true);
             StartAnimation();
         }
 
@@ -43,7 +32,6 @@ public class AvmLayout : MonoBehaviour
         {
             Open = false;
             postProcess._AvmDevideOffset = 0f;
-            AvmLayer.SetActive(false);
         }
 
         if (isAnimating)
