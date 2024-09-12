@@ -194,22 +194,22 @@ public class AvmCameraScript : MonoBehaviour
     Vector3[] GetRectangleVertices(Vector3 center)
     {
         // 未旋转时的顶点相对于中心的坐标
-        Vector3 bottomLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[0]);
-        Vector3 topLeft = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[1]);
-        Vector3 topRight = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[2]);
-        Vector3 bottomRight = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[3]);
+        Vector3 lb = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[0]);
+        Vector3 rb = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[1]);
+        Vector3 lt = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[2]);
+        Vector3 rt = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[3]);
 
         // transform.RotateAround(topLeft, Vector3.up, angle);
         // transform.RotateAround(topRight, Vector3.up, angle);
         // transform.RotateAround(bottomLeft, Vector3.up, angle);
         // transform.RotateAround(bottomRight, Vector3.up, angle);
 
-        topLeft += center;
-        topRight += center;
-        bottomLeft += center;
-        bottomRight += center;
+        lb += center;
+        lt += center;
+        rb += center;
+        rt += center;
 
-        return new Vector3[] { topLeft, bottomLeft, bottomRight, topRight };
+        return new Vector3[] { lt, lb, rb, rt };
     }
 
 }
