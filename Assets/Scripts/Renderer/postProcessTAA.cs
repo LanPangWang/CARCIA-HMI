@@ -12,13 +12,16 @@ public class postProcessTAA : MonoBehaviour
     public float TAAJitterClamp;
 	public Camera mainCamera;
     public Camera AVMCamera;
+    public Camera freeSpaceCamera;
     public Material _blitMat;
     public Shader _getDepthShader;
+    public Shader _getFreeSpaceShader;
     public RenderTexture _RTPre;
     public RenderTexture _RTDepth;
     public RenderTexture _RTDevide;
     public RenderTexture _RTAVM;
     public RenderTexture _RTAVMBlend;
+    public RenderTexture _RTFreeSpace;
     public Texture2D _AVMRaw;
 
     public int HaltonCount;
@@ -40,6 +43,7 @@ public class postProcessTAA : MonoBehaviour
         // _MainCameraProjection = mainCamera.projectionMatrix;
 		Shader.SetGlobalTexture("_MainCameraRGBAPre", _RTPre);
 		Shader.SetGlobalTexture("_MainCameraDepthTexture", _RTDepth);
+		Shader.SetGlobalTexture("_AvmCameraFreeSpaceTexture", _RTFreeSpace);
         // Debug.Log(_MainCameraProjection);
         isFirstFrame = true;
         HaltonGenerate();
@@ -109,6 +113,7 @@ public class postProcessTAA : MonoBehaviour
         // ResizeRT(ref _RTAVM, new Vector2(AVMSize, AVMSize));
         ResizeRT(ref _RTAVM, new Vector2(Screen.width, Screen.height));
         ResizeRT(ref _RTAVMBlend, new Vector2(Screen.width, Screen.height));
+        ResizeRT(ref _RTFreeSpace, new Vector2(Screen.width, Screen.height));
         AVMCamera.enabled = false;
         AVMCamera.enabled = true;
     }
@@ -148,7 +153,7 @@ public class postProcessTAA : MonoBehaviour
 
 	void OnPreRender() {
         // _MainCameraProjection = mainCamera.projectionMatrix;
-
+        freeSpaceCamera.RenderWithShader(_getFreeSpaceShader, "RenderType");
         // mainCamera.projectionMatrix = preProj;
     }
 

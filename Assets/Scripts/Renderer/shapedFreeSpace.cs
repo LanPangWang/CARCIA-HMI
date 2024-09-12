@@ -70,7 +70,7 @@ public class shapedFreeSpace : MonoBehaviour
     private float yaw = 0;
 
     public float frequency;
-    // public bool updateTrigger = false;
+    public bool updateTrigger = false;
     private bool calculating = false;
     private bool shallUpdate = false;
 
@@ -97,6 +97,8 @@ public class shapedFreeSpace : MonoBehaviour
         normals = new Vector3[vertices.Length];
         Array.Fill(uvs, Vector2.zero);
         Array.Fill(normals, Vector3.zero);
+        uvs[0] = new Vector2(0f, 0.5f);
+        uvs[vertices.Length - 1] = new Vector2(0f, 0.5f);
 
         NativeArray<Vector3> input = new NativeArray<Vector3>(vertices.Length, Allocator.Persistent);
         NativeArray<int> result = new NativeArray<int>((vertices.Length - 2) * 3, Allocator.Persistent);
@@ -159,6 +161,7 @@ public class shapedFreeSpace : MonoBehaviour
                 calculating = true;
                 StartCoroutine(EarCut());
             }
+
             // if (updateTrigger)
             // {
             //     calculating = true;

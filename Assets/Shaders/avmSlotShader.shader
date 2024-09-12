@@ -9,7 +9,6 @@ Shader "Unlit/avmSlotShader"
 		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("DstBlend", float) = 10
 		[Enum(UnityEngine.Rendering.BlendOp)] _BlendOp ("BlendOp", float) = 0
         _MainTex ("Texture", 2D) = "white" {}
-        _FreeSpaceAlpha ("FreeSpaceAlpha", range(0, 1)) = 1
         _Color1 ("Color1", Color) = (1.0,1.0,1.0,1.0)
         _Color2 ("Color2", Color) = (1.0,1.0,1.0,1.0)
     }
@@ -20,10 +19,6 @@ Shader "Unlit/avmSlotShader"
 
 		ZWrite [_ZWriteMode]
 		ZTest [_ZTestMode]
-        GrabPass
-        {
-            "_AVMFreeSpaceTex"
-        }
         Pass
         {
 			Cull [_CullMode]
@@ -53,10 +48,9 @@ Shader "Unlit/avmSlotShader"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float _FreeSpaceAlpha;
 			fixed4 _Color1;
 			fixed4 _Color2;
-            sampler2D _AVMFreeSpaceTex;
+            sampler2D _AvmCameraFreeSpaceTexture;
 
             v2f vert (appdata v)
             {
@@ -71,9 +65,9 @@ Shader "Unlit/avmSlotShader"
             {
                 // sample the texture
                 fixed alpha = tex2Dlod(_MainTex, float4(i.uv, 0, 0)).a;
-                fixed freeSpaceAlpha = tex2Dlod(_AVMFreeSpaceTex, float4(i.scrPos.xy, 0, 0)).a;
-                freeSpaceAlpha = smoothstep(0, _FreeSpaceAlpha, freeSpaceAlpha);
-                fixed3 col = lerp(_Color1, _Color2, freeSpaceAlpha);
+                fixed freeSpaceAlpha = tex2Dlod(_AvmCameraFreeSpaceTexture, float4(i.scrPos.xy, 0, 0)).a;
+                // fixed3 col = lerp(_Color1, _Color2, freeSpaceAlpha);
+                fixed3 col = _Color1 * (1 - freeSpaceAlpha) + _Color2 * freeSpaceAlpha;
                 return fixed4(col, alpha);
             }
             ENDCG
