@@ -151,23 +151,23 @@ public class shapedFreeSpace : MonoBehaviour
         }
         if (!calculating)
         {
-            world = WebSocketNet.Instance.world;
-            center = WebSocketNet.Instance.center;
-            yaw = WebSocketNet.Instance.yaw;
-            if (world != null)
-            { 
-                RepeatedField<Point> spacePoints = WorldUtils.GetFreeSpace(world);
-                vertices = Utils.ApplyArrayToCenter(spacePoints, center);            
-                calculating = true;
-                StartCoroutine(EarCut());
-            }
-
-            // if (updateTrigger)
-            // {
+            // world = WebSocketNet.Instance.world;
+            // center = WebSocketNet.Instance.center;
+            // yaw = WebSocketNet.Instance.yaw;
+            // if (world != null)
+            // { 
+            //     RepeatedField<Point> spacePoints = WorldUtils.GetFreeSpace(world);
+            //     vertices = Utils.ApplyArrayToCenter(spacePoints, center);            
             //     calculating = true;
             //     StartCoroutine(EarCut());
-            //     updateTrigger = false;
             // }
+
+            if (updateTrigger)
+            {
+                calculating = true;
+                StartCoroutine(EarCut());
+                updateTrigger = false;
+            }
         }
     }
 }

@@ -16,12 +16,14 @@ public class postProcessTAA : MonoBehaviour
     public Material _blitMat;
     public Shader _getDepthShader;
     public Shader _getFreeSpaceShader;
+    public Material _blurMat;
     public RenderTexture _RTPre;
     public RenderTexture _RTDepth;
     public RenderTexture _RTDevide;
     public RenderTexture _RTAVM;
     public RenderTexture _RTAVMBlend;
     public RenderTexture _RTFreeSpace;
+    public RenderTexture _RTFreeSpaceBlur;
     public Texture2D _AVMRaw;
 
     public int HaltonCount;
@@ -43,7 +45,7 @@ public class postProcessTAA : MonoBehaviour
         // _MainCameraProjection = mainCamera.projectionMatrix;
 		Shader.SetGlobalTexture("_MainCameraRGBAPre", _RTPre);
 		Shader.SetGlobalTexture("_MainCameraDepthTexture", _RTDepth);
-		Shader.SetGlobalTexture("_AvmCameraFreeSpaceTexture", _RTFreeSpace);
+		Shader.SetGlobalTexture("_AvmCameraFreeSpaceTexture", _RTFreeSpaceBlur);
         // Debug.Log(_MainCameraProjection);
         isFirstFrame = true;
         HaltonGenerate();
@@ -113,7 +115,7 @@ public class postProcessTAA : MonoBehaviour
         // ResizeRT(ref _RTAVM, new Vector2(AVMSize, AVMSize));
         ResizeRT(ref _RTAVM, new Vector2(Screen.width, Screen.height));
         ResizeRT(ref _RTAVMBlend, new Vector2(Screen.width, Screen.height));
-        ResizeRT(ref _RTFreeSpace, new Vector2(Screen.width, Screen.height));
+        // ResizeRT(ref _RTFreeSpace, new Vector2(Screen.width, Screen.height));
         AVMCamera.enabled = false;
         AVMCamera.enabled = true;
     }
@@ -154,6 +156,13 @@ public class postProcessTAA : MonoBehaviour
 	void OnPreRender() {
         // _MainCameraProjection = mainCamera.projectionMatrix;
         freeSpaceCamera.RenderWithShader(_getFreeSpaceShader, "RenderType");
+        _blurMat.SetTexture("_MainTex", _RTFreeSpace);
+        Graphics.Blit(_RTFreeSpace, _RTFreeSpaceBlur, _blurMat, 0);
+        
+		Shader.SetGlobalVector("_AVMCameraPos", new Vector4(freeSpaceCamera.transform.position.x, 
+                                                            freeSpaceCamera.transform.position.y, 
+                                                            freeSpaceCamera.transform.position.z, 
+                                                            freeSpaceCamera.orthographicSize));
         // mainCamera.projectionMatrix = preProj;
     }
 

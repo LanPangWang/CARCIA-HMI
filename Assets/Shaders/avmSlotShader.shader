@@ -43,7 +43,7 @@ Shader "Unlit/avmSlotShader"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                float4 scrPos : TEXCOORD1;
+                float3 worldpos : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -51,13 +51,14 @@ Shader "Unlit/avmSlotShader"
 			fixed4 _Color1;
 			fixed4 _Color2;
             sampler2D _AvmCameraFreeSpaceTexture;
+            float4 _AVMCameraPos;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.scrPos = ComputeScreenPos(o.vertex);
+                o.worldpos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 return o;
             }
 
@@ -65,10 +66,14 @@ Shader "Unlit/avmSlotShader"
             {
                 // sample the texture
                 fixed alpha = tex2Dlod(_MainTex, float4(i.uv, 0, 0)).a;
-                fixed freeSpaceAlpha = tex2Dlod(_AvmCameraFreeSpaceTexture, float4(i.scrPos.xy, 0, 0)).a;
+                float2 scrpos = float2(0, 0);
+                scrpos.x = ((i.worldpos.x - _AVMCameraPos.x) + _AVMCameraPos.w) / (2 * _AVMCameraPos.w);
+                scrpos.y = ((i.worldpos.z - _AVMCameraPos.z) + _AVMCameraPos.w) / (2 * _AVMCameraPos.w);
+                fixed freeSpaceAlpha = tex2Dlod(_AvmCameraFreeSpaceTexture, float4(scrpos, 0, 0)).a;
                 // fixed3 col = lerp(_Color1, _Color2, freeSpaceAlpha);
                 fixed3 col = _Color1 * (1 - freeSpaceAlpha) + _Color2 * freeSpaceAlpha;
                 return fixed4(col, alpha);
+                // return fixed4(i.worldpos.x > -8, 0, 0, 1);
             }
             ENDCG
         }
