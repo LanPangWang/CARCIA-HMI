@@ -54,10 +54,10 @@ public class WebSocketNet : MonoBehaviour
     }
 
     // 在启动时连接WebSocket服务器并发送初始消息
-    //private async void Start()
-    //{
-    //    await ConnectWebSocket("ws://192.168.8.71:8888/websocket");
-    //}
+    private async void Start()
+    {
+        await ConnectWebSocket("ws://192.168.8.71:8888/websocket");
+    }
 
     // 连接WebSocket服务器
     private async Task ConnectWebSocket(string url)

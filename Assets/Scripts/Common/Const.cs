@@ -1,10 +1,26 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public interface IPoint
 {
     double X { get; }
     double Y { get; }
+}
+
+public class InteractionInfo
+{
+    public string label { get; set; }
+    public string? icon { get; set; }  // `?` 表示该属性是可选的（nullable）
+    public Action? cb { get; set; }    // 可选的回调函数
+
+    // 构造函数
+    public InteractionInfo(string label, string? icon = null, Action? cb = null)
+    {
+        this.label = label;
+        this.icon = icon;
+        this.cb = cb;
+    }
 }
 
 public class CameraPreset
@@ -92,4 +108,47 @@ public static class Constants
         R,
         P,
     }
+
+    public enum PilotStateMap
+    {
+        none = 0,
+        PARK_SEARCH,
+        PARK_LOCK,
+        PARK_ING,
+        PARK_SUCCESS,
+        PARK_FAIL,
+        PARK_TAKE_OVER,
+        PARK_CHOOSE,
+        PARK_PLANING,
+        PARK_PLAN_ERROR,
+        PARK_OUT_SEARCH = 11,
+        PARK_OUT_SELECT,
+        PARK_OUT_ING,
+        PARK_OUT_SUCCESS,
+        PARK_OUT_ERROR,
+        PARK_OUT_OVER,
+        PARK_OUT_START,
+        DRIVE_ING = 20,
+    }
+
+    public static Dictionary<PilotStateMap, InteractionInfo> InteractionInfo = new Dictionary<PilotStateMap, InteractionInfo>
+    {
+        { PilotStateMap.none, new InteractionInfo("进入APA", cb: () => HmiSocket.Instance.StartApa() ) },
+        { PilotStateMap.DRIVE_ING, new InteractionInfo("领航驾驶中")},
+        { PilotStateMap.PARK_SEARCH, new InteractionInfo("正在搜索车位")},
+        { PilotStateMap.PARK_CHOOSE, new InteractionInfo("请选择车位")},
+        { PilotStateMap.PARK_PLANING, new InteractionInfo("路径规划中")},
+        { PilotStateMap.PARK_PLAN_ERROR, new InteractionInfo("路径规划失败")},
+        { PilotStateMap.PARK_LOCK, new InteractionInfo("开始泊车", cb: () => HmiSocket.Instance.StartPark() )},
+        { PilotStateMap.PARK_ING, new InteractionInfo("自动泊入中")},
+        { PilotStateMap.PARK_SUCCESS, new InteractionInfo("泊入完成")},
+        { PilotStateMap.PARK_FAIL, new InteractionInfo("泊车失败", "parkFail")},
+        { PilotStateMap.PARK_TAKE_OVER, new InteractionInfo("泊车失败", "parkFail")},
+        { PilotStateMap.PARK_OUT_SEARCH, new InteractionInfo("搜索泊出方向")},
+        { PilotStateMap.PARK_OUT_SELECT, new InteractionInfo("请选择泊出方向")},
+        { PilotStateMap.PARK_OUT_START, new InteractionInfo("开始泊出", cb: () => HmiSocket.Instance.StartApaOut())},
+        { PilotStateMap.PARK_OUT_ING, new InteractionInfo("正在泊出")},
+        { PilotStateMap.PARK_OUT_ERROR, new InteractionInfo("泊出失败")},
+        { PilotStateMap.PARK_OUT_OVER, new InteractionInfo("泊出失败")},
+    };
 }

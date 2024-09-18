@@ -4,6 +4,7 @@ using TMPro; // 引入TextMeshPro命名空间
 using System.Net.WebSockets;
 using System;
 using System.Threading;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xviewer;
@@ -18,6 +19,9 @@ public class HmiSocket : MonoBehaviour
 
     public TMP_InputField wsInputField; // 引用UI中的InputField
     public Button connectButton; // 引用UI中的Button
+
+    public long parkStartTime;
+    public float parkCost;
 
     private void Awake()
     {
@@ -103,6 +107,120 @@ public class HmiSocket : MonoBehaviour
         else
         {
             Debug.LogWarning("HmiSocket未连接，无法发送消息"); // 输出警告信息
+        }
+    }
+
+    public async Task StartApa()
+    {
+        Debug.Log("StartApa");
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "user_controlled_actions", 1 },
+                }
+            }
+        };
+        await Send(paramsDict);
+    }
+
+    public async Task LockSlot(int id, int dir)
+    {
+        Debug.Log("LockSlot");
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "key_choose_carport", id },
+                    { "dir", dir },
+                }
+            }
+        };
+        await Send(paramsDict);
+    }
+
+    public async Task StartPark()
+    {
+        Debug.Log("StartPark");
+        parkStartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        parkCost = 0;
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "system_order", 1 },
+                }
+            }
+        };
+        await Send(paramsDict);
+        await Task.Delay(500);  // 等待指定的毫秒数
+        paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "user_controlled_actions", 6 },
+                }
+            }
+        };
+        // #TODO player audio 3
+        await Send(paramsDict);
+    }
+    
+    public async Task LockParkOutDir(int dir)
+    {
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "user_controlled_actions", 14 },
+                    { "parking_out_dir", dir },
+                }
+            }
+        };
+        await Send(paramsDict);
+    }
+
+    public async Task StartApaOut()
+    {
+        if (StateManager.Instance.parkOutInfo.lockParkOutDir >= 0)
+        {
+            parkCost = 0;
+
+            var paramsDict = new Dictionary<string, object>
+            {
+                { "type", "HMIKeyDownEnvent" },
+                { "hmi", new Dictionary<string, object>
+                    {
+                        { "system_order", 1 },
+                    }
+                }
+            };
+            await Send(paramsDict);
+            await Task.Delay(500);  // 等待指定的毫秒数
+            paramsDict = new Dictionary<string, object>
+            {
+                { "type", "HMIKeyDownEnvent" },
+                { "hmi", new Dictionary<string, object>
+                    {
+                        { "user_controlled_actions", 7 },
+                    }
+                }
+            };
+            StateManager.Instance.ChangeParkOutDir(-1);
+            await Send(paramsDict);
+        }
+    }
+
+    public void CalculateParkTimeCost()
+    {
+        if (parkCost == 0)
+        {
+            parkCost = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - parkStartTime;
         }
     }
 }

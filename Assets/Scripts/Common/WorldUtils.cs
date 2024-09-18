@@ -100,4 +100,34 @@ public static class WorldUtils
         double speed = world?.Engineering?.Chassis?.BcsVehSpdG * 1.13f ?? 0;
         return (int)Math.Floor(speed);
     }
+
+    public static int GetLockSlotId(SimulationWorld world)
+    {
+        return world?.Planning?.LockCarportId ?? -1;
+    }
+
+    public static int GetState(SimulationWorld world)
+    {
+        return world?.Planning?.State ?? 0;
+    }
+
+    public static int MakePilotState(int state)
+    {
+        return 1;
+    }
+
+    public static RepeatedField<ParkingSpace> GetParkingSlots(SimulationWorld world)
+    {
+        return world?.Perception?.ParkingSlotsAll?.ParkingSlots_ ?? new RepeatedField<ParkingSpace>();
+    }
+
+    public static int GetApaPlanState(SimulationWorld world)
+    {
+        return world?.Planning?.ApaPlanState?.PlanState ?? 0;
+    }
+
+    public static bool IsInPilot(SimulationWorld world)
+    {
+        return world?.Engineering?.Chassis?.ScuLatCtrlMode == 2 && world.Engineering.Chassis.ScuLngCtrlMode == 2;
+    }
 }
