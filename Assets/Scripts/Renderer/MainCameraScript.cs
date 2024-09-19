@@ -55,6 +55,7 @@ public class CameraScript : MonoBehaviour
                 target = Constants.CAMERA_PRESETS[targetIndex];
                 StartFlyToAnimation();
             }
+            pilotState = newPilotState;
         }
         // 获取摄像机当前的位置和方向  
         //Vector3 cameraPosition = Camera.main.transform.position;

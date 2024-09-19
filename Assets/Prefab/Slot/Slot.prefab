@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -4393864497282051265}
   - component: {fileID: 166080483113457859}
   - component: {fileID: 6151377561134224026}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Slot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,4 +118,4 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 0}

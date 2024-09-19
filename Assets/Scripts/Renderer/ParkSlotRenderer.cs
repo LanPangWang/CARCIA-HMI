@@ -43,20 +43,17 @@ public class ParkSlotRenderer : MonoBehaviour
             // 从摄像机向触摸点发出射线
             Ray ray = Camera.main.ScreenPointToRay(touchPosition);
             RaycastHit hit;
-            bool ishit = Physics.Raycast(ray, out hit);
-            Debug.Log(ray);
-            Debug.Log(hit.collider);
             // 射线检测与物体碰撞
-            if (ishit)
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
                 // 检查被选中物体的Layer是否为 "Slots"
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Slots"))
                 {
                     // 找到选中的 Slots 层模型
-                    GameObject selectedSlot = hit.collider.gameObject;
-                    Debug.Log("选中的模型是: " + selectedSlot.name);
-
-                    // 你可以在这里对选中的模型做进一步处理
+                    string name = hit.collider.gameObject.name;
+                    int id = int.Parse(name.Split("-")[1]);
+                    Debug.Log("选中的模型是: " + id);
+                    HmiSocket.Instance.LockSlot(id, 1);
                 }
             }
         }
@@ -110,9 +107,11 @@ public class ParkSlotRenderer : MonoBehaviour
         // 确保子对象的局部旋转为零
         plane.transform.localRotation = UnityEngine.Quaternion.identity;
 
+        // 添加mesh 让射线能点击到车位
+        MeshFilter meshFilter = plane.GetComponent<MeshFilter>();
+        plane.GetComponent<MeshCollider>().sharedMesh = planeFromPoints.mesh;
 
-        //MeshFilter meshFilter = plane.GetComponent<MeshFilter>();
-        //plane.GetComponent<MeshCollider>().sharedMesh = meshFilter.sharedMesh;
+        plane.name = $"slot-{slot.Id}";
 
         // 提高平面的位置
         Vector3 position = plane.transform.localPosition;
@@ -124,7 +123,7 @@ public class ParkSlotRenderer : MonoBehaviour
         gameObject.transform.localRotation = rotation;
     }
 
-    //void MakeSlot()
+    //void MakeSlot1()
     //{
     //    Vector3[] points = new Vector3[4];
     //    points[0] = new Vector3(-1, -1, 0);
@@ -137,16 +136,24 @@ public class ParkSlotRenderer : MonoBehaviour
     //    // 获取 PlaneFromPoints 脚本并设置点
     //    PlaneFromPoints planeFromPoints = plane.GetComponent<PlaneFromPoints>();
     //    planeFromPoints.SetPoints(points);
-
     //    // 设置父对象
     //    plane.transform.SetParent(gameObject.transform);
-
     //    // 确保子对象的局部旋转为零
     //    plane.transform.localRotation = UnityEngine.Quaternion.identity;
 
+    //    // 添加mesh 让射线能点击到车位
+    //    MeshFilter meshFilter = plane.GetComponent<MeshFilter>();
+    //    plane.GetComponent<MeshCollider>().sharedMesh = planeFromPoints.mesh;
+
+    //    plane.name = $"slot-1";
     //    // 提高平面的位置
     //    Vector3 position = plane.transform.localPosition;
-    //    position.y = 0.01f; // 略微抬高平面
-    //    gameObject.transform.localPosition = position;
+    //    position.z = -0.02f; // 略微抬高平面
+    //    plane.transform.localPosition = position;
+
+    //    // 根据yaw角旋转导航线
+    //    UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, 90);
+    //    gameObject.transform.localRotation = rotation;
+
     //}
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlaneFromPoints : MonoBehaviour
 {
-    private Mesh mesh;
+    public Mesh mesh;
     private Vector3[] points = new Vector3[4];
 
     void Awake()
@@ -36,8 +36,8 @@ public class PlaneFromPoints : MonoBehaviour
         // Define the triangles that make up the plane
         int[] triangles = new int[]
         {
-            0, 1, 2, // First triangle
-            0, 2, 3,  // Second triangle
+            0, 2, 1, // First triangle
+            0, 3, 2,  // Second triangle
         };
 
         // Optionally, define the UV coordinates for texturing

@@ -55,6 +55,11 @@ public class InteractionScript : MonoBehaviour
         } else
         {
             cb = info.cb;
+            Text buttonText = InteractionBtn.GetComponentInChildren<Text>();
+            if (buttonText != null)
+            {
+                buttonText.text = label;  // 设置按钮的文本
+            }
         }
 
         if (newIsButton != isButton)
