@@ -121,18 +121,7 @@ public class AvmCameraScript : MonoBehaviour
         }
         uint frameId = StateManager.Instance.GetFrameId();
         selectedObject = null;
-        var paramsDict = new Dictionary<string, object>
-        {
-            { "type", "HMIKeyDownEnvent" },
-            { "hmi", new Dictionary<string, object>
-                {
-                    { "custom_parking_dir", 1 },
-                    { "custom_parking_slotPoints", points.ToArray() },
-                    { "custom_parking_frameId", frameId },
-                }
-            }
-        };
-        await HmiSocket.Instance.Send(paramsDict);
+        await HmiSocket.Instance.LockCustomSlot(points, frameId);
     }
 
     private Vector3 GetCenter(Touch touch)

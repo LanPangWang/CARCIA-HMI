@@ -39,6 +39,12 @@ public class HmiSocket : MonoBehaviour
         connectButton.onClick.AddListener(OnConnectButtonClicked);
     }
 
+    // 在启动时连接WebSocket服务器并发送初始消息
+    private async void Start()
+    {
+        await ConnectWebSocket("ws://192.168.8.71:8888/hmisocket");
+    }
+
     // 当用户点击连接按钮时触发
     private async void OnConnectButtonClicked()
     {
@@ -89,6 +95,9 @@ public class HmiSocket : MonoBehaviour
     // 发送消息到WebSocket服务器
     public async Task Send(object messageObject)
     {
+        Debug.Log(111);
+        Debug.Log(WS.State);
+        Debug.Log(222);
         if (WS.State == WebSocketState.Open) // 检查WebSocket连接状态是否打开
         {
             // 将对象序列化为JSON字符串
@@ -118,7 +127,7 @@ public class HmiSocket : MonoBehaviour
             { "type", "HMIKeyDownEnvent" },
             { "hmi", new Dictionary<string, object>
                 {
-                    { "user_controlled_actions", 1 },
+                    { "user_controlled_actions", 11 },
                 }
             }
         };
@@ -214,6 +223,52 @@ public class HmiSocket : MonoBehaviour
             StateManager.Instance.ChangeParkOutDir(-1);
             await Send(paramsDict);
         }
+    }
+
+    public async Task LockCustomSlot(List<string> points, uint frameId)
+    {
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "custom_parking_dir", 1 },
+                    { "custom_parking_slotPoints", points.ToArray() },
+                    { "custom_parking_frameId", frameId },
+                }
+            }
+        };
+        await Send(paramsDict);
+    }
+
+    public async Task EntryCustomSlot(uint frameId)
+    {
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "into_custom_parking", 1 },
+                    { "custom_parking_frameId", frameId },
+                }
+            }
+        };
+        await Send(paramsDict);
+    }
+
+    public async Task ExitCustomSlot(uint frameId)
+    {
+        var paramsDict = new Dictionary<string, object>
+        {
+            { "type", "HMIKeyDownEnvent" },
+            { "hmi", new Dictionary<string, object>
+                {
+                    { "into_custom_parking", 0 },
+                    { "custom_parking_frameId", frameId },
+                }
+            }
+        };
+        await Send(paramsDict);
     }
 
     public void CalculateParkTimeCost()

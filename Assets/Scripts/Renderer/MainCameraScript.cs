@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraScript : MonoBehaviour
@@ -18,6 +17,8 @@ public class CameraScript : MonoBehaviour
     private Vector3 initialPosition; // 初始摄像机位置
     private Quaternion initialRotation; // 初始摄像机旋转
     private bool isMoved = false;
+    private Constants.PilotStateMap pilotState;
+    private int targetIndex = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -31,15 +32,29 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HandleKeyboardInput();
+        //HandleKeyboardInput();
         HandleTouchInput();
+        Constants.PilotStateMap newPilotState = StateManager.Instance.pilotState;
 
         // 检查是否超过触摸超时
         if (isMoved && Time.time - lastTouchTime > touchTimeout)
         {
             isMoved = false;
-            target = Constants.CAMERA_PRESETS[0];
+            target = Constants.CAMERA_PRESETS[targetIndex];
             StartFlyToAnimation();
+        } else if (newPilotState != pilotState)
+        {
+            if (Constants.DriveStates.Contains(newPilotState))
+            {
+                targetIndex = 0;
+                target = Constants.CAMERA_PRESETS[targetIndex];
+                StartFlyToAnimation();
+            } else
+            {
+                targetIndex = 2;
+                target = Constants.CAMERA_PRESETS[targetIndex];
+                StartFlyToAnimation();
+            }
         }
         // 获取摄像机当前的位置和方向  
         //Vector3 cameraPosition = Camera.main.transform.position;

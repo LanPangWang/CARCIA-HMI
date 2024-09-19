@@ -5,15 +5,11 @@ using Xviewer;
 public class ParkSlotRenderer : MonoBehaviour
 {
     public GameObject slotPrefab; // 在Inspector中将你的预设体赋值给这个变量
+    public GameObject MainCamera;
 
     private SimulationWorld world;
     private TrajectoryPoint center;
     private float yaw = 0;
-
-    void Start()
-    {
-        //MakeSlot();
-    }
 
     void Update()
     {
@@ -25,6 +21,44 @@ public class ParkSlotRenderer : MonoBehaviour
         {
             RepeatedField<ParkingSpace> slots = WorldUtils.GetSlots(world);
             MakeSlots(slots);
+        }
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0); // 获取第一个触摸点
+            if (touch.phase == TouchPhase.Ended)
+            {
+                SelectSlot(touch);
+            }
+        }
+    }
+
+    void SelectSlot(Touch touch)
+    {
+        Constants.PilotStateMap pilotState = StateManager.Instance.pilotState;
+        if (pilotState == Constants.PilotStateMap.PARK_CHOOSE || pilotState == Constants.PilotStateMap.PARK_LOCK)
+        {
+            // 获取触摸位置
+            Vector3 touchPosition = touch.position;
+            // 从摄像机向触摸点发出射线
+            Ray ray = Camera.main.ScreenPointToRay(touchPosition);
+            RaycastHit hit;
+            bool ishit = Physics.Raycast(ray, out hit);
+            Debug.Log(ray);
+            Debug.Log(hit.collider);
+            // 射线检测与物体碰撞
+            if (ishit)
+            {
+                // 检查被选中物体的Layer是否为 "Slots"
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Slots"))
+                {
+                    // 找到选中的 Slots 层模型
+                    GameObject selectedSlot = hit.collider.gameObject;
+                    Debug.Log("选中的模型是: " + selectedSlot.name);
+
+                    // 你可以在这里对选中的模型做进一步处理
+                }
+            }
         }
     }
 
@@ -71,11 +105,14 @@ public class ParkSlotRenderer : MonoBehaviour
         // 获取 PlaneFromPoints 脚本并设置点
         PlaneFromPoints planeFromPoints = plane.GetComponent<PlaneFromPoints>();
         planeFromPoints.SetPoints(points);
-
         // 设置父对象
         plane.transform.SetParent(gameObject.transform);
         // 确保子对象的局部旋转为零
         plane.transform.localRotation = UnityEngine.Quaternion.identity;
+
+
+        //MeshFilter meshFilter = plane.GetComponent<MeshFilter>();
+        //plane.GetComponent<MeshCollider>().sharedMesh = meshFilter.sharedMesh;
 
         // 提高平面的位置
         Vector3 position = plane.transform.localPosition;
@@ -86,7 +123,6 @@ public class ParkSlotRenderer : MonoBehaviour
         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, -yaw * Mathf.Rad2Deg + 90);
         gameObject.transform.localRotation = rotation;
     }
-
 
     //void MakeSlot()
     //{

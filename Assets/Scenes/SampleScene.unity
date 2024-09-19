@@ -941,7 +941,7 @@ GameObject:
   m_Component:
   - component: {fileID: 180657260}
   - component: {fileID: 180657259}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Slots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -961,6 +961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 628025484224346668, guid: f2343f7477eb04f0da7d6b02e54dedf0, type: 3}
+  MainCamera: {fileID: 963194225}
 --- !u!4 &180657260
 Transform:
   m_ObjectHideFlags: 0

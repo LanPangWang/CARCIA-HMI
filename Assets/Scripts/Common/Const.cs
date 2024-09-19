@@ -65,7 +65,7 @@ public static class Constants
     {
         new CameraPreset(new Vector3(0, 5, -8), Quaternion.Euler(15, 0, 0)), // 正常
         new CameraPreset(new Vector3(0, 8, -10), Quaternion.Euler(25, 0, 0)), // 稍微拉远
-        new CameraPreset(new Vector3(0, 10, 0), Quaternion.Euler(90, 0, 0)), // 完全俯视
+        new CameraPreset(new Vector3(0, 20, 1.4795f), Quaternion.Euler(90, 0, 0)), // 完全俯视
     };
 
     // 车道线属性列表
@@ -130,6 +130,13 @@ public static class Constants
         PARK_OUT_START,
         DRIVE_ING = 20,
     }
+
+    // PilotStateMap 需要正常行车视角的子集 
+    public static readonly HashSet<PilotStateMap> DriveStates = new HashSet<PilotStateMap>
+    {
+        PilotStateMap.none,
+        PilotStateMap.DRIVE_ING,
+    };
 
     public static Dictionary<PilotStateMap, InteractionInfo> InteractionInfo = new Dictionary<PilotStateMap, InteractionInfo>
     {
