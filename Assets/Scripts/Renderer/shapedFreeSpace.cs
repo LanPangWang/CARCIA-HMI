@@ -93,12 +93,6 @@ public class shapedFreeSpace : MonoBehaviour
     private System.Collections.IEnumerator EarCut()
     {
         // yield return new WaitForEndOfFrame();
-        uvs = new Vector2[vertices.Length];
-        normals = new Vector3[vertices.Length];
-        Array.Fill(uvs, Vector2.zero);
-        Array.Fill(normals, Vector3.zero);
-        uvs[0] = new Vector2(0f, 0.5f);
-        uvs[vertices.Length - 1] = new Vector2(0f, 0.5f);
 
         NativeArray<Vector3> input = new NativeArray<Vector3>(vertices.Length, Allocator.Persistent);
         NativeArray<int> result = new NativeArray<int>((vertices.Length - 2) * 3, Allocator.Persistent);
@@ -109,15 +103,39 @@ public class shapedFreeSpace : MonoBehaviour
         jobData.vertices.CopyFrom(vertices);
 		// yield break;
 
+        float startTime = UnityEngine.Time.realtimeSinceStartup;
         JobHandle handle = jobData.Schedule();
-        yield return new WaitForSecondsRealtime(frequency);
-        handle.Complete();
+        while(!handle.IsCompleted)
+        {
+            if ((UnityEngine.Time.realtimeSinceStartup - startTime) > frequency)
+            {
+                break;
+            }
+            yield return new WaitForSecondsRealtime(UnityEngine.Time.unscaledDeltaTime);
+        }
+        if (handle.IsCompleted)
+        {
+            handle.Complete();
+        }
+        else
+        {
+            Debug.LogWarning("earcutting took too long");
+            calculating = false;
+            yield break;
+        }
 
         try
         {
             Destroy(mesh);
         }
         catch {}
+
+        uvs = new Vector2[vertices.Length];
+        normals = new Vector3[vertices.Length];
+        Array.Fill(uvs, Vector2.zero);
+        Array.Fill(normals, Vector3.zero);
+        uvs[0] = new Vector2(0f, 0.5f);
+        uvs[vertices.Length - 1] = new Vector2(0f, 0.5f);
 
         mesh = new Mesh();
         mesh.vertices = vertices;
@@ -151,23 +169,23 @@ public class shapedFreeSpace : MonoBehaviour
         }
         if (!calculating)
         {
-            // world = WebSocketNet.Instance.world;
-            // center = WebSocketNet.Instance.center;
-            // yaw = WebSocketNet.Instance.yaw;
-            // if (world != null)
-            // { 
-            //     RepeatedField<Point> spacePoints = WorldUtils.GetFreeSpace(world);
-            //     vertices = Utils.ApplyArrayToCenter(spacePoints, center);            
-            //     calculating = true;
-            //     StartCoroutine(EarCut());
-            // }
-
-            if (updateTrigger)
-            {
+            world = WebSocketNet.Instance.world;
+            center = WebSocketNet.Instance.center;
+            yaw = WebSocketNet.Instance.yaw;
+            if (world != null)
+            { 
+                RepeatedField<Point> spacePoints = WorldUtils.GetFreeSpace(world);
+                vertices = Utils.ApplyArrayToCenter(spacePoints, center);            
                 calculating = true;
                 StartCoroutine(EarCut());
-                updateTrigger = false;
             }
+
+            // if (updateTrigger)
+            // {
+            //     calculating = true;
+            //     StartCoroutine(EarCut());
+            //     updateTrigger = false;
+            // }
         }
     }
 }
