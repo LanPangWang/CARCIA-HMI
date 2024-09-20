@@ -34,6 +34,7 @@ public class CustomSlot : MonoBehaviour
         } else
         {
             entryBtn.gameObject.SetActive(true);
+            exitBtn.gameObject.SetActive(false);
         }
 
         //bool shouldShow = speed <= 25 && !AvmOpen && pilotState == 0;
