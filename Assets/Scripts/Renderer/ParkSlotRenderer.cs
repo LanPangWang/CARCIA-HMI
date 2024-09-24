@@ -96,6 +96,9 @@ public class ParkSlotRenderer : MonoBehaviour
     void MakeSlot(ParkingSpace slot)
     {
         Vector3[] points = GetSlotPoints(slot);
+
+        if (points.Length != 4) return;
+
         // 实例化预设体
         GameObject plane = Instantiate(slotPrefab);
 
