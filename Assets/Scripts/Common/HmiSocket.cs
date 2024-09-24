@@ -42,7 +42,7 @@ public class HmiSocket : MonoBehaviour
     // 在启动时连接WebSocket服务器并发送初始消息
     private async void Start()
     {
-        await ConnectWebSocket("ws://192.168.8.71:8888/hmisocket");
+        //await ConnectWebSocket("ws://192.168.8.71:8888/hmisocket");
     }
 
     // 当用户点击连接按钮时触发

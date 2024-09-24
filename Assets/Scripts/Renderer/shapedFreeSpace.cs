@@ -180,12 +180,12 @@ public class shapedFreeSpace : MonoBehaviour
                 StartCoroutine(EarCut());
             }
 
-            // if (updateTrigger)
-            // {
-            //     calculating = true;
-            //     StartCoroutine(EarCut());
-            //     updateTrigger = false;
-            // }
+            if (updateTrigger)
+            {
+                calculating = true;
+                StartCoroutine(EarCut());
+               updateTrigger = false;
+            }
         }
     }
 }

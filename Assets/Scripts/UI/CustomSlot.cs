@@ -19,23 +19,33 @@ public class CustomSlot : MonoBehaviour
         int speed = StateManager.Instance.speed;
         bool AvmOpen = StateManager.Instance.AvmOpen;
         Constants.PilotStateMap pilotState = StateManager.Instance.pilotState;
-        if (speed > 25) // 速度大于25 都不显示
-        {
-            entryBtn.gameObject.SetActive(false);
-            exitBtn.gameObject.SetActive(false);
-        } else if (AvmOpen) // 如果打开了avm 则只显示关闭
+        if (AvmOpen) // 如果打开了avm 则只显示关闭
         {
             entryBtn.gameObject.SetActive(false);
             exitBtn.gameObject.SetActive(true);
-        } else if (pilotState > 0) // 如果没打开avm 并且已经进入自动驾驶了 都不显示
-        {
-            entryBtn.gameObject.SetActive(false);
-            exitBtn.gameObject.SetActive(false);
-        } else
+        }
+        else
         {
             entryBtn.gameObject.SetActive(true);
             exitBtn.gameObject.SetActive(false);
         }
+        //if (speed > 25) // 速度大于25 都不显示
+        //{
+        //    entryBtn.gameObject.SetActive(false);
+        //    exitBtn.gameObject.SetActive(false);
+        //} else if (AvmOpen) // 如果打开了avm 则只显示关闭
+        //{
+        //    entryBtn.gameObject.SetActive(false);
+        //    exitBtn.gameObject.SetActive(true);
+        //} else if (pilotState > 0) // 如果没打开avm 并且已经进入自动驾驶了 都不显示
+        //{
+        //    entryBtn.gameObject.SetActive(false);
+        //    exitBtn.gameObject.SetActive(false);
+        //} else
+        //{
+        //    entryBtn.gameObject.SetActive(true);
+        //    exitBtn.gameObject.SetActive(false);
+        //}
 
         //bool shouldShow = speed <= 25 && !AvmOpen && pilotState == 0;
         //if (shouldShow != show)
