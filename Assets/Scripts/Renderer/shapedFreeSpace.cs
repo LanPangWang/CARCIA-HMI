@@ -119,6 +119,9 @@ public class shapedFreeSpace : MonoBehaviour
         }
         else
         {
+            handle.Complete();
+            input.Dispose();
+            result.Dispose();
             Debug.LogWarning("earcutting took too long");
             calculating = false;
             yield break;
