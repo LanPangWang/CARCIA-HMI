@@ -6,9 +6,12 @@ public class CustomSlot : MonoBehaviour
 {
     public Button entryBtn;
     public Button exitBtn;
+    private AvmCameraScript avmScript;
 
     private void Awake()
     {
+        Camera avmCamera = GameObject.Find("AvmCamera").GetComponent<Camera>();
+        avmScript = avmCamera.GetComponent<AvmCameraScript>();
         entryBtn.onClick.AddListener(OnEntryCustomSlot);
         exitBtn.onClick.AddListener(OnExitCustomSlot);
     }
@@ -64,6 +67,10 @@ public class CustomSlot : MonoBehaviour
         StateManager.Instance.SetAvmOpen(true);
         uint frameId = StateManager.Instance.GetFrameId();
         await HmiSocket.Instance.EntryCustomSlot(frameId);
+        Vector3[] vertices = avmScript.GetRectangleVertices(Constants.CustomSlotCenter);
+        List<string> points = Utils.GetCustomSlotPoints(vertices);
+        frameId = StateManager.Instance.GetFrameId();
+        await HmiSocket.Instance.LockCustomSlot(points, frameId);
     }
 
     async void OnExitCustomSlot()

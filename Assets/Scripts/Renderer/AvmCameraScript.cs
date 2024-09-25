@@ -111,16 +111,12 @@ public class AvmCameraScript : MonoBehaviour
     private async void OnTouchEnd (Touch touch)
     {
         Vector3 center = GetCenter(touch);
+        Debug.Log(center);
         Vector3[] vertices = GetRectangleVertices(center);
-        List<string> points = new List<string>();
-        foreach (Vector3 p in vertices)
-        {
-            points.Add(p.x.ToString("F5"));
-            points.Add(p.y.ToString("F5"));
-            points.Add(p.z.ToString("F5"));
-        }
+        List<string> points = Utils.GetCustomSlotPoints(vertices);
         uint frameId = StateManager.Instance.GetFrameId();
         selectedObject = null;
+        Constants.CustomSlotCenter = center;
         await HmiSocket.Instance.LockCustomSlot(points, frameId);
     }
 
@@ -165,22 +161,8 @@ public class AvmCameraScript : MonoBehaviour
         return realPosition;
     }
 
-    bool CheckBorder(Vector3[] vertices)
-    {
-        // 遍历所有顶点
-        foreach (Vector3 vertex in vertices)
-        {
-            // 检查x和y坐标是否都在范围内
-            if (vertex.x < -8 || vertex.x > 8 || vertex.z < this.transform.position.z - 8 || vertex.z > this.transform.position.z + 8)
-            {
-                return false; // 只要有一个点超出范围，立即返回false
-            }
-        }
-        return true; // 如果所有点都在范围内，返回true
-    }
-
     // 获取长方形的四个顶点
-    Vector3[] GetRectangleVertices(Vector3 center)
+    public Vector3[] GetRectangleVertices(Vector3 center)
     {
         // 未旋转时的顶点相对于中心的坐标
         Vector3 lb = CustomSlot.transform.TransformVector(SlotCollider.sharedMesh.vertices[0]);

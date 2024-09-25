@@ -98,4 +98,17 @@ public static class Utils
         string url = $"ws://{ip}:8888/{type}";
         return url;
     }
+
+    // 将自定义车位中的4个Vector3 存到一个数组中
+    public static List<string> GetCustomSlotPoints(Vector3[] vertices)
+    {
+        List<string> points = new List<string>();
+        foreach (Vector3 p in vertices)
+        {
+            points.Add(p.x.ToString("F5"));
+            points.Add(p.y.ToString("F5"));
+            points.Add(p.z.ToString("F5"));
+        }
+        return points;
+    }
 }

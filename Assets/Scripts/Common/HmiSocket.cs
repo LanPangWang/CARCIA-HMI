@@ -95,9 +95,6 @@ public class HmiSocket : MonoBehaviour
     // 发送消息到WebSocket服务器
     public async Task Send(object messageObject)
     {
-        Debug.Log(111);
-        Debug.Log(WS.State);
-        Debug.Log(222);
         if (WS.State == WebSocketState.Open) // 检查WebSocket连接状态是否打开
         {
             // 将对象序列化为JSON字符串
