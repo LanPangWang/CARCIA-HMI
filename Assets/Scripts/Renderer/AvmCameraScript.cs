@@ -110,13 +110,11 @@ public class AvmCameraScript : MonoBehaviour
 
     private async void OnTouchEnd (Touch touch)
     {
-        Vector3 center = GetCenter(touch);
-        Debug.Log(center);
-        Vector3[] vertices = GetRectangleVertices(center);
+        Vector3[] vertices = GetRectangleVertices(CustomSlot.transform.parent.position);
         List<string> points = Utils.GetCustomSlotPoints(vertices);
         uint frameId = StateManager.Instance.GetFrameId();
         selectedObject = null;
-        Constants.CustomSlotCenter = center;
+        Constants.CustomSlotCenter = CustomSlot.transform.parent.position;
         await HmiSocket.Instance.LockCustomSlot(points, frameId);
     }
 
