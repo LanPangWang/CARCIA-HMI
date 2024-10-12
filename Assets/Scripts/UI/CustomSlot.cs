@@ -42,11 +42,6 @@ public class CustomSlot : MonoBehaviour
             entryBtn.gameObject.SetActive(false);
             exitBtn.gameObject.SetActive(true);
         }
-        else if (pilotState > 0) // 如果没打开avm 并且已经进入自动驾驶了 都不显示
-        {
-            entryBtn.gameObject.SetActive(false);
-            exitBtn.gameObject.SetActive(false);
-        }
         else
         {
             entryBtn.gameObject.SetActive(true);

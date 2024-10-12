@@ -112,6 +112,8 @@ public class HmiSocket : MonoBehaviour
         }
         else
         {
+            string message = JsonConvert.SerializeObject(messageObject);
+            Debug.Log(message);
             Debug.LogWarning("HmiSocket未连接，无法发送消息"); // 输出警告信息
         }
     }
