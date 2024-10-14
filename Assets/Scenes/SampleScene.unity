@@ -705,6 +705,7 @@ MonoBehaviour:
   CustomSlot: {fileID: 417574953}
   DirRotateButton: {fileID: 148511704}
   SlotRotateButton: {fileID: 1273065857}
+  SlotDirButton: {fileID: 148511704}
 --- !u!1 &106597949
 GameObject:
   m_ObjectHideFlags: 0
@@ -947,7 +948,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &180657259
 MonoBehaviour:
   m_ObjectHideFlags: 0

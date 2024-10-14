@@ -30,6 +30,8 @@ public class StateManager : MonoBehaviour
 
     public uint frameId { get; private set; } = 0;
 
+    public uint CustomSlotDir { get; private set; } = 1;
+
     public Constants.PilotStateMap pilotState { get; private set; } = 0;
 
     public int apaPlaneState { get; private set; } = 0;
@@ -127,6 +129,14 @@ public class StateManager : MonoBehaviour
         if (dir != parkOutInfo.lockParkOutDir)
         {
             parkOutInfo.lockParkOutDir = dir;
+        }
+    }
+
+    public void ChangeCustomSlotDir(uint dir)
+    {
+        if (CustomSlotDir != dir)
+        {
+            CustomSlotDir = dir;
         }
     }
 }

@@ -7,11 +7,12 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject CustomSlot;
     public GameObject DirRotateButton;
     public GameObject SlotRotateButton;
-    private MeshCollider SlotCollider; // 当前被选中的模型的collider
+    public GameObject SlotDirButton;
 
+    private MeshCollider SlotCollider; // 当前被选中的模型的collider
     private Camera avmCamera; // 绑定AvmCamera相机
     private GameObject selectedObject; // 当前被选中的模型
-    private Bounds Border; 
+    private Bounds Border;
     private Vector3 offset; // 点击位置和模型位置的偏移量
     private postProcessTAA postProcess;
 
@@ -69,7 +70,7 @@ public class AvmCameraScript : MonoBehaviour
         }
     }
 
-    private void OnTouchBegan (Touch touch)
+    private void OnTouchBegan(Touch touch)
     {
         Vector2 realPosition = CalRealPosition(touch.position);
         Ray ray = avmCamera.ScreenPointToRay(realPosition);
@@ -86,10 +87,14 @@ public class AvmCameraScript : MonoBehaviour
         }
     }
 
-    private void OnTouchMove (Touch touch)
+    private void OnTouchMove(Touch touch)
     {
         Vector3 center = GetCenter(touch);
-        if (selectedObject.GetInstanceID() == CustomSlot.GetInstanceID())
+        if (selectedObject.GetInstanceID() == SlotDirButton.GetInstanceID())
+        {
+            return;
+        }
+        else if (selectedObject.GetInstanceID() == CustomSlot.GetInstanceID())
         {
             CustomSlot.transform.parent.position = BorderFix(center);
         }
@@ -108,8 +113,12 @@ public class AvmCameraScript : MonoBehaviour
         }
     }
 
-    private async void OnTouchEnd (Touch touch)
+    private async void OnTouchEnd(Touch touch)
     {
+        if (selectedObject.GetInstanceID() == SlotDirButton.GetInstanceID())
+        {
+            OnDirClick();
+        }
         Vector3[] vertices = GetRectangleVertices(CustomSlot.transform.parent.position);
         List<string> points = Utils.GetCustomSlotPoints(vertices);
         uint frameId = StateManager.Instance.GetFrameId();
@@ -179,6 +188,20 @@ public class AvmCameraScript : MonoBehaviour
         rt += center;
 
         return new Vector3[] { lt, lb, rb, rt };
+    }
+
+    private void OnDirClick()
+    {
+        Debug.Log(111);
+        uint dir = StateManager.Instance.CustomSlotDir;
+        if (dir == 1)
+        {
+            StateManager.Instance.ChangeCustomSlotDir(2);
+        }
+        else if (dir == 2)
+        {
+            StateManager.Instance.ChangeCustomSlotDir(1);
+        }
     }
 
 }

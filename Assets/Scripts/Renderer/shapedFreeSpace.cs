@@ -18,6 +18,7 @@ public struct EarCutJob : IJob
     {
         return (Pb.x - Pa.x) * (Pc.y - Pa.y) - (Pb.y - Pa.y) * (Pc.x - Pa.x) >= 0;
     }
+
     public void Execute()
     {
         int currentIndex = 0;
@@ -63,6 +64,7 @@ public struct EarCutJob : IJob
         }
     }
 }
+
 public class shapedFreeSpace : MonoBehaviour
 {
     private SimulationWorld world;
@@ -90,6 +92,7 @@ public class shapedFreeSpace : MonoBehaviour
         meshFilter = this.GetComponent<MeshFilter>();
         mesh = new Mesh();
     }
+
     private System.Collections.IEnumerator EarCut()
     {
         // yield return new WaitForEndOfFrame();
@@ -162,6 +165,7 @@ public class shapedFreeSpace : MonoBehaviour
         catch {}
         meshFilter.mesh = Instantiate(mesh);
     }
+
     void Update()
     {
         if (shallUpdate)

@@ -226,12 +226,13 @@ public class HmiSocket : MonoBehaviour
 
     public async Task LockCustomSlot(List<string> points, uint frameId)
     {
+        uint dir = StateManager.Instance.CustomSlotDir;
         var paramsDict = new Dictionary<string, object>
         {
             { "type", "HMIKeyDownEnvent" },
             { "hmi", new Dictionary<string, object>
                 {
-                    { "custom_parking_dir", 1 },
+                    { "custom_parking_dir", dir },
                     { "custom_parking_slotPoints", points.ToArray() },
                     { "custom_parking_frameId", frameId },
                 }
