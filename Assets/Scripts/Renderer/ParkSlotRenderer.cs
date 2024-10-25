@@ -1,6 +1,7 @@
 using Google.Protobuf.Collections;
 using UnityEngine;
 using Xviewer;
+using Newtonsoft.Json;
 
 public class ParkSlotRenderer : MonoBehaviour
 {
@@ -72,6 +73,9 @@ public class ParkSlotRenderer : MonoBehaviour
     {
         foreach (ParkingSpace slot in slots)
         {
+            string message = JsonConvert.SerializeObject(slot);
+            Debug.Log("slot info=====");
+            Debug.Log(message);
             MakeSlot(slot);
         }
     }
