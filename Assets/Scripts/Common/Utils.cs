@@ -117,4 +117,9 @@ public static class Utils
         }
         return points;
     }
+
+    public static float CalculateDistance(Vector3 pointA, Vector3 pointB)
+    {
+        return (pointB - pointA).magnitude;
+    }
 }

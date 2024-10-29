@@ -73,9 +73,10 @@ public class ParkSlotRenderer : MonoBehaviour
     {
         foreach (ParkingSpace slot in slots)
         {
-            string message = JsonConvert.SerializeObject(slot);
-            Debug.Log("slot info=====");
-            Debug.Log(message);
+            if (slot.Src == 4)
+            {
+                Debug.Log("custom slot direction === " + slot.Direction);
+            }
             MakeSlot(slot);
         }
     }
@@ -102,6 +103,13 @@ public class ParkSlotRenderer : MonoBehaviour
         Vector3[] points = GetSlotPoints(slot);
 
         if (points.Length != 4) return;
+
+        // 检查每两个点之间的距离
+
+        if (Utils.CalculateDistance(points[0], points[2]) < 0.1f || Utils.CalculateDistance(points[1], points[3]) < 0.1f)
+        {
+            return;
+        }
 
         // 实例化预设体
         GameObject plane = Instantiate(slotPrefab);
