@@ -24,7 +24,8 @@ public class postProcessTAA : MonoBehaviour
     public RenderTexture _RTAVMBlend;
     public RenderTexture _RTFreeSpace;
     public RenderTexture _RTFreeSpaceBlur;
-    public Texture2D _AVMRaw;
+    public RenderTexture _AVMRaw;
+    private Texture2D bevTexture;
 
     public int HaltonCount;
     public float HaltonFactor1;
@@ -50,6 +51,7 @@ public class postProcessTAA : MonoBehaviour
         isFirstFrame = true;
         HaltonGenerate();
         Debug.Log(mainCamera.renderingPath);
+        bevTexture = new Texture2D(1600, 1600);
         // mainCamera.enabled = false;
         // mainCamera.depthTextureMode = DepthTextureMode.Depth;
         // beforeGbuffer.SetViewProjectionMatrices(mainCamera.transform.worldToLocalMatrix, preProj);
@@ -164,6 +166,21 @@ public class postProcessTAA : MonoBehaviour
                                                             freeSpaceCamera.transform.position.z, 
                                                             freeSpaceCamera.orthographicSize));
         // mainCamera.projectionMatrix = preProj;
+
+        // #TODO 更新AVMRaw
+        string bevImage = StateManager.Instance.bevImage;
+        if (!string.IsNullOrEmpty(bevImage))
+        {
+            // Assuming bevImage is a base64-encoded string representing the image buffer
+            byte[] imageBytes = System.Convert.FromBase64String(bevImage);
+
+            // Load the image data into the Texture2D
+            if (bevTexture.LoadImage(imageBytes))
+            {
+                // Assign the Texture2D to _AVMRaw RenderTexture
+                Graphics.Blit(bevTexture, _AVMRaw);
+            }
+        }
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)

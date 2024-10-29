@@ -615,6 +615,7 @@ GameObject:
   - component: {fileID: 90643018}
   - component: {fileID: 90643017}
   - component: {fileID: 90643019}
+  - component: {fileID: 90643020}
   m_Layer: 0
   m_Name: AvmCamera
   m_TagString: Untagged
@@ -706,6 +707,20 @@ MonoBehaviour:
   DirRotateButton: {fileID: 148511704}
   SlotRotateButton: {fileID: 1273065857}
   SlotDirButton: {fileID: 148511704}
+--- !u!114 &90643020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90643015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd88edebf712b49b187c5fb5ce30bac3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wsInputField: {fileID: 1764160138}
+  connectButton: {fileID: 1867752640}
 --- !u!1 &106597949
 GameObject:
   m_ObjectHideFlags: 0
@@ -948,7 +963,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &180657259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3070,7 +3085,7 @@ MonoBehaviour:
   _RTAVMBlend: {fileID: 8400000, guid: a85477bfbb2d69f4d8990940c1971715, type: 2}
   _RTFreeSpace: {fileID: 8400000, guid: 33dc1c9876b815349a706cf2a2e808cc, type: 2}
   _RTFreeSpaceBlur: {fileID: 8400000, guid: 02e1b81b2d35f5d488b3f0f7be8cb8a7, type: 2}
-  _AVMRaw: {fileID: 2800000, guid: 6835c8abbac34b04e89af06eac5e858f, type: 3}
+  _AVMRaw: {fileID: 8400000, guid: 14e5254da352d4d94b5d9b953a56d54e, type: 2}
   HaltonCount: 8
   HaltonFactor1: 2
   HaltonFactor2: 3

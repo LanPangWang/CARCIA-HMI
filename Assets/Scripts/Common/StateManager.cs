@@ -42,6 +42,8 @@ public class StateManager : MonoBehaviour
 
     public ParkOutInfo parkOutInfo { get; private set; }
 
+    public string bevImage { get; private set; }   // avm的bev图
+
     private void Awake()
     {
         parkOutInfo = new ParkOutInfo(new int[] { 0, 0, 0, 0, 0, 0 }, -1, 1, 2); // 示例数据
@@ -138,5 +140,10 @@ public class StateManager : MonoBehaviour
         {
             CustomSlotDir = dir;
         }
+    }
+
+    public void SetBevImage(string texture)
+    {
+        bevImage = texture;
     }
 }

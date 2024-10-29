@@ -99,6 +99,12 @@ public static class Utils
         return url;
     }
 
+    public static string GetCameraUrl(string ip, string type)
+    {
+        string url = $"ws://{ip}:8899/{type}";
+        return url;
+    }
+
     // 将自定义车位中的4个Vector3 存到一个数组中
     public static List<string> GetCustomSlotPoints(Vector3[] vertices)
     {

@@ -243,6 +243,8 @@ public class HmiSocket : MonoBehaviour
 
     public async Task EntryCustomSlot(uint frameId)
     {
+        await StartApa();
+        await Task.Delay(500);  // 等待指定的毫秒数
         var paramsDict = new Dictionary<string, object>
         {
             { "type", "HMIKeyDownEnvent" },

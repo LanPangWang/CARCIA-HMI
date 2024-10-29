@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AVMRaw:
-        m_Texture: {fileID: 2800000, guid: 6835c8abbac34b04e89af06eac5e858f, type: 3}
+        m_Texture: {fileID: 8400000, guid: 14e5254da352d4d94b5d9b953a56d54e, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AVMTex:
