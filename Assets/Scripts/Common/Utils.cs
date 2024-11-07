@@ -122,4 +122,25 @@ public static class Utils
     {
         return (pointB - pointA).magnitude;
     }
+
+    public static Vector3 GetSlotCenter(Vector3[] points)
+    {
+        Vector3 center = Vector3.zero;
+        if (points.Length != 4)
+        {
+            Debug.LogError("需要四个点来计算中心点");
+            return center;
+        }
+
+        // 累加所有点的坐标
+        foreach (var point in points)
+        {
+            center += point;
+        }
+
+        // 计算平均值
+        center /= 4;
+
+        return center;
+    }
 }

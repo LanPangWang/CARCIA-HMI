@@ -191,4 +191,9 @@ public class StateManager : MonoBehaviour
     {
         bevImage = texture;
     }
+
+    public void SetInparking()
+    {
+        inParking = !inParking;
+    }
 }

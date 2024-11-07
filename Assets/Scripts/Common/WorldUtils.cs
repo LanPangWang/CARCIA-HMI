@@ -148,4 +148,9 @@ public static class WorldUtils
         }
         return info;
     }
+
+    public static RepeatedField<Avaliableslot> GetValidSlots(SimulationWorld world)
+    {
+        return world?.Planning?.ApaPlanState?.AvaliableSlots ?? new RepeatedField<Avaliableslot>();
+    }
 }

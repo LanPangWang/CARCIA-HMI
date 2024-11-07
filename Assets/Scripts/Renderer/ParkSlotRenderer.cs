@@ -1,12 +1,12 @@
 using Google.Protobuf.Collections;
 using UnityEngine;
 using Xviewer;
-using Newtonsoft.Json;
 
 public class ParkSlotRenderer : MonoBehaviour
 {
     public GameObject slotPrefab; // 在Inspector中将你的预设体赋值给这个变量
     public GameObject MainCamera;
+    public Material CustomMat;
 
     private SimulationWorld world;
     private TrajectoryPoint center;
@@ -73,12 +73,16 @@ public class ParkSlotRenderer : MonoBehaviour
     {
         foreach (ParkingSpace slot in slots)
         {
-            if (slot.Src == 4)
+            if (slot.Src == 4 && StateManager.Instance.inParking)
             {
-                Debug.Log("custom slot direction === " + slot.Direction);
+              // 如果是指尖泊车的车位，多画一个给AVM的camera渲染
+                MakeSlot(slot, true);
             }
             MakeSlot(slot);
         }
+        // 根据yaw角旋转导航线
+        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, -yaw * Mathf.Rad2Deg + 90);
+        gameObject.transform.localRotation = rotation;
     }
 
     Vector3[] GetSlotPoints(ParkingSpace slot)
@@ -98,7 +102,7 @@ public class ParkSlotRenderer : MonoBehaviour
         return ps;
     }
 
-    void MakeSlot(ParkingSpace slot)
+    void MakeSlot(ParkingSpace slot, bool custom = false)
     {
         Vector3[] points = GetSlotPoints(slot);
 
@@ -127,15 +131,17 @@ public class ParkSlotRenderer : MonoBehaviour
         plane.GetComponent<MeshCollider>().sharedMesh = planeFromPoints.mesh;
 
         plane.name = $"slot-{slot.Id}";
-
+        // 如果 custom 为 true，设置特殊材质
+        if (custom == true)
+        {
+            plane.GetComponent<Renderer>().material = CustomMat;
+            plane.layer = LayerMask.NameToLayer("Custom Slot");
+            plane.name = $"slot-{slot.Id}-custom";
+        }
         // 提高平面的位置
         Vector3 position = plane.transform.localPosition;
         position.z = -0.02f; // 略微抬高平面
         plane.transform.localPosition = position;
-
-        // 根据yaw角旋转导航线
-        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, -yaw * Mathf.Rad2Deg + 90);
-        gameObject.transform.localRotation = rotation;
     }
 
     //void MakeSlot1()
