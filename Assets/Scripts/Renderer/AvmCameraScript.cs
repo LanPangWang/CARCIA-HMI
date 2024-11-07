@@ -8,6 +8,7 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject DirRotateButton;
     public GameObject SlotRotateButton;
     public GameObject SlotDirButton;
+    public GameObject MainCar;
 
     private MeshCollider SlotCollider; // 当前被选中的模型的collider
     private Camera avmCamera; // 绑定AvmCamera相机
@@ -15,6 +16,8 @@ public class AvmCameraScript : MonoBehaviour
     private Bounds Border;
     private Vector3 offset; // 点击位置和模型位置的偏移量
     private postProcessTAA postProcess;
+    // private CarInfo oldCarInfo;
+    // private Vector3 oldPosition;
 
     void Start()
     {
@@ -41,6 +44,20 @@ public class AvmCameraScript : MonoBehaviour
         // 确保触摸仅在AvmCamera上生效
         if (avmCamera == null || !avmCamera.orthographic)
             return;
+
+        bool inParking = StateManager.Instance.inParking;
+        CustomSlot.SetActive(!inParking);
+        // SlotDirButton.SetActive(!inParking);
+        // if (inParking)
+        // {
+        //     OnParking();
+        //     return;
+        // }
+        // else
+        // {
+        //     oldCarInfo = StateManager.Instance.carInfo;
+        //     oldPosition = CustomSlot.transform.parent.position;
+        // }
 
         // 检测是否有触摸
         if (Input.touchCount > 0)
@@ -118,6 +135,9 @@ public class AvmCameraScript : MonoBehaviour
         if (selectedObject.GetInstanceID() == SlotDirButton.GetInstanceID())
         {
             OnDirClick();
+        } else
+        {
+            StateManager.Instance.ChangeCustomSlotDir(1);
         }
         Vector3[] vertices = GetRectangleVertices(CustomSlot.transform.parent.position);
         List<string> points = Utils.GetCustomSlotPoints(vertices);
@@ -204,4 +224,17 @@ public class AvmCameraScript : MonoBehaviour
         }
     }
 
+    // private void OnParking()
+    // {
+    //     CarInfo newCarInfo = StateManager.Instance.carInfo;
+    //     Vector3 positionOffset = newCarInfo.position - oldCarInfo.position; // X向前对应prefab的Z Y向右对应prefab的X
+    //     Debug.Log("positionOffset====" + newCarInfo.position + oldPosition);
+    //     Vector3 newPosition = new Vector3(oldPosition.x - positionOffset.y, 0, oldPosition.z - positionOffset.x);
+    //     // 使用反向变换抵消B的移动和旋转  s
+    //     CustomSlot.transform.parent.position = newPosition;
+    //     // 以父级的位置为中心，绕Y轴旋转指定的角度
+    //     float heading = oldCarInfo.heading - newCarInfo.heading;
+    //     //CustomSlot.transform.parent.localRotation = UnityEngine.Quaternion.Euler(0, heading * Mathf.Rad2Deg, 0);
+    //     //CustomSlot.transform.parent.RotateAround(Vector3.zero, Vector3.up, heading);
+    // }
 }

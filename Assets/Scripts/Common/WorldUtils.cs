@@ -130,4 +130,22 @@ public static class WorldUtils
     {
         return world?.Engineering?.Chassis?.ScuLatCtrlMode == 2 && world.Engineering.Chassis.ScuLngCtrlMode == 2;
     }
+
+    public static CarInfo GetCarInfo(SimulationWorld world)
+    {
+        CarInfo info = new CarInfo();
+        if (world?.AutoDrivingCar?.PositionX != null && world?.AutoDrivingCar?.PositionY != null)
+        {
+            float x = (float)world.AutoDrivingCar.PositionX;
+            float y = (float)world.AutoDrivingCar.PositionY;
+            Vector3 p = new Vector3(x, y, 0);
+            info.position = p;
+        }
+        if (world?.AutoDrivingCar?.Heading != null)
+        {
+            float heading = (float)world.AutoDrivingCar.Heading;
+            info.heading = heading;
+        }
+        return info;
+    }
 }

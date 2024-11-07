@@ -20,6 +20,12 @@ public class ParkOutInfo
     }
 }
 
+public class CarInfo
+{
+    public Vector3 position;
+    public float heading;
+}
+
 public class StateManager : MonoBehaviour
 {
     private SimulationWorld world;
@@ -44,9 +50,19 @@ public class StateManager : MonoBehaviour
 
     public string bevImage { get; private set; }   // avm的bev图
 
+    public CarInfo carInfo { get; private set; }
+
+    public bool inParking { get; private set; }
+
+
+    private float parkSuccessTime = 0f; // 用于跟踪 PARK_SUCCESS 的持续时间
+    private const float ParkSuccessDuration = 3f; // 持续时间阈值，单位秒
+
     private void Awake()
     {
         parkOutInfo = new ParkOutInfo(new int[] { 0, 0, 0, 0, 0, 0 }, -1, 1, 2); // 示例数据
+        carInfo = new CarInfo();
+
         if (Instance == null)
         {
             Instance = this;
@@ -63,9 +79,39 @@ public class StateManager : MonoBehaviour
         world = WebSocketNet.Instance.world;
         speed = WorldUtils.GetSpeed(world);
         slots = WorldUtils.GetParkingSlots(world);
+        carInfo = WorldUtils.GetCarInfo(world);
         apaPlaneState = WorldUtils.GetApaPlanState(world);
-        pilotState = (int)UpdateParkingState(world) != 0 ? UpdateParkingState(world) : UpdateDrivingState(world);
+        Constants.PilotStateMap state = (int)UpdateParkingState(world) != 0 ? UpdateParkingState(world) : UpdateDrivingState(world);
+        UpdateState(state);
         //pilotState = Constants.PilotStateMap.PARK_SEARCH;
+    }
+
+    private async void UpdateState(Constants.PilotStateMap state)
+    {
+        if (state != pilotState)
+        {
+            parkSuccessTime = 0f;
+            pilotState = state;
+            inParking = StateManager.Instance.pilotState == Constants.PilotStateMap.PARK_ING;
+        }
+        else
+        {
+            if (state == Constants.PilotStateMap.PARK_SUCCESS)
+            {
+                parkSuccessTime += UnityEngine.Time.deltaTime; // 增加计时
+                // 如果 PARK_SUCCESS 持续了 3 秒，调用ExitCustomSlot
+                if (parkSuccessTime >= ParkSuccessDuration)
+                {
+                    uint frameId = GetFrameId();
+                    await HmiSocket.Instance.ExitCustomSlot(frameId);
+                }
+            }
+            else
+            {
+                // 如果状态不再是 PARK_SUCCESS，重置计时器
+                parkSuccessTime = 0f;
+            }
+        }
     }
 
     private Constants.PilotStateMap UpdateParkingState(SimulationWorld world)
@@ -86,8 +132,7 @@ public class StateManager : MonoBehaviour
                 break;
             case Constants.PilotStateMap.PARK_SUCCESS:
             case Constants.PilotStateMap.PARK_OUT_SUCCESS:
-                // #TODO himSocket.calculateParkTimeCost();
-                if (false)
+                if (parkSuccessTime >= ParkSuccessDuration)
                 {
                     return Constants.PilotStateMap.none;
                 }

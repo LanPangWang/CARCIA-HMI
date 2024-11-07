@@ -707,6 +707,7 @@ MonoBehaviour:
   DirRotateButton: {fileID: 148511704}
   SlotRotateButton: {fileID: 1273065857}
   SlotDirButton: {fileID: 148511704}
+  MainCar: {fileID: 1277828912}
 --- !u!114 &90643020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1652,6 +1653,7 @@ GameObject:
   - component: {fileID: 417574955}
   - component: {fileID: 417574954}
   - component: {fileID: 417574957}
+  - component: {fileID: 417574958}
   m_Layer: 10
   m_Name: customSlot
   m_TagString: Untagged
@@ -1719,7 +1721,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.3, y: 5.2, z: 1}
+  m_LocalScale: {x: 2.3, y: 5.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1273065858}
@@ -1748,6 +1750,33 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &417574958
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417574953}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &484288568
 GameObject:
   m_ObjectHideFlags: 0
@@ -2893,9 +2922,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6d55b03da5314a94b109f85066bf93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Car: {fileID: 0}
+  Car: {fileID: 1646981259178978, guid: 1eb894c97da32c940a90228cac9bea1c, type: 3}
   Bicycle: {fileID: 0}
-  Pedestrain: {fileID: 0}
+  Pedestrain: {fileID: 1616406060653692748, guid: f71041fd118fbb34aa9d2dd6a1d96fce, type: 3}
   Barrier: {fileID: 0}
   WaterBarrier: {fileID: 0}
   Fence: {fileID: 0}
@@ -3746,6 +3775,11 @@ PrefabInstance:
 --- !u!4 &1277828911 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 434688, guid: 271f6c29f65972d4492013b8893175b2, type: 3}
+  m_PrefabInstance: {fileID: 1277828910}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1277828912 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 136596, guid: 271f6c29f65972d4492013b8893175b2, type: 3}
   m_PrefabInstance: {fileID: 1277828910}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1363926807
@@ -5503,7 +5537,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2070336273}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.21, y: 0, z: 1.4795}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
