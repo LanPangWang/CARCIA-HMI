@@ -161,4 +161,5 @@ public static class Constants
 
     // 初始自定义车位在UTM坐标中的位置，每次touch end 更新
     public static Vector3 CustomSlotCenter = new Vector3(2.21f, 0, 1.4795f);
+    public static Vector3 DefaultCustomSlotCenter = new Vector3(2.21f, 0, 1.4795f);
 }

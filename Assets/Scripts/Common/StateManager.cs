@@ -38,6 +38,8 @@ public class StateManager : MonoBehaviour
 
     public uint CustomSlotDir { get; private set; } = 1;
 
+    public uint ValidCustomSlotDir { get; private set; } = 0;
+
     public Constants.PilotStateMap pilotState { get; private set; } = 0;
 
     public int apaPlaneState { get; private set; } = 0;
@@ -78,12 +80,25 @@ public class StateManager : MonoBehaviour
     {
         world = WebSocketNet.Instance.world;
         speed = WorldUtils.GetSpeed(world);
-        slots = WorldUtils.GetParkingSlots(world);
+        slots = WorldUtils.GetSlots(world);
         carInfo = WorldUtils.GetCarInfo(world);
         apaPlaneState = WorldUtils.GetApaPlanState(world);
         Constants.PilotStateMap state = (int)UpdateParkingState(world) != 0 ? UpdateParkingState(world) : UpdateDrivingState(world);
         UpdateState(state);
+        UpdateCustomSlot();
         //pilotState = Constants.PilotStateMap.PARK_SEARCH;
+    }
+
+    private void UpdateCustomSlot()
+    {
+        ValidCustomSlotDir = WorldUtils.GetValidSlotDir(world);
+        CustomSlotDir = (uint)(ValidCustomSlotDir == 2 ? 2 : 1);
+    }
+
+    private void ResetCustomSlot()
+    {
+        ValidCustomSlotDir = 0;
+        CustomSlotDir = 1;
     }
 
     private async void UpdateState(Constants.PilotStateMap state)
@@ -92,7 +107,7 @@ public class StateManager : MonoBehaviour
         {
             parkSuccessTime = 0f;
             pilotState = state;
-            inParking = StateManager.Instance.pilotState == Constants.PilotStateMap.PARK_ING;
+            inParking = pilotState == Constants.PilotStateMap.PARK_ING;
         }
         else
         {
@@ -104,6 +119,8 @@ public class StateManager : MonoBehaviour
                 {
                     uint frameId = GetFrameId();
                     await HmiSocket.Instance.ExitCustomSlot(frameId);
+                    Constants.CustomSlotCenter = Constants.DefaultCustomSlotCenter;
+                    ResetCustomSlot();
                 }
             }
             else

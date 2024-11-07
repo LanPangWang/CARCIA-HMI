@@ -1,3 +1,4 @@
+using Xviewer;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -10,12 +11,14 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject SlotDirButton;
     public GameObject MainCar;
 
+    private SimulationWorld world;
     private MeshCollider SlotCollider; // 当前被选中的模型的collider
     private Camera avmCamera; // 绑定AvmCamera相机
     private GameObject selectedObject; // 当前被选中的模型
     private Bounds Border;
     private Vector3 offset; // 点击位置和模型位置的偏移量
     private postProcessTAA postProcess;
+    private uint validDir;
     // private CarInfo oldCarInfo;
     // private Vector3 oldPosition;
 
@@ -46,18 +49,9 @@ public class AvmCameraScript : MonoBehaviour
             return;
 
         bool inParking = StateManager.Instance.inParking;
+        validDir = StateManager.Instance.ValidCustomSlotDir;
         CustomSlot.SetActive(!inParking);
-        // SlotDirButton.SetActive(!inParking);
-        // if (inParking)
-        // {
-        //     OnParking();
-        //     return;
-        // }
-        // else
-        // {
-        //     oldCarInfo = StateManager.Instance.carInfo;
-        //     oldPosition = CustomSlot.transform.parent.position;
-        // }
+        DirRotateButton.SetActive(validDir == 3);
 
         // 检测是否有触摸
         if (Input.touchCount > 0)
@@ -85,6 +79,12 @@ public class AvmCameraScript : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void CalValidDir()
+    {
+        world = WebSocketNet.Instance.world;
+        validDir = WorldUtils.GetValidSlotDir(world);
     }
 
     private void OnTouchBegan(Touch touch)
@@ -121,7 +121,7 @@ public class AvmCameraScript : MonoBehaviour
             // 使用四元数避免反三角函数以提高计算效率
             Vector3 direction = center - CustomSlot.transform.parent.position;
             direction.y = 0f;
-            Quaternion tgtRot = new Quaternion();
+            UnityEngine.Quaternion tgtRot = new UnityEngine.Quaternion();
             tgtRot.SetFromToRotation(Vector3.forward, direction);
             CustomSlot.transform.parent.rotation = tgtRot;
 
@@ -212,8 +212,9 @@ public class AvmCameraScript : MonoBehaviour
 
     private void OnDirClick()
     {
-        Debug.Log(111);
         uint dir = StateManager.Instance.CustomSlotDir;
+        Debug.Log("dir change ===" + dir + validDir);
+        if (validDir != 3) return;
         if (dir == 1)
         {
             StateManager.Instance.ChangeCustomSlotDir(2);

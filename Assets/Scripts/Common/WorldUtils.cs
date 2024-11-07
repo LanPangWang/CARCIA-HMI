@@ -56,13 +56,13 @@ public static class WorldUtils
 
     public static TrajectoryStamped GetGuideLine(SimulationWorld world)
     {
-        return world.Planning?.TrajPoints ?? new TrajectoryStamped();
+        return world?.Planning?.TrajPoints ?? new TrajectoryStamped();
     }
 
     public static RepeatedField<ParkingSpace> GetSlots(SimulationWorld world)
     {
 
-        return world.Perception?.ParkingSlotsAll?.ParkingSlots_ ?? new RepeatedField<ParkingSpace>();
+        return world?.Perception?.ParkingSlotsAll?.ParkingSlots_ ?? new RepeatedField<ParkingSpace>();
     }
 
     public static (TrajectoryPoint center, float yaw) GetWorldCenter(SimulationWorld world)
@@ -79,7 +79,7 @@ public static class WorldUtils
 
     public static RepeatedField<Object3D> GetObstacleList(SimulationWorld world)
     {
-        RepeatedField<Object3D> ObstacleList = world?.Perception?.FusionPilot?.ObjectInfo.ObjectList ?? new RepeatedField<Object3D>();
+        RepeatedField<Object3D> ObstacleList = world?.Perception?.FusionPilot?.ObjectInfo?.ObjectList ?? new RepeatedField<Object3D>();
         return ObstacleList;
     }
 
@@ -116,11 +116,6 @@ public static class WorldUtils
         return 1;
     }
 
-    public static RepeatedField<ParkingSpace> GetParkingSlots(SimulationWorld world)
-    {
-        return world?.Perception?.ParkingSlotsAll?.ParkingSlots_ ?? new RepeatedField<ParkingSpace>();
-    }
-
     public static int GetApaPlanState(SimulationWorld world)
     {
         return world?.Planning?.ApaPlanState?.PlanState ?? 0;
@@ -152,5 +147,24 @@ public static class WorldUtils
     public static RepeatedField<Avaliableslot> GetValidSlots(SimulationWorld world)
     {
         return world?.Planning?.ApaPlanState?.AvaliableSlots ?? new RepeatedField<Avaliableslot>();
+    }
+
+    public static uint GetValidSlotDir(SimulationWorld world)
+    {
+        RepeatedField<Avaliableslot> validSlots = GetValidSlots(world);
+        RepeatedField<ParkingSpace> slots = GetSlots(world);
+        var targetSlot = slots.FirstOrDefault(slot => slot.Src == 4);
+        Debug.Log("targetSlot=====" + targetSlot);
+        Debug.Log("validSlots=====" + validSlots);
+        if (targetSlot != null)
+        {
+            long id = targetSlot.Id;
+            var customSlot = validSlots.FirstOrDefault(validSlot => (long)validSlot.ParkingSlotId == id);
+            if (customSlot != null)
+            {
+                return customSlot.ParkingDir;
+            }
+        }
+        return 0;
     }
 }
