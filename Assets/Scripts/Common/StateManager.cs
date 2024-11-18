@@ -29,6 +29,7 @@ public class CarInfo
 public class StateManager : MonoBehaviour
 {
     private SimulationWorld world;
+    private bool redirectToReady;
 
     public static StateManager Instance { get; private set; }
 
@@ -85,55 +86,40 @@ public class StateManager : MonoBehaviour
         apaPlaneState = WorldUtils.GetApaPlanState(world);
         Constants.PilotStateMap state = (int)UpdateParkingState(world) != 0 ? UpdateParkingState(world) : UpdateDrivingState(world);
         UpdateState(state);
-        UpdateCustomSlot();
-        //pilotState = Constants.PilotStateMap.PARK_SEARCH;
-    }
-
-    private void UpdateCustomSlot()
-    {
         ValidCustomSlotDir = WorldUtils.GetValidSlotDir(world);
-        CustomSlotDir = (uint)(ValidCustomSlotDir == 2 ? 2 : 1);
-    }
-
-    private void ResetCustomSlot()
-    {
-        ValidCustomSlotDir = 0;
-        CustomSlotDir = 1;
+        //pilotState = Constants.PilotStateMap.PARK_SEARCH;
     }
 
     private async void UpdateState(Constants.PilotStateMap state)
     {
         if (state != pilotState)
         {
-            parkSuccessTime = 0f;
             pilotState = state;
             inParking = pilotState == Constants.PilotStateMap.PARK_ING;
         }
-        else
+    }
+
+    private void dealWithSuccess(Constants.PilotStateMap state)
+    {
+        bool isSuccess = state == Constants.PilotStateMap.PARK_SUCCESS || state == Constants.PilotStateMap.PARK_OUT_SUCCESS;
+        if (isSuccess)
         {
-            if (state == Constants.PilotStateMap.PARK_SUCCESS)
+            parkSuccessTime += UnityEngine.Time.deltaTime;
+            if (parkSuccessTime >= ParkSuccessDuration && !redirectToReady)
             {
-                parkSuccessTime += UnityEngine.Time.deltaTime; // 增加计时
-                // 如果 PARK_SUCCESS 持续了 3 秒，调用ExitCustomSlot
-                if (parkSuccessTime >= ParkSuccessDuration)
-                {
-                    uint frameId = GetFrameId();
-                    await HmiSocket.Instance.ExitCustomSlot(frameId);
-                    Constants.CustomSlotCenter = Constants.DefaultCustomSlotCenter;
-                    ResetCustomSlot();
-                }
-            }
-            else
-            {
-                // 如果状态不再是 PARK_SUCCESS，重置计时器
-                parkSuccessTime = 0f;
+                redirectToReady = true;
+                uint frameId = GetFrameId();
+                Constants.CustomSlotCenter = Constants.DefaultCustomSlotCenter;
+                HmiSocket.Instance.ExitCustomSlot(frameId);
             }
         }
+        else parkSuccessTime = 0;
     }
 
     private Constants.PilotStateMap UpdateParkingState(SimulationWorld world)
     {
         var state = (Constants.PilotStateMap)WorldUtils.GetState(world);
+        dealWithSuccess(state);
         var validSlots = slots.Where((_) => _.Valid).ToArray();
         switch (state)
         {

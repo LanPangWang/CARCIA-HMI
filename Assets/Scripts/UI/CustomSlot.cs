@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI; // 引入UI命名空间using System;
 using System.Collections.Generic;
+using Xviewer;
 
 public class CustomSlot : MonoBehaviour
 {
     public Button entryBtn;
     public Button exitBtn;
     private AvmCameraScript avmScript;
+    private SimulationWorld world;
 
     private void Awake()
     {
@@ -22,6 +24,7 @@ public class CustomSlot : MonoBehaviour
         int speed = StateManager.Instance.speed;
         bool AvmOpen = StateManager.Instance.AvmOpen;
         Constants.PilotStateMap pilotState = StateManager.Instance.pilotState;
+        world = WebSocketNet.Instance.world;
         //if (AvmOpen) // 如果打开了avm 则只显示关闭
         //{
         //    entryBtn.gameObject.SetActive(false);
@@ -63,6 +66,9 @@ public class CustomSlot : MonoBehaviour
         uint frameId = StateManager.Instance.GetFrameId();
         await HmiSocket.Instance.EntryCustomSlot(frameId);
         Vector3[] vertices = avmScript.GetRectangleVertices(Constants.CustomSlotCenter);
+        uint ValidCustomSlotDir = StateManager.Instance.ValidCustomSlotDir;
+        uint defaultDir = (uint)(ValidCustomSlotDir == 2 ? 2 : 1);
+        StateManager.Instance.ChangeCustomSlotDir(defaultDir);
         List<string> points = Utils.GetCustomSlotPoints(vertices);
         frameId = StateManager.Instance.GetFrameId();
         await HmiSocket.Instance.LockCustomSlot(points, frameId);

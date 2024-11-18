@@ -260,6 +260,7 @@ public class HmiSocket : MonoBehaviour
 
     public async Task ExitCustomSlot(uint frameId)
     {
+        StateManager.Instance.SetAvmOpen(false);
         var paramsDict = new Dictionary<string, object>
         {
             { "type", "HMIKeyDownEnvent" },

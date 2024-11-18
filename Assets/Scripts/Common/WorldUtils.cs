@@ -154,8 +154,8 @@ public static class WorldUtils
         RepeatedField<Avaliableslot> validSlots = GetValidSlots(world);
         RepeatedField<ParkingSpace> slots = GetSlots(world);
         var targetSlot = slots.FirstOrDefault(slot => slot.Src == 4);
-        Debug.Log("targetSlot=====" + targetSlot);
-        Debug.Log("validSlots=====" + validSlots);
+        //Debug.Log("targetSlot=====" + targetSlot);
+        //Debug.Log("validSlots=====" + validSlots);
         if (targetSlot != null)
         {
             long id = targetSlot.Id;

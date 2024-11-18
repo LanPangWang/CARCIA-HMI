@@ -101,12 +101,12 @@ public class CameraSocket : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogError("WebSocket发送错误: " + ex.Message); // 捕获并输出发送异常
+                Debug.LogError("Camera Socket发送错误: " + ex.Message); // 捕获并输出发送异常
             }
         }
         else
         {
-            Debug.LogWarning("WebSocket未连接，无法发送消息"); // 输出警告信息
+            Debug.LogWarning("Camera Socket未连接，无法发送消息"); // 输出警告信息
         }
     }
 
