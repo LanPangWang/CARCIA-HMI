@@ -159,6 +159,7 @@ public class CameraSocket : MonoBehaviour
         {
             { "type", "RequestCameraData" },
             { "list", ImageList },
+            { "src", "app" },
         };
         await SendMessageWebSocket(paramsDict);
     }
