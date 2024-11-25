@@ -138,7 +138,7 @@ public class CameraSocket : MonoBehaviour
 
                 if (AvmOpen)
                 {
-                    GetAvmImage();
+                    //GetAvmImage();
                 }
                 else
                 {
@@ -178,7 +178,7 @@ public class CameraSocket : MonoBehaviour
             AvmOpen = StateManager.Instance.AvmOpen;
             if (AvmOpen)
             {
-                GetAvmImage();
+                //GetAvmImage();
             }
         }
     }

@@ -106,6 +106,7 @@ public class StateManager : MonoBehaviour
         if (isSuccess)
         {
             parkSuccessTime += UnityEngine.Time.deltaTime;
+            Debug.Log(parkSuccessTime);
             if (parkSuccessTime >= ParkSuccessDuration && !redirectToReady)
             {
                 redirectToReady = true;
@@ -114,7 +115,11 @@ public class StateManager : MonoBehaviour
                 HmiSocket.Instance.ExitCustomSlot(frameId);
             }
         }
-        else parkSuccessTime = 0;
+        else
+        {
+            parkSuccessTime = 0;
+            redirectToReady = false;
+        }
     }
 
     private Constants.PilotStateMap UpdateParkingState(SimulationWorld world)
