@@ -10,7 +10,7 @@ public class ApaObstacleRenderer : MonoBehaviour
     public GameObject Bicycle;
     public GameObject Pedestrain;
     public GameObject Barrier;
-    public GameObject WaterBarrier;
+    public GameObject Cone;
     public GameObject Fence;
 
     private SimulationWorld world;
@@ -31,8 +31,8 @@ public class ApaObstacleRenderer : MonoBehaviour
         center = WebSocketNet.Instance.center;
         yaw = WebSocketNet.Instance.yaw;
         ClearObstacles();
-        RepeatedField<Object3D> obstacles = WorldUtils.GetObstacleList(world);
-        foreach (Object3D obj in obstacles)
+        RepeatedField<TrackBox> obstacles = WorldUtils.GetApaObstacleList(world);
+        foreach (TrackBox obj in obstacles)
         {
             RenderObstacle(obj);
         }
@@ -42,14 +42,14 @@ public class ApaObstacleRenderer : MonoBehaviour
     void ClearObstacles()
     {
         obstacleInstances.Clear();
-        RepeatedField<Object3D> obstacles = WorldUtils.GetObstacleList(world);
+        RepeatedField<TrackBox> obstacles = WorldUtils.GetApaObstacleList(world);
         foreach (Transform child in gameObject.transform)
         {
             bool stillExists = false;
-            foreach (Object3D obj in obstacles)
+            foreach (TrackBox obj in obstacles)
             {
                 string name = GetObjectName(obj);
-                if (obj.ObjectId.ToString() == child.gameObject.name)
+                if (obj.TrackId.ToString() == child.gameObject.name)
                 {
                     stillExists = true;
                     obstacleInstances.Add(name, 1);
@@ -64,14 +64,14 @@ public class ApaObstacleRenderer : MonoBehaviour
         }
     }
 
-    string GetObjectName(Object3D obj)
+    string GetObjectName(TrackBox obj)
     {
-        return obj.ObjectType.ToString() + "_" + obj.ObjectId.ToString();
+        return obj.ClassLabel.ToString() + "_" + obj.TrackId.ToString();
     }
 
-    void RenderObstacle(Object3D obj)
+    void RenderObstacle(TrackBox obj)
     {
-        int type = obj.ObjectType;
+        int type = obj.ClassLabel;
         string name = GetObjectName(obj);
         GameObject prefab = GetPrefabForType(type);
         if (obstacleInstances.ContainsKey(name))
@@ -95,17 +95,18 @@ public class ApaObstacleRenderer : MonoBehaviour
         }
     }
 
-    void SetObjstaclePosition(GameObject instance, Object3D obj)
+    void SetObjstaclePosition(GameObject instance, TrackBox obj)
     {
-        Point position = obj.ReferencePoint?[0];
-        if (position is Point)
-        {
-            Vector3 p = new Vector3((float)(position.X), (float)(position.Y), 0f);
-            float heading = obj.YawAngle;
-            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0, -heading * Mathf.Rad2Deg, 0);
-            instance.transform.rotation = rotation;
-            instance.transform.localPosition = p;
-        }
+        Vector3 p = new Vector3(obj.Cx, obj.Cy, 0);
+        float heading = obj.Yaw;
+        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0, -heading * Mathf.Rad2Deg + 90, 0);
+        instance.transform.rotation = rotation;
+        instance.transform.localPosition = p;
+        //Point position = obj.ReferencePoint?[0];
+        //if (position is Point)
+        //{
+        //    Vector3 p = new Vector3((float)(position.X), (float)(position.Y), 0f);
+        //}
     }
 
     GameObject GetPrefabForType(int type)
@@ -118,7 +119,7 @@ public class ApaObstacleRenderer : MonoBehaviour
             Bicycle,
             Pedestrain,
             Barrier,
-            WaterBarrier,
+            Cone,
             Fence,
         };
         if (prefabs[type] is GameObject)

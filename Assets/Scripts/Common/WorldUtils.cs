@@ -83,6 +83,12 @@ public static class WorldUtils
         return ObstacleList;
     }
 
+    public static RepeatedField<TrackBox> GetApaObstacleList(SimulationWorld world)
+    {
+        RepeatedField<TrackBox> ObstacleList = world?.Perception?.ApaPerceptionObject?.TrackBoxList_ ?? new RepeatedField<TrackBox>();
+        return ObstacleList;
+    }
+
     public static RepeatedField<Point> GetFreeSpace(SimulationWorld world)
     {
         RepeatedField<Point> spacePoints = world?.Perception?.FreeSpace;

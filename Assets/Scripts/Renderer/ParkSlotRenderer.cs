@@ -23,8 +23,8 @@ public class ParkSlotRenderer : MonoBehaviour
             RepeatedField<ParkingSpace> slots = WorldUtils.GetSlots(world);
             MakeSlots(slots);
         }
-
-        if (Input.touchCount > 0)
+        bool avmOpen = StateManager.Instance.AvmOpen;
+        if (Input.touchCount > 0 && !avmOpen)
         {
             Touch touch = Input.GetTouch(0); // 获取第一个触摸点
             if (touch.phase == TouchPhase.Ended)
