@@ -10,6 +10,7 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject SlotRotateButton;
     public GameObject SlotDirButton;
     public GameObject MainCar;
+    public Material CustomSlotMat;
 
     private SimulationWorld world;
     private MeshCollider SlotCollider; // 当前被选中的模型的collider
@@ -51,6 +52,13 @@ public class AvmCameraScript : MonoBehaviour
         bool inParking = StateManager.Instance.inParking;
         validDir = StateManager.Instance.ValidCustomSlotDir;
         CustomSlot.SetActive(!inParking);
+        if (validDir != 0)
+        {
+            CustomSlotMat.SetColor("_Color1", Color.green);
+        } else
+        {
+            CustomSlotMat.SetColor("_Color1", Color.red);
+        }
         DirRotateButton.SetActive(validDir == 3);
 
         // 检测是否有触摸

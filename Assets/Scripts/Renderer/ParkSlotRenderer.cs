@@ -136,11 +136,7 @@ public class ParkSlotRenderer : MonoBehaviour
         // 如果 custom 为 true，设置特殊材质
         if (custom == true)
         {
-            Renderer renderer = plane.GetComponent<Renderer>();
-            if (StateManager.Instance.ValidCustomSlotDir != 0)
-            {
-                renderer.material.SetColor("_BaseColor", Color.green);
-            }
+            CustomMat.SetColor("_Color1", Color.green);
             plane.GetComponent<Renderer>().material = CustomMat;
             plane.layer = LayerMask.NameToLayer("Custom Slot");
             plane.name = $"slot-{slot.Id}-custom";

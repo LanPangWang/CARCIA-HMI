@@ -708,6 +708,7 @@ MonoBehaviour:
   SlotRotateButton: {fileID: 1273065857}
   SlotDirButton: {fileID: 148511704}
   MainCar: {fileID: 1277828912}
+  CustomSlotMat: {fileID: 2100000, guid: 40fe1124b16f2b84da477ecd81d6c63c, type: 2}
 --- !u!114 &90643020
 MonoBehaviour:
   m_ObjectHideFlags: 0
