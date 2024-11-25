@@ -124,11 +124,14 @@ public class StateManager : MonoBehaviour
         switch (state)
         {
             case Constants.PilotStateMap.PARK_SEARCH:
-                if (validSlots.Length > 0 && speed < 1)
+                if (AvmOpen && apaPlaneState == 1) {
+                    return Constants.PilotStateMap.PARK_PLANING;
+                }
+                else if (validSlots.Length > 0 && speed < 1)
                 {
                     return Constants.PilotStateMap.PARK_CHOOSE;
                 }
-                if (apaPlaneState == 1)
+                else if (apaPlaneState == 1)
                 {
                     return Constants.PilotStateMap.PARK_PLANING;
                 }
