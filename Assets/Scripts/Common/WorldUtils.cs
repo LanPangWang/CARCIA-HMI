@@ -160,6 +160,7 @@ public static class WorldUtils
         {
             long id = targetSlot.Id;
             var customSlot = validSlots.FirstOrDefault(validSlot => (long)validSlot.ParkingSlotId == id);
+            Debug.Log(customSlot);
             if (customSlot != null)
             {
                 return customSlot.ParkingDir;

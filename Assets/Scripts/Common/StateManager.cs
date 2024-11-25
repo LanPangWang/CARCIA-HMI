@@ -2,6 +2,7 @@ using Google.Protobuf.Collections;
 using UnityEngine;
 using System.Linq;
 using Xviewer;
+using TMPro.Examples;
 
 public class ParkOutInfo
 {
@@ -124,14 +125,18 @@ public class StateManager : MonoBehaviour
         switch (state)
         {
             case Constants.PilotStateMap.PARK_SEARCH:
-                if (AvmOpen && apaPlaneState == 1) {
-                    return Constants.PilotStateMap.PARK_PLANING;
-                }
-                else if (validSlots.Length > 0 && speed < 1)
+                if (validSlots.Length > 0 && speed < 1)
                 {
-                    return Constants.PilotStateMap.PARK_CHOOSE;
+                    if(AvmOpen)
+                    {
+                        return Constants.PilotStateMap.PARK_PLANING;
+                    }
+                    else
+                    {
+                        return Constants.PilotStateMap.PARK_CHOOSE;
+                    }
                 }
-                else if (apaPlaneState == 1)
+                if (apaPlaneState == 1)
                 {
                     return Constants.PilotStateMap.PARK_PLANING;
                 }
