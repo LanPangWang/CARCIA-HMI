@@ -143,4 +143,15 @@ public static class Utils
 
         return center;
     }
+
+    public static Vector3[] ReorderPointsForShortEdges(Vector3[] points)
+    {
+        // 计算点之间的距离
+        float d01 = Utils.CalculateDistance(points[0], points[1]);
+        float d12 = Utils.CalculateDistance(points[1], points[2]);
+
+        if (d01 > d12) return new[] { points[1], points[2], points[3], points[0] };
+        return points;
+    }
+
 }

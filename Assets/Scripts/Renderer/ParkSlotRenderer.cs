@@ -108,6 +108,8 @@ public class ParkSlotRenderer : MonoBehaviour
 
         if (points.Length != 4) return;
 
+        points = Utils.ReorderPointsForShortEdges(points);
+
         // 检查每两个点之间的距离
 
         if (Utils.CalculateDistance(points[0], points[2]) < 0.1f || Utils.CalculateDistance(points[1], points[3]) < 0.1f)
@@ -134,6 +136,11 @@ public class ParkSlotRenderer : MonoBehaviour
         // 如果 custom 为 true，设置特殊材质
         if (custom == true)
         {
+            Renderer renderer = plane.GetComponent<Renderer>();
+            if (StateManager.Instance.ValidCustomSlotDir != 0)
+            {
+                renderer.material.SetColor("_BaseColor", Color.green);
+            }
             plane.GetComponent<Renderer>().material = CustomMat;
             plane.layer = LayerMask.NameToLayer("Custom Slot");
             plane.name = $"slot-{slot.Id}-custom";

@@ -135,13 +135,12 @@ public class StateManager : MonoBehaviour
                     if(AvmOpen)
                     {
                         return Constants.PilotStateMap.PARK_PLANING;
-                    }
-                    else
+                    } else
                     {
                         return Constants.PilotStateMap.PARK_CHOOSE;
                     }
                 }
-                if (apaPlaneState == 1)
+                else if (apaPlaneState == 1)
                 {
                     return Constants.PilotStateMap.PARK_PLANING;
                 }
@@ -171,6 +170,11 @@ public class StateManager : MonoBehaviour
 
     private Constants.PilotStateMap UpdateDrivingState(SimulationWorld world)
     {
+        if (AvmOpen)
+        {
+            if (ValidCustomSlotDir == 0) return Constants.PilotStateMap.PARK_PLAN_ERROR;
+            else return Constants.PilotStateMap.PARK_PLANING;
+        }
         return WorldUtils.IsInPilot(world) ? Constants.PilotStateMap.DRIVE_ING : Constants.PilotStateMap.none;
     }
 

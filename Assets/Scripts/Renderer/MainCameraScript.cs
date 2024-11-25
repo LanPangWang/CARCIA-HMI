@@ -35,7 +35,6 @@ public class CameraScript : MonoBehaviour
         //HandleKeyboardInput();
         HandleTouchInput();
         Constants.PilotStateMap newPilotState = StateManager.Instance.pilotState;
-
         // 检查是否超过触摸超时
         if (isMoved && Time.time - lastTouchTime > touchTimeout)
         {
@@ -46,7 +45,8 @@ public class CameraScript : MonoBehaviour
         {
             if (Constants.DriveStates.Contains(newPilotState))
             {
-                targetIndex = 0;
+                //targetIndex = 0;
+                targetIndex = StateManager.Instance.AvmOpen ? 2 : 0;
                 target = Constants.CAMERA_PRESETS[targetIndex];
                 StartFlyToAnimation();
             } else
