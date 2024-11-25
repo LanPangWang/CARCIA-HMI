@@ -196,6 +196,7 @@ public class StateManager : MonoBehaviour
         {
             CustomSlotDir = dir;
         }
+        Shader.SetGlobalFloat("_CustomParkingDir", dir);
     }
 
     public void SetBevImage(string texture)
