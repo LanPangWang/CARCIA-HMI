@@ -11,6 +11,8 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject SlotDirButton;
     public GameObject MainCar;
     public Material CustomSlotMat;
+    public GameObject slotContainer;
+    public Rigidbody CustomSlotPrefabRigidbody;
 
     private SimulationWorld world;
     private MeshCollider SlotCollider; // 当前被选中的模型的collider
@@ -22,6 +24,10 @@ public class AvmCameraScript : MonoBehaviour
     private uint validDir;
     // private CarInfo oldCarInfo;
     // private Vector3 oldPosition;
+    private Vector3 basicSlotPose;
+    private Vector3 tgtSlotPose;
+    private UnityEngine.Quaternion basicSlotRot;
+    private float tgtYaw;
 
     void Start()
     {
@@ -41,17 +47,69 @@ public class AvmCameraScript : MonoBehaviour
         Border.extents = new Vector3(avmCamera.orthographicSize, 1, avmCamera.orthographicSize);
 
         postProcess = MainCamera.GetComponent<postProcessTAA>();
+        // basicCarInfo = StateManager.Instance.carInfoDouble;
+        // currentCarInfo = StateManager.Instance.carInfoDouble;
+        basicSlotPose = CustomSlot.transform.parent.localPosition;
+        basicSlotRot = CustomSlot.transform.parent.localRotation;
+        tgtSlotPose = CustomSlot.transform.parent.localPosition;
+        tgtYaw = 0;
     }
+    void FixedUpdate() 
+    {
+        bool inParking = StateManager.Instance.inParking;
+        if (inParking)
+        {
+            if(StateManager.Instance.customSlotId != -1)
+            {
+                // Debug.Log(StateManager.Instance.customSlotId);
+                try
+                {
+                    Transform customSlotTransform = slotContainer.transform.Find($"slot-{StateManager.Instance.customSlotId}");
+                    // Debug.Log(customSlotTransform.name);
+                    MeshFilter meshFilter = customSlotTransform.gameObject.GetComponent<MeshFilter>();
+                    Vector3[] slotPoints = meshFilter.sharedMesh.vertices;
+                    for(int i = 0; i < 4; i++)
+                    {
+                        slotPoints[i] = customSlotTransform.TransformVector(slotPoints[i]);
+                    }
+                    // Vector3[] slotPoints = StateManager.Instance.customSlotPoints;
+                    // Debug.Log(slotPoints[0]);
 
+                    Vector3 tgtDir = slotPoints[1] - slotPoints[2];
+                    // tgtDir = new Vector3(tgtDir.y, 0f, -tgtDir.x);
+                    // tgtDir.z = tgtDir.y;
+                    tgtDir.y = 0f;
+                    tgtDir.Normalize();
+                    Vector3 slotDir = CustomSlot.transform.parent.forward;
+                    float dirCos = tgtDir.x * slotDir.x + tgtDir.z * slotDir.z;
+                    tgtDir *= (dirCos < 0) ? -1 : 1;
+                    // Vector3 slotDir = SlotRotateButton
+                    UnityEngine.Quaternion tgtRot = new UnityEngine.Quaternion();
+                    tgtRot.SetFromToRotation(Vector3.forward, tgtDir);
+
+                    Vector3 tgtPose = (slotPoints[0] + slotPoints[2]) / 2f;
+                    // Vector3 tgtPose2 = new Vector3(tgtPose.y, 0f, -tgtPose.x);
+                    // tgtPose.z = -tgtPose.y;
+                    tgtPose.y = 0;
+                    // CustomSlot.transform.parent.position = tgtPose;
+                    // CustomSlot.transform.parent.rotation = tgtRot;
+                    CustomSlotPrefabRigidbody.MovePosition(tgtPose);
+                    CustomSlotPrefabRigidbody.MoveRotation(tgtRot);
+                }
+                catch { }
+            }
+        }
+    }
     void Update()
     {
         // 确保触摸仅在AvmCamera上生效
+        // Debug.Log($"{basicCarInfo.x}, {basicCarInfo.y}, {basicCarInfo.heading}");
         if (avmCamera == null || !avmCamera.orthographic)
             return;
 
         bool inParking = StateManager.Instance.inParking;
         validDir = StateManager.Instance.ValidCustomSlotDir;
-        CustomSlot.SetActive(!inParking);
+        // CustomSlot.SetActive(!inParking);
         if (validDir != 0)
         {
             CustomSlotMat.SetColor("_Color1", Color.green);

@@ -142,21 +142,22 @@ public class WebSocketNet : MonoBehaviour
     // 当对象被销毁时关闭WebSocket连接
     private async void OnDestroy()
     {
-        try
-        {
-            if (WS != null && WS.State == WebSocketState.Open) // 检查WebSocket实例和连接状态
-            {
-                await WS.CloseAsync(WebSocketCloseStatus.NormalClosure, "WebSocket closed", CancellationToken.None); // 关闭WebSocket连接
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("WebSocket关闭错误: " + ex.Message); // 捕获并输出关闭异常
-        }
-        finally
+        // try
+        // {
+        //     if (WS != null && WS.State == WebSocketState.Open) // 检查WebSocket实例和连接状态
+        //     {
+        //         await WS.CloseAsync(WebSocketCloseStatus.NormalClosure, "WebSocket closed", CancellationToken.None); // 关闭WebSocket连接
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     Debug.LogError("WebSocket关闭错误: " + ex.Message); // 捕获并输出关闭异常
+        // }
+        // finally
         {
             if (WS != null)
             {
+                WS.Abort();
                 WS.Dispose(); // 确保WebSocket实例被正确释放
                 WS = null;
             }

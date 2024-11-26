@@ -182,4 +182,8 @@ public class CameraSocket : MonoBehaviour
             }
         }
     }
+    void OnDestroy() {
+        WS.Abort();
+        WS.Dispose();
+    }
 }

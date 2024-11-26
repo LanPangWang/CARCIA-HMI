@@ -281,4 +281,8 @@ public class HmiSocket : MonoBehaviour
             parkCost = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - parkStartTime;
         }
     }
+    void OnDestroy() {
+        WS.Abort();
+        WS.Dispose();
+    }
 }

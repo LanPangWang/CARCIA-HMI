@@ -31,6 +31,7 @@ public class StateManager : MonoBehaviour
 {
     private SimulationWorld world;
     private bool redirectToReady;
+    public int customSlotId = -1;
 
     public static StateManager Instance { get; private set; }
 

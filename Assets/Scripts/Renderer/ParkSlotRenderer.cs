@@ -75,8 +75,7 @@ public class ParkSlotRenderer : MonoBehaviour
         {
             if (slot.Src == 4 && StateManager.Instance.inParking)
             {
-              // 如果是指尖泊车的车位，多画一个给AVM的camera渲染
-                MakeSlot(slot, true);
+                StateManager.Instance.customSlotId = (int)slot.Id;
             }
             MakeSlot(slot);
         }
