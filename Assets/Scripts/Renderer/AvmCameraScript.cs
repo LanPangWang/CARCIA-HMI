@@ -113,15 +113,22 @@ public class AvmCameraScript : MonoBehaviour
         bool inParking = StateManager.Instance.inParking;
         validDir = StateManager.Instance.ValidCustomSlotDir;
         // CustomSlot.SetActive(!inParking);
-        if (validDir != 0)
+        if(inParking)
         {
-            // CustomSlotMat.SetColor("_Color1", Color.green);
             CustomSlotMat.SetTexture("_MainTex", validSlotTex);
-        } 
+        }
         else
         {
-            CustomSlotMat.SetTexture("_MainTex", invalidSlotTex);
-            // CustomSlotMat.SetColor("_Color1", Color.red);
+            if (validDir != 0)
+            {
+                // CustomSlotMat.SetColor("_Color1", Color.green);
+                CustomSlotMat.SetTexture("_MainTex", validSlotTex);
+            } 
+            else
+            {
+                CustomSlotMat.SetTexture("_MainTex", invalidSlotTex);
+                // CustomSlotMat.SetColor("_Color1", Color.red);
+            }
         }
         DirRotateButton.SetActive(validDir == 3);
 
