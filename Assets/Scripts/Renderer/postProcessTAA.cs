@@ -44,9 +44,9 @@ public class postProcessTAA : MonoBehaviour
     {
         ResizeAllRT();
         // _MainCameraProjection = mainCamera.projectionMatrix;
+		Shader.SetGlobalTexture("_AvmCameraFreeSpaceTexture", _RTFreeSpaceBlur);
 		Shader.SetGlobalTexture("_MainCameraRGBAPre", _RTPre);
 		Shader.SetGlobalTexture("_MainCameraDepthTexture", _RTDepth);
-		Shader.SetGlobalTexture("_AvmCameraFreeSpaceTexture", _RTFreeSpaceBlur);
         // Debug.Log(_MainCameraProjection);
         isFirstFrame = true;
         HaltonGenerate();
@@ -157,7 +157,7 @@ public class postProcessTAA : MonoBehaviour
 
 	void OnPreRender() {
         // _MainCameraProjection = mainCamera.projectionMatrix;
-        freeSpaceCamera.RenderWithShader(_getFreeSpaceShader, "RenderType");
+        // freeSpaceCamera.RenderWithShader(_getFreeSpaceShader, "RenderType");
         _blurMat.SetTexture("_MainTex", _RTFreeSpace);
         Graphics.Blit(_RTFreeSpace, _RTFreeSpaceBlur, _blurMat, 0);
         

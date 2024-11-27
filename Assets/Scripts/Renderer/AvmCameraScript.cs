@@ -14,6 +14,9 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject slotContainer;
     public Rigidbody CustomSlotPrefabRigidbody;
 
+    public Texture invalidSlotTex;
+    public Texture validSlotTex;
+
     private SimulationWorld world;
     private MeshCollider SlotCollider; // 当前被选中的模型的collider
     private Camera avmCamera; // 绑定AvmCamera相机
@@ -112,10 +115,13 @@ public class AvmCameraScript : MonoBehaviour
         // CustomSlot.SetActive(!inParking);
         if (validDir != 0)
         {
-            CustomSlotMat.SetColor("_Color1", Color.green);
-        } else
+            // CustomSlotMat.SetColor("_Color1", Color.green);
+            CustomSlotMat.SetTexture("_MainTex", validSlotTex);
+        } 
+        else
         {
-            CustomSlotMat.SetColor("_Color1", Color.red);
+            CustomSlotMat.SetTexture("_MainTex", invalidSlotTex);
+            // CustomSlotMat.SetColor("_Color1", Color.red);
         }
         DirRotateButton.SetActive(validDir == 3);
 

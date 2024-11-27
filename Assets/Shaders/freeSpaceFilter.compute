@@ -1,0 +1,59 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> FreeSpaceRaw;
+RWTexture2D<float4> FreeSpaceDivide;
+float _ResultResolution;
+float _CameraOffsetZ;
+
+[numthreads(64,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    if(id.x > 1)
+    {
+        return;
+    }
+    int2 uv = uint2(128, (int)_CameraOffsetZ);
+    int Dir = (id.x == 0) ? 1 : -1;
+    uint inside = 1;
+    uint onEdgeCount = 0;
+    // uint step = 0;
+    while(1)
+    {
+        if(FreeSpaceRaw[uv].a > 0)
+        {
+            onEdgeCount += 1;
+        }
+        else
+        {
+            if(onEdgeCount > 0)
+            {
+                uint2 inUV = uint2(uv.x, uv.y - onEdgeCount * Dir);
+                uint2 outUV = uint2(uv.x, uv.y - Dir);
+
+                float inRight = FreeSpaceRaw[uint2(inUV.x + 1, inUV.y)].a
+                                + FreeSpaceRaw[uint2(inUV.x + 1, inUV.y + 1)].a
+                                + FreeSpaceRaw[uint2(inUV.x + 1, inUV.y - 1)].a;
+                float outLeft = FreeSpaceRaw[uint2(inUV.x - 1, inUV.y)].a
+                                + FreeSpaceRaw[uint2(inUV.x - 1, inUV.y + 1)].a
+                                + FreeSpaceRaw[uint2(inUV.x - 1, inUV.y - 1)].a;
+                
+                inside += (outLeft > 0 == inRight > 0) ? 1 : 0;
+                onEdgeCount = 0;
+            }
+        }
+
+        if(inside % 2 == 1)
+        // float final = inside % 2;
+        {
+            FreeSpaceRaw[uint2(uv)] = float4(1,1,1,1);
+        }
+        uv.y += Dir;
+        if (uv.y < 0 || uv.y >= _ResultResolution)
+        {
+            break;
+        }
+    }
+}

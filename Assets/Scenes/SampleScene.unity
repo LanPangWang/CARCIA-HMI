@@ -662,7 +662,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 5128
+    m_Bits: 1032
   m_RenderingPath: 3
   m_TargetTexture: {fileID: 8400000, guid: 8ac8eb64bbb2c604eb6c6a0dc011853f, type: 2}
   m_TargetDisplay: 0
@@ -711,6 +711,8 @@ MonoBehaviour:
   CustomSlotMat: {fileID: 2100000, guid: 40fe1124b16f2b84da477ecd81d6c63c, type: 2}
   slotContainer: {fileID: 180657258}
   CustomSlotPrefabRigidbody: {fileID: 2070336275}
+  invalidSlotTex: {fileID: 2800000, guid: 21373827dba420d40bbaf52563408913, type: 3}
+  validSlotTex: {fileID: 2800000, guid: a9083247e982d494a983cc5dbb8d8cba, type: 3}
 --- !u!114 &90643020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -936,6 +938,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FreeSpacePrefab: {fileID: 639494764282230723, guid: 76ca64df014e44e7fa7ead445653c33c, type: 3}
+  vertices:
+  - {x: 1, y: 1, z: 0}
+  - {x: 2, y: 1, z: 0}
+  - {x: 2, y: 2, z: 0}
+  - {x: 0, y: 3, z: 0}
+  - {x: -2, y: 2, z: 0}
+  - {x: -2, y: 1, z: 0}
+  - {x: -1, y: 1, z: 0}
+  - {x: -1, y: -1, z: 0}
+  - {x: -2, y: -1, z: 0}
+  - {x: -2, y: -2, z: 0}
+  - {x: 2, y: -2, z: 0}
+  - {x: 2, y: -1, z: 0}
+  - {x: 1, y: -1, z: 0}
 --- !u!4 &151168016
 Transform:
   m_ObjectHideFlags: 0
@@ -3536,7 +3552,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 2147485951
+    m_Bits: 2147490047
   m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -4449,7 +4465,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1212337135}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
@@ -4481,7 +4497,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 4096
   m_RenderingPath: 3
   m_TargetTexture: {fileID: 8400000, guid: 33dc1c9876b815349a706cf2a2e808cc, type: 2}
   m_TargetDisplay: 0
@@ -5679,7 +5695,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1655744281
 Transform:
   m_ObjectHideFlags: 0
@@ -7027,7 +7043,7 @@ GameObject:
   - component: {fileID: 2021585663}
   - component: {fileID: 2021585662}
   - component: {fileID: 2021585661}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: shapedFreeSpace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7046,8 +7062,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 038c08abcdc7c5c41bfb982a7427abe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frequency: 0.2
+  timeout: 500
   updateTrigger: 0
+  freeSpaceThresholds:
+  - 2
+  - 1
   vertices:
   - {x: 1, y: 1, z: 0}
   - {x: 2, y: 1, z: 0}
@@ -7061,6 +7080,21 @@ MonoBehaviour:
   - {x: -2, y: -2, z: 0}
   - {x: 2, y: -2, z: 0}
   - {x: 2, y: -1, z: 0}
+  - {x: 1, y: -1, z: 0}
+  vertices2:
+  - {x: 1, y: 1, z: 0}
+  - {x: 2, y: 1, z: 0}
+  - {x: 2, y: 2, z: 0}
+  - {x: 0, y: 3, z: 0}
+  - {x: -2, y: 2, z: 0}
+  - {x: -2, y: 1, z: 0}
+  - {x: -1, y: 1, z: 0}
+  - {x: -1, y: -1, z: 0}
+  - {x: -2, y: -1, z: 0}
+  - {x: -2, y: -2, z: 0}
+  - {x: 2, y: -2, z: 0}
+  - {x: 2, y: -1, z: 0}
+  - {x: 1, y: -1, z: 0}
   - {x: 1, y: -1, z: 0}
 --- !u!33 &2021585662
 MeshFilter:
