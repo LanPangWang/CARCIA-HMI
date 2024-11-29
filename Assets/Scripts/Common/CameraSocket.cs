@@ -17,7 +17,7 @@ public class CameraSocket : MonoBehaviour
     public SimulationWorld world;
     private ClientWebSocket WS; // WebSocket 客户端实例
     private bool isConnecting = false; // 标识是否正在尝试连接
-    private List<uint> ImageList = new List<uint> { 0, 100 };
+    private List<uint> ImageList = new List<uint> { 100 };
     private bool AvmOpen = false;
 
     public TMP_InputField wsInputField; // 引用UI中的InputField
@@ -138,7 +138,7 @@ public class CameraSocket : MonoBehaviour
 
                 if (AvmOpen)
                 {
-                    //GetAvmImage();
+                    GetAvmImage();
                 }
                 else
                 {
@@ -178,7 +178,7 @@ public class CameraSocket : MonoBehaviour
             AvmOpen = StateManager.Instance.AvmOpen;
             if (AvmOpen)
             {
-                //GetAvmImage();
+                GetAvmImage();
             }
         }
     }
