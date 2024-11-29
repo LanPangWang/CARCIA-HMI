@@ -69,6 +69,8 @@ Shader "Unlit/avmSlotShader"
                 fixed2 uvDir = i.uv;
                 uvDir.y = (_CustomParkingDir > 1.1) ? (1 - uvDir.y) : uvDir.y;
                 fixed alpha = tex2Dlod(_MainTex, float4(uvDir, 0, 0)).a;
+                clip(alpha - 0.01);
+                alpha = 0.2 + alpha * 0.5;
                 float2 scrpos = float2(0, 0);
                 scrpos.x = ((i.worldpos.x - _AVMCameraPos.x) + _AVMCameraPos.w) / (2 * _AVMCameraPos.w);
                 scrpos.y = ((i.worldpos.z - _AVMCameraPos.z) + _AVMCameraPos.w) / (2 * _AVMCameraPos.w);

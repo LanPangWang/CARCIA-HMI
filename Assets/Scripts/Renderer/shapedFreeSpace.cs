@@ -276,8 +276,11 @@ public class shapedFreeSpace : MonoBehaviour
                 RepeatedField<Point> spacePoints = WorldUtils.GetFreeSpace(world);
                 vertices = Utils.ApplyArrayToCenter(spacePoints, center);   
                 // PointsFilter(ref vertices2, ref vertices);
-                EarCut();       
-                calculating = true;
+                if (vertices.Length > 2)
+                {
+                    EarCut();       
+                    calculating = true;
+                }
             }
 
             if (updateTrigger)

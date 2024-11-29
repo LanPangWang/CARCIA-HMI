@@ -6,17 +6,18 @@ using Xviewer;
 
 public class ApaObstacleRenderer : MonoBehaviour
 {
-    public GameObject Car;
-    public GameObject Bicycle;
-    public GameObject Pedestrain;
-    public GameObject Barrier;
-    public GameObject Cone;
-    public GameObject Fence;
+    // public GameObject Car;
+    // public GameObject Bicycle;
+    // public GameObject Pedestrain;
+    // public GameObject Barrier;
+    // public GameObject Cone;
+    // public GameObject Fence;
 
     private SimulationWorld world;
     private float yaw;
     public TrajectoryPoint center = new TrajectoryPoint();
     private Dictionary<string, int> obstacleInstances = new Dictionary<string, int>();
+    public GameObject[] prefabs;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +26,7 @@ public class ApaObstacleRenderer : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         world = WebSocketNet.Instance.world;
         center = WebSocketNet.Instance.center;
@@ -49,7 +50,7 @@ public class ApaObstacleRenderer : MonoBehaviour
             foreach (TrackBox obj in obstacles)
             {
                 string name = GetObjectName(obj);
-                if (obj.TrackId.ToString() == child.gameObject.name)
+                if (GetObjectName(obj) == child.gameObject.name)
                 {
                     stillExists = true;
                     obstacleInstances.Add(name, 1);
@@ -59,6 +60,7 @@ public class ApaObstacleRenderer : MonoBehaviour
 
             if (!stillExists)
             {
+                Debug.Log("destroy " + child.gameObject.name);
                 Destroy(child.gameObject);
             }
         }
@@ -73,7 +75,7 @@ public class ApaObstacleRenderer : MonoBehaviour
     {
         int type = obj.ClassLabel;
         string name = GetObjectName(obj);
-        GameObject prefab = GetPrefabForType(type);
+        // GameObject prefab = GetPrefabForType(type);
         if (obstacleInstances.ContainsKey(name))
         {
             foreach (Transform child in gameObject.transform)
@@ -81,27 +83,37 @@ public class ApaObstacleRenderer : MonoBehaviour
                 if (child.gameObject.name == name)
                 {
                     GameObject instance = child.gameObject;
-                    SetObjstaclePosition(instance, obj);
+                    SetObjstaclePosition(instance, obj, false);
                 }
             }
 
         }
-        else if (prefab != null)
+        else if (prefabs[type] != null)
         {
-            GameObject instance = Instantiate(prefab);
+            GameObject instance = Instantiate(prefabs[type]);
             instance.name = GetObjectName(obj);
             instance.transform.SetParent(gameObject.transform);
-            SetObjstaclePosition(instance, obj);
+            SetObjstaclePosition(instance, obj, true);
         }
     }
 
-    void SetObjstaclePosition(GameObject instance, TrackBox obj)
+    void SetObjstaclePosition(GameObject instance, TrackBox obj, bool FirstTime)
     {
+
         Vector3 p = new Vector3(obj.Cx, obj.Cy, 0);
         float heading = obj.Yaw;
         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0, -heading * Mathf.Rad2Deg + 90, 0);
-        instance.transform.rotation = rotation;
-        instance.transform.localPosition = p;
+        if (FirstTime)
+        {
+            instance.transform.rotation = rotation;
+            instance.transform.localPosition = p;
+        }
+        else
+        {
+            Rigidbody rigidbody = instance.GetComponent<Rigidbody>();
+            rigidbody.MovePosition(transform.TransformVector(p));
+            rigidbody.MoveRotation(rotation);
+        }
         //Point position = obj.ReferencePoint?[0];
         //if (position is Point)
         //{
@@ -111,17 +123,6 @@ public class ApaObstacleRenderer : MonoBehaviour
 
     GameObject GetPrefabForType(int type)
     {
-        GameObject[] prefabs = new GameObject[]
-        {
-            null,
-            null,
-            Car,
-            Bicycle,
-            Pedestrain,
-            Barrier,
-            Cone,
-            Fence,
-        };
         if (prefabs[type] is GameObject)
         {
             return prefabs[type];

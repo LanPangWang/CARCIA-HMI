@@ -29,6 +29,7 @@ public class AvmCameraScript : MonoBehaviour
     // private Vector3 oldPosition;
     private Vector3 basicSlotPose;
     private Vector3 tgtSlotPose;
+    private Vector3 basicRotateButtonLocalPos;
     private UnityEngine.Quaternion basicSlotRot;
     private float tgtYaw;
 
@@ -56,6 +57,8 @@ public class AvmCameraScript : MonoBehaviour
         basicSlotRot = CustomSlot.transform.parent.localRotation;
         tgtSlotPose = CustomSlot.transform.parent.localPosition;
         tgtYaw = 0;
+
+        basicRotateButtonLocalPos = SlotRotateButton.transform.localPosition;
     }
     void FixedUpdate() 
     {
@@ -103,6 +106,14 @@ public class AvmCameraScript : MonoBehaviour
             }
         }
     }
+    void FixRotButtonPos()
+    {
+        SlotRotateButton.transform.localPosition = basicRotateButtonLocalPos;
+        bool xOut = Mathf.Abs(SlotRotateButton.transform.position.x - avmCamera.transform.position.x) > 8f;
+        bool zOut = Mathf.Abs(SlotRotateButton.transform.position.z - avmCamera.transform.position.z) > 8f;
+        SlotRotateButton.transform.localPosition = (xOut || zOut) ? -basicRotateButtonLocalPos : basicRotateButtonLocalPos;
+
+    }
     void Update()
     {
         // 确保触摸仅在AvmCamera上生效
@@ -147,6 +158,7 @@ public class AvmCameraScript : MonoBehaviour
             if (touch.phase == TouchPhase.Moved && selectedObject != null)
             {
                 OnTouchMove(touch);
+                FixRotButtonPos();
             }
 
             // 当触摸结束时，取消选择
