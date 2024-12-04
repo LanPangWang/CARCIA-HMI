@@ -113,10 +113,10 @@ Material:
     - _ZWrite: 1
     - _ZWriteMode: 0
     m_Colors:
-    - _Color: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
+    - _Color: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 1}
     - _EmisColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FarColor: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
+    - _FarColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
     - _GlowColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _RingColor: {r: 0.672, g: 1, b: 1, a: 1}
