@@ -147,6 +147,14 @@ public static class WorldUtils
             float heading = (float)world.AutoDrivingCar.Heading;
             info.heading = heading;
         }
+        if (world?.Controling?.ControlVisual?.ES != null)
+        {
+            double es = world.Controling.ControlVisual.ES;
+            info.es = (float)Math.Round(es, 1);
+        } else
+        {
+            info.es = 0;
+        }
         return info;
     }
 

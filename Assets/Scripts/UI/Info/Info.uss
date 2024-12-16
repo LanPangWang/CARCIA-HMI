@@ -1,0 +1,29 @@
+.DriveInfo {
+    border-left-color: rgb(72, 139, 255);
+    border-right-color: rgb(72, 139, 255);
+    border-top-color: rgb(72, 139, 255);
+    border-bottom-color: rgb(72, 139, 255);
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+    width: 240px;
+    height: 100px;
+    margin-top: 0;
+    margin-left: 0;
+    -unity-text-align: middle-right;
+    font-size: 28px;
+    -unity-font: url("project://database/Library/unity%20default%20resources?fileID=10102&guid=0000000000000000e000000000000000&type=0#LegacyRuntime");
+    -unity-font-style: normal;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    background-color: rgb(255, 255, 255);
+    margin-right: 0;
+    margin-bottom: 0;
+}

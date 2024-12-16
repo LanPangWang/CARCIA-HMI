@@ -25,6 +25,7 @@ public class CarInfo
 {
     public Vector3 position;
     public float heading;
+    public float es;
 }
 
 public class StateManager : MonoBehaviour
@@ -59,6 +60,8 @@ public class StateManager : MonoBehaviour
 
     public bool inParking { get; private set; }
 
+    public uint gear { get; private set; }
+
 
     private float parkSuccessTime = 0f; // 用于跟踪 PARK_SUCCESS 的持续时间
     private const float ParkSuccessDuration = 3f; // 持续时间阈值，单位秒
@@ -85,6 +88,7 @@ public class StateManager : MonoBehaviour
         speed = WorldUtils.GetSpeed(world);
         slots = WorldUtils.GetSlots(world);
         carInfo = WorldUtils.GetCarInfo(world);
+        gear = WorldUtils.GetGear(world);
         apaPlaneState = WorldUtils.GetApaPlanState(world);
         Constants.PilotStateMap state = (int)UpdateParkingState(world) != 0 ? UpdateParkingState(world) : UpdateDrivingState(world);
         UpdateState(state);
@@ -112,7 +116,6 @@ public class StateManager : MonoBehaviour
             {
                 redirectToReady = true;
                 uint frameId = GetFrameId();
-                Constants.CustomSlotCenter = Constants.DefaultCustomSlotCenter;
                 HmiSocket.Instance.ExitCustomSlot(frameId);
             }
         }

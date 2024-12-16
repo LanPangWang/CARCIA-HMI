@@ -63,9 +63,10 @@ public class CustomSlot : MonoBehaviour
     async void OnEntryCustomSlot()
     {
         StateManager.Instance.SetAvmOpen(true);
+        avmScript.ResetCustom();
         uint frameId = StateManager.Instance.GetFrameId();
         await HmiSocket.Instance.EntryCustomSlot(frameId);
-        Vector3[] vertices = avmScript.GetRectangleVertices(Constants.CustomSlotCenter);
+        Vector3[] vertices = avmScript.GetRectangleVertices(Constants.DefaultCustomSlotCenter);
         uint ValidCustomSlotDir = StateManager.Instance.ValidCustomSlotDir;
         uint defaultDir = (uint)(ValidCustomSlotDir == 2 ? 2 : 1);
         StateManager.Instance.ChangeCustomSlotDir(defaultDir);
@@ -80,4 +81,5 @@ public class CustomSlot : MonoBehaviour
         uint frameId = StateManager.Instance.GetFrameId();
         await HmiSocket.Instance.ExitCustomSlot(frameId);
     }
+
 }

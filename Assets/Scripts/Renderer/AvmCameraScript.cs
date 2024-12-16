@@ -234,7 +234,6 @@ public class AvmCameraScript : MonoBehaviour
         List<string> points = Utils.GetCustomSlotPoints(vertices);
         uint frameId = StateManager.Instance.GetFrameId();
         selectedObject = null;
-        Constants.CustomSlotCenter = CustomSlot.transform.parent.position;
         await HmiSocket.Instance.LockCustomSlot(points, frameId);
     }
 
@@ -314,6 +313,12 @@ public class AvmCameraScript : MonoBehaviour
         {
             StateManager.Instance.ChangeCustomSlotDir(1);
         }
+    }
+
+    public void ResetCustom()
+    {
+        CustomSlot.transform.parent.position = Constants.DefaultCustomSlotCenter;
+        CustomSlot.transform.parent.rotation = new UnityEngine.Quaternion();
     }
 
     // private void OnParking()
