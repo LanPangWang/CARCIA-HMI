@@ -504,7 +504,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainCamera: {fileID: 963194225}
   CustomSlot: {fileID: 417574953}
-  DirRotateButton: {fileID: 148511704}
   SlotRotateButton: {fileID: 1273065857}
   SlotDirButton: {fileID: 148511704}
   MainCar: {fileID: 1277828912}
@@ -2252,7 +2251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainCamera: {fileID: 963194225}
-  DriveInfoContainer: {fileID: 0}
+  DriveInfoContainer: {fileID: 1674845985}
 --- !u!114 &484288574
 MonoBehaviour:
   m_ObjectHideFlags: 0

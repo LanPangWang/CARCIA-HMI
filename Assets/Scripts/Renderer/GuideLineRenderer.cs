@@ -1,6 +1,7 @@
 using Google.Protobuf.Collections;
 using UnityEngine;
 using Xviewer;
+using System.Linq;
 
 public class GuideLineRenderer : MonoBehaviour
 {
@@ -19,6 +20,10 @@ public class GuideLineRenderer : MonoBehaviour
     void Update()
     {
         ClearLaneLines();
+        if (StateManager.Instance.pilotState == Constants.PilotStateMap.PARK_SUCCESS)
+        {
+            return;
+        }
         world = WebSocketNet.Instance.world;
         center = WebSocketNet.Instance.center;
         yaw = WebSocketNet.Instance.yaw;
@@ -38,10 +43,31 @@ public class GuideLineRenderer : MonoBehaviour
         }
     }
 
+    Vector3[] FilterPointsByGear(Vector3[] points)
+    {
+        uint gear = StateManager.Instance.gear;
+        Constants.GearTypes gearStr = (Constants.GearTypes)gear;
+        // #TODO 为什么D挡小于0了？
+        if (gearStr == Constants.GearTypes.D)
+        {
+            return points.Where(point => point.x < -3).ToArray();
+        }
+        else if (gearStr == Constants.GearTypes.R)
+        {
+            return points.Where(point => point.x > 0).ToArray();
+        }
+        else
+        {
+            return points;
+        }
+    }
+
     void MakeGuideLine(TrajectoryStamped guideLine)
     {
         RepeatedField<TrajectoryPoint> points = guideLine.TrajPoints;
         Vector3[] ps = Utils.ApplyArrayToCenter(points, center);
+        ps = Utils.TranslateCurveByDistanceWithDirOffset(ps);
+        ps = FilterPointsByGear(ps);
         GameObject newLine = Instantiate(GuideLineBase);
         LineRenderer lineRenderer = newLine.GetComponent<LineRenderer>();
 

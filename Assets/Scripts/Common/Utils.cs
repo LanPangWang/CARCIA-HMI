@@ -154,4 +154,37 @@ public static class Utils
         return points;
     }
 
+    public static Vector3[] TranslateCurveByDistanceWithDirOffset(Vector3[] curvePoints)
+    {
+        // 创建一个新的列表，用于存储平移后的顶点
+        List<Vector3> translatedPoints = new List<Vector3>();
+        Vector3 lastTangent = new Vector3(1, 0, 0);
+        bool isForward = false;
+
+        // 遍历曲线的顶点数组
+        for (int i = 1; i < curvePoints.Length; i += 10)
+        {
+            Vector3 point = curvePoints[i];
+            Vector3 prevPoint = curvePoints[i - 1];
+            if (point == prevPoint) continue;
+            // 计算切线方向并归一化
+            Vector3 tangent = (point - prevPoint).normalized;
+            // 判断切线方向是否与上一个切线方向一致
+            bool isSameDir = Vector3.Dot(tangent, lastTangent) > 0;
+            // 根据方向切换平移方向
+            isForward = isSameDir ? isForward : !isForward;
+            // 计算偏移向量
+            Vector3 offset = tangent * (isForward ? 3f : -0.89f);
+            // 根据偏移向量，平移当前点
+            Vector3 translatedPoint = point + offset;
+            // 将平移后的点加入列表
+            translatedPoints.Add(translatedPoint);
+            // 更新上一个切线方向
+            lastTangent = tangent;
+        }
+
+        // 返回平移后的曲线顶点列表
+        return translatedPoints.ToArray();
+    }
+
 }
