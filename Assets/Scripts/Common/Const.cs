@@ -145,18 +145,18 @@ public static class Constants
         { PilotStateMap.PARK_SEARCH, new InteractionInfo("正在搜索车位")},
         { PilotStateMap.PARK_CHOOSE, new InteractionInfo("请选择车位")},
         { PilotStateMap.PARK_PLANING, new InteractionInfo("路径规划中")},
-        { PilotStateMap.PARK_PLAN_ERROR, new InteractionInfo("路径规划失败")},
+        { PilotStateMap.PARK_PLAN_ERROR, new InteractionInfo("路径规划失败", "fail")},
         { PilotStateMap.PARK_LOCK, new InteractionInfo("开始泊车", cb: () => HmiSocket.Instance.StartPark() )},
         { PilotStateMap.PARK_ING, new InteractionInfo("自动泊入中")},
         { PilotStateMap.PARK_SUCCESS, new InteractionInfo("泊入完成")},
-        { PilotStateMap.PARK_FAIL, new InteractionInfo("泊车失败", "parkFail")},
-        { PilotStateMap.PARK_TAKE_OVER, new InteractionInfo("泊车失败", "parkFail")},
+        { PilotStateMap.PARK_FAIL, new InteractionInfo("泊车失败", "fail")},
+        { PilotStateMap.PARK_TAKE_OVER, new InteractionInfo("泊车失败", "fail")},
         { PilotStateMap.PARK_OUT_SEARCH, new InteractionInfo("搜索泊出方向")},
         { PilotStateMap.PARK_OUT_SELECT, new InteractionInfo("请选择泊出方向")},
         { PilotStateMap.PARK_OUT_START, new InteractionInfo("开始泊出", cb: () => HmiSocket.Instance.StartApaOut())},
         { PilotStateMap.PARK_OUT_ING, new InteractionInfo("正在泊出")},
-        { PilotStateMap.PARK_OUT_ERROR, new InteractionInfo("泊出失败")},
-        { PilotStateMap.PARK_OUT_OVER, new InteractionInfo("泊出失败")},
+        { PilotStateMap.PARK_OUT_ERROR, new InteractionInfo("泊出失败", "fail")},
+        { PilotStateMap.PARK_OUT_OVER, new InteractionInfo("泊出失败", "fail")},
     };
 
     // 初始自定义车位在UTM坐标中的位置，每次touch end 更新

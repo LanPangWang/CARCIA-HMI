@@ -77,22 +77,13 @@ public class InteractionScript2 : MonoBehaviour
                 labelElement.style.fontSize = 28; // 设置字体大小为 28px
             }
 
+            Sprite newSprite = Resources.Load<Sprite>($"Images/wheel");
             if (!string.IsNullOrEmpty(info.icon))
             {
-                // 加载图标
-                Sprite newSprite = Resources.Load<Sprite>($"Images/{info.icon}");
-                if (newSprite == null)
-                {
-                    newSprite = Resources.Load<Sprite>("Images/wheel"); // 默认图标
-                    Debug.LogWarning("无法找到图标: " + info.icon);
-                }
-
-                // 将 Sprite 转换为 Texture2D 并设置为背景
-                if (newSprite != null && newSprite.texture != null)
-                {
-                    visualElement.style.backgroundImage = new StyleBackground(newSprite.texture);
-                }
+                Debug.Log(info.icon);
+                newSprite = Resources.Load<Sprite>($"Images/{info.icon}");
             }
+            visualElement.style.backgroundImage = new StyleBackground(newSprite.texture);
         }
         else
         {

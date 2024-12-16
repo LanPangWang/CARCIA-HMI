@@ -3,6 +3,7 @@ using UnityEngine;
 public class AvmLayout : MonoBehaviour
 {
     public GameObject MainCamera;
+    public GameObject DriveInfoContainer;
 
     private bool Open = false;
     private postProcessTAA postProcess;
@@ -12,9 +13,18 @@ public class AvmLayout : MonoBehaviour
     private bool isAnimating = false;
     private float initialOffset;
 
+    private RectTransform driveInfoRectTransform;
+    private float defaultX;
+
     void Start()
     {
         postProcess = MainCamera.GetComponent<postProcessTAA>();
+        driveInfoRectTransform = DriveInfoContainer.GetComponent<RectTransform>();
+        Debug.Log("-=---------");
+
+        Debug.Log(driveInfoRectTransform.position);
+        Debug.Log(driveInfoRectTransform.localPosition);
+        defaultX = driveInfoRectTransform.localPosition.x;
         float largeSlide = Mathf.Max(Screen.width, Screen.height);
         float smallSlide = Mathf.Min(Screen.width, Screen.height);
         targetOffset = -(smallSlide / largeSlide);
@@ -32,6 +42,7 @@ public class AvmLayout : MonoBehaviour
         {
             Open = false;
             postProcess._AvmDevideOffset = 0f;
+            UpdateDriveInfoPosition(0f);
         }
 
         if (isAnimating)
@@ -55,11 +66,23 @@ public class AvmLayout : MonoBehaviour
 
         // 使用 Mathf.SmoothStep 实现 EaseInOut 效果
         float smoothStep = Mathf.SmoothStep(0f, 1f, t);
-        postProcess._AvmDevideOffset = Mathf.Lerp(initialOffset, targetOffset, smoothStep);
+        float newOffset = Mathf.Lerp(initialOffset, targetOffset, smoothStep);
+
+        postProcess._AvmDevideOffset = newOffset;
+        UpdateDriveInfoPosition(newOffset);
 
         if (t >= 1f)
         {
             isAnimating = false; // 动画完成
+        }
+    }
+
+    void UpdateDriveInfoPosition(float offset)
+    {
+        if (driveInfoRectTransform != null)
+        {
+            float x = defaultX + offset * Screen.width;
+            driveInfoRectTransform.localPosition = new Vector3(x, 0, 0);
         }
     }
 }

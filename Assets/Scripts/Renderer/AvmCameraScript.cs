@@ -6,13 +6,13 @@ public class AvmCameraScript : MonoBehaviour
 {
     public GameObject MainCamera;
     public GameObject CustomSlot;
-    public GameObject DirRotateButton;
     public GameObject SlotRotateButton;
     public GameObject SlotDirButton;
     public GameObject MainCar;
     public Material CustomSlotMat;
     public GameObject slotContainer;
     public Rigidbody CustomSlotPrefabRigidbody;
+    public GameObject Radar;
 
     public Texture invalidSlotTex;
     public Texture validSlotTex;
@@ -112,37 +112,18 @@ public class AvmCameraScript : MonoBehaviour
         bool xOut = Mathf.Abs(SlotRotateButton.transform.position.x - avmCamera.transform.position.x) > 8f;
         bool zOut = Mathf.Abs(SlotRotateButton.transform.position.z - avmCamera.transform.position.z) > 8f;
         SlotRotateButton.transform.localPosition = (xOut || zOut) ? -basicRotateButtonLocalPos : basicRotateButtonLocalPos;
-
     }
-    void Update()
+
+    void UpdateButton()
     {
-        // 确保触摸仅在AvmCamera上生效
-        // Debug.Log($"{basicCarInfo.x}, {basicCarInfo.y}, {basicCarInfo.heading}");
-        if (avmCamera == null || !avmCamera.orthographic)
-            return;
-
         bool inParking = StateManager.Instance.inParking;
-        validDir = StateManager.Instance.ValidCustomSlotDir;
-        // CustomSlot.SetActive(!inParking);
-        if(inParking)
-        {
-            CustomSlotMat.SetTexture("_MainTex", validSlotTex);
-        }
-        else
-        {
-            if (validDir != 0)
-            {
-                // CustomSlotMat.SetColor("_Color1", Color.green);
-                CustomSlotMat.SetTexture("_MainTex", validSlotTex);
-            } 
-            else
-            {
-                CustomSlotMat.SetTexture("_MainTex", invalidSlotTex);
-                // CustomSlotMat.SetColor("_Color1", Color.red);
-            }
-        }
-        DirRotateButton.SetActive(validDir == 3);
+        bool needShow = validDir == 3 && !inParking;
+        SlotDirButton.SetActive(needShow);
+        SlotRotateButton.SetActive(!inParking);
+    }
 
+    void HandlerTouch()
+    {
         // 检测是否有触摸
         if (Input.touchCount > 0)
         {
@@ -172,10 +153,44 @@ public class AvmCameraScript : MonoBehaviour
         }
     }
 
-    private void CalValidDir()
+    void UpdateRadar()
     {
-        world = WebSocketNet.Instance.world;
-        validDir = WorldUtils.GetValidSlotDir(world);
+        Constants.PilotStateMap state = StateManager.Instance.pilotState;
+        bool needShow = state == Constants.PilotStateMap.PARK_SEARCH || state == Constants.PilotStateMap.PARK_OUT_SEARCH;
+        Radar.SetActive(needShow);
+    }
+
+    void Update()
+    {
+        // 确保触摸仅在AvmCamera上生效
+        // Debug.Log($"{basicCarInfo.x}, {basicCarInfo.y}, {basicCarInfo.heading}");
+        if (avmCamera == null || !avmCamera.orthographic)
+            return;
+
+        bool inParking = StateManager.Instance.inParking;
+        validDir = StateManager.Instance.ValidCustomSlotDir;
+        // CustomSlot.SetActive(!inParking);
+        if(inParking)
+        {
+            CustomSlotMat.SetTexture("_MainTex", validSlotTex);
+        }
+        else
+        {
+            if (validDir != 0)
+            {
+                // CustomSlotMat.SetColor("_Color1", Color.green);
+                CustomSlotMat.SetTexture("_MainTex", validSlotTex);
+            } 
+            else
+            {
+                CustomSlotMat.SetTexture("_MainTex", invalidSlotTex);
+                // CustomSlotMat.SetColor("_Color1", Color.red);
+            }
+        }
+
+        HandlerTouch();
+        UpdateButton();
+        UpdateRadar();
     }
 
     private void OnTouchBegan(Touch touch)
