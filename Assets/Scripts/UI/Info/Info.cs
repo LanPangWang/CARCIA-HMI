@@ -7,7 +7,6 @@ public class InteractionScript2 : MonoBehaviour
     public UIDocument uiDocument;
     private Action cb;
     private Button InteractionBtn;
-    private Font systemFont;
     private bool isButton = false;
 
     private void OnBtnClick()
@@ -20,25 +19,8 @@ public class InteractionScript2 : MonoBehaviour
 
     void Start()
     {
-        // 加载系统自带的中文字体
-        systemFont = Resources.Load<Font>("Fonts/NotoSans");
-        // 设置到整个 UI 文档
-        var root = uiDocument.rootVisualElement;
-        root.style.unityFont = systemFont;
-        if (systemFont == null)
-        {
-            Debug.LogError("Failed to load system font!=========");
-        }
-        else
-        {
-            Debug.Log("System font loaded successfully.=========");
-        }
-        // 按钮初始化
         InteractionBtn = uiDocument.rootVisualElement.Q<Button>("Button");
         InteractionBtn.clicked += OnBtnClick;
-
-        // 设置按钮的字体
-        InteractionBtn.style.unityFont = systemFont;
     }
 
     void UpdateParkDis()
@@ -60,7 +42,6 @@ public class InteractionScript2 : MonoBehaviour
 
         Label gearElement = uiDocument.rootVisualElement.Q<Label>("Gear");
         gearElement.text = gearStr.ToString();
-        gearElement.style.unityFont = systemFont; // 设置字体
 
         string forward = "";
         if (gearStr == Constants.GearTypes.D)
@@ -75,7 +56,6 @@ public class InteractionScript2 : MonoBehaviour
 
         Label disElement = uiDocument.rootVisualElement.Q<Label>("Dis");
         disElement.text = disStr;
-        disElement.style.unityFont = systemFont; // 设置字体
     }
 
     void UpdateInfo()
@@ -88,13 +68,6 @@ public class InteractionScript2 : MonoBehaviour
         Label labelElement = uiDocument.rootVisualElement.Q<Label>("Label");
         VisualElement visualElement = uiDocument.rootVisualElement.Q<VisualElement>("VisualElement");
         GroupBox container = uiDocument.rootVisualElement.Q<GroupBox>("Container");
-
-        // 设置字体
-        labelElement.style.unityFont = systemFont;
-
-        Debug.Log(label);
-        Debug.Log(labelElement.style.unityFont);
-        Debug.Log("===============");
         // 如果不是按钮的
         if (!newIsButton)
         {
@@ -120,7 +93,6 @@ public class InteractionScript2 : MonoBehaviour
         {
             // 设置按钮文本和字体
             InteractionBtn.text = label;
-            InteractionBtn.style.unityFont = systemFont;
             cb = info.cb;
         }
 
