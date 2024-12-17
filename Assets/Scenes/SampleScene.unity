@@ -799,6 +799,10 @@ MonoBehaviour:
   slotPrefab: {fileID: 628025484224346668, guid: f2343f7477eb04f0da7d6b02e54dedf0, type: 3}
   MainCamera: {fileID: 963194225}
   CustomMat: {fileID: 2100000, guid: 40fe1124b16f2b84da477ecd81d6c63c, type: 2}
+  invalidTexture: {fileID: 2800000, guid: 21373827dba420d40bbaf52563408913, type: 3}
+  validTexture: {fileID: 2800000, guid: 1347fa43e3ef2b34ca95c62408e5343c, type: 3}
+  lockTexture: {fileID: 2800000, guid: 243c420ae4aaa5547b4effc6183eceab, type: 3}
+  parkingTexture: {fileID: 2800000, guid: 0506e6c1a58c265419dd82c82b324362, type: 3}
 --- !u!4 &180657260
 Transform:
   m_ObjectHideFlags: 0

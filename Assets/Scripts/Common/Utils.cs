@@ -81,6 +81,54 @@ public static class Utils
         return newPoints;
     }
 
+    public static Vector3 ApplyCenterWidthYaw<T>(T p, TrajectoryPoint c, float yaw)
+    {
+        // 获取类型T的X和Y属性
+        PropertyInfo xProp = typeof(T).GetProperty("X");
+        PropertyInfo yProp = typeof(T).GetProperty("Y");
+
+        // 检查是否存在这些属性
+        if (xProp == null || yProp == null)
+        {
+            Debug.LogError("对象必须包含 X 和 Y 属性。");
+            return new Vector3();
+        }
+
+        // 计算相对坐标
+        double px = (double)xProp.GetValue(p);
+        double py = (double)yProp.GetValue(p);
+
+        float x = (float)(px - c.X);
+        float y = (float)(py - c.Y);
+        float rX = x * Mathf.Cos(yaw) - y * Mathf.Sin(yaw);
+        float rY = x * Mathf.Sin(yaw) + y * Mathf.Cos(yaw);
+        float z = 0f;
+        Vector3 relativePos = new Vector3(rX, rY, z);
+
+        // 返回新的 BEV 坐标
+        return relativePos;
+    }
+
+    public static Vector3[] ApplyArrayToCenterWidthYaw<T>(RepeatedField<T> points, TrajectoryPoint c, float yaw)
+    {
+        Vector3[] newPoints = new Vector3[0];
+        if (double.IsNaN(c.X) || double.IsNaN(c.Y))
+        {
+            Debug.LogError("Vector3 'c' contains NaN value in x or y component.");
+            return newPoints;
+        }
+
+        // 检查points是否是一个Vector3数组
+        if (points == null || !(points is RepeatedField<T>))
+        {
+            Debug.LogError("Points 集合必须是 RepeatedField<T> 类型。");
+            return newPoints;
+        }
+
+        newPoints = points.Select(p => ApplyCenterWidthYaw(p, c, yaw)).ToArray();
+        return newPoints;
+    }
+
     public static float GetYOnLine(Vector3 p1, Vector3 p2, float x)
     {
         float x1 = p1.x;
@@ -158,7 +206,7 @@ public static class Utils
     {
         // 创建一个新的列表，用于存储平移后的顶点
         List<Vector3> translatedPoints = new List<Vector3>();
-        Vector3 lastTangent = new Vector3(1, 0, 0);
+        Vector3 lastTangent = new Vector3(-1, 0, 0);
         bool isForward = false;
 
         // 遍历曲线的顶点数组
@@ -174,7 +222,7 @@ public static class Utils
             // 根据方向切换平移方向
             isForward = isSameDir ? isForward : !isForward;
             // 计算偏移向量
-            Vector3 offset = tangent * (isForward ? 3f : -0.89f);
+            Vector3 offset = tangent * (isForward ? 3.87f : -0.89f);
             // 根据偏移向量，平移当前点
             Vector3 translatedPoint = point + offset;
             // 将平移后的点加入列表

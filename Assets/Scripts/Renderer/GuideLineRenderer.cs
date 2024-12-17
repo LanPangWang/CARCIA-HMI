@@ -2,6 +2,7 @@ using Google.Protobuf.Collections;
 using UnityEngine;
 using Xviewer;
 using System.Linq;
+using System;
 
 public class GuideLineRenderer : MonoBehaviour
 {
@@ -47,14 +48,13 @@ public class GuideLineRenderer : MonoBehaviour
     {
         uint gear = StateManager.Instance.gear;
         Constants.GearTypes gearStr = (Constants.GearTypes)gear;
-        // #TODO 为什么D挡小于0了？
         if (gearStr == Constants.GearTypes.D)
         {
-            return points.Where(point => point.x < -3).ToArray();
+            return points.Where(point => point.x > 0).ToArray();
         }
         else if (gearStr == Constants.GearTypes.R)
         {
-            return points.Where(point => point.x > 0).ToArray();
+            return points.Where(point => point.x < 0).ToArray();
         }
         else
         {
@@ -65,9 +65,9 @@ public class GuideLineRenderer : MonoBehaviour
     void MakeGuideLine(TrajectoryStamped guideLine)
     {
         RepeatedField<TrajectoryPoint> points = guideLine.TrajPoints;
-        Vector3[] ps = Utils.ApplyArrayToCenter(points, center);
-        ps = Utils.TranslateCurveByDistanceWithDirOffset(ps);
+        Vector3[] ps = Utils.ApplyArrayToCenterWidthYaw(points, center, -yaw);
         ps = FilterPointsByGear(ps);
+        ps = Utils.TranslateCurveByDistanceWithDirOffset(ps);
         GameObject newLine = Instantiate(GuideLineBase);
         LineRenderer lineRenderer = newLine.GetComponent<LineRenderer>();
 
@@ -75,7 +75,7 @@ public class GuideLineRenderer : MonoBehaviour
         lineRenderer.SetPositions(ps);
         newLine.transform.SetParent(gameObject.transform);
         // 根据yaw角旋转导航线
-        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0, 0, -yaw * Mathf.Rad2Deg + 90);
+        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0, 0, 90);
         newLine.transform.localRotation = rotation;
     }
 }

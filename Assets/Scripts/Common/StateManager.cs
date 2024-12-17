@@ -62,6 +62,10 @@ public class StateManager : MonoBehaviour
 
     public uint gear { get; private set; }
 
+    public int lockSlotId { get; private set; }
+
+    public RepeatedField<Avaliableslot> avaliableslots { get; private set; }
+
 
     private float parkSuccessTime = 0f; // 用于跟踪 PARK_SUCCESS 的持续时间
     private const float ParkSuccessDuration = 3f; // 持续时间阈值，单位秒
@@ -89,7 +93,9 @@ public class StateManager : MonoBehaviour
         slots = WorldUtils.GetSlots(world);
         carInfo = WorldUtils.GetCarInfo(world);
         gear = WorldUtils.GetGear(world);
+        lockSlotId = WorldUtils.GetLockSlotId(world);
         apaPlaneState = WorldUtils.GetApaPlanState(world);
+        avaliableslots = WorldUtils.GetValidSlots(world);
         Constants.PilotStateMap state = (int)UpdateParkingState(world) != 0 ? UpdateParkingState(world) : UpdateDrivingState(world);
         UpdateState(state);
         ValidCustomSlotDir = WorldUtils.GetValidSlotDir(world);

@@ -7,10 +7,16 @@ public class ParkSlotRenderer : MonoBehaviour
     public GameObject slotPrefab; // 在Inspector中将你的预设体赋值给这个变量
     public GameObject MainCamera;
     public Material CustomMat;
+    public Texture2D invalidTexture;
+    public Texture2D validTexture;
+    public Texture2D lockTexture;
+    public Texture2D parkingTexture;
 
     private SimulationWorld world;
     private TrajectoryPoint center;
     private float yaw = 0;
+    private int lockId = -1;
+    private RepeatedField<Avaliableslot> avaliableslots;
 
     void Update()
     {
@@ -18,6 +24,8 @@ public class ParkSlotRenderer : MonoBehaviour
         world = WebSocketNet.Instance.world;
         center = WebSocketNet.Instance.center;
         yaw = WebSocketNet.Instance.yaw;
+        lockId = StateManager.Instance.lockSlotId;
+        avaliableslots = StateManager.Instance.avaliableslots;
         if (world is SimulationWorld)
         {
             RepeatedField<ParkingSpace> slots = WorldUtils.GetSlots(world);
@@ -101,6 +109,27 @@ public class ParkSlotRenderer : MonoBehaviour
         return ps;
     }
 
+    Texture2D GetTexture(long id, bool valid)
+    {
+        bool inParking = StateManager.Instance.inParking;
+        if (id == lockId)
+        {
+            return inParking ? parkingTexture : lockTexture;
+        }
+        else if (valid)
+        {
+            foreach (var slot in avaliableslots)
+            {
+                if (slot.ParkingSlotId == id && slot.ParkingDir > 0)
+                {
+                    return validTexture;
+                }
+            }
+            return invalidTexture;
+        }
+        return invalidTexture;
+    }
+
     void MakeSlot(ParkingSpace slot, bool custom = false)
     {
         Vector3[] points = GetSlotPoints(slot);
@@ -119,6 +148,12 @@ public class ParkSlotRenderer : MonoBehaviour
         // 实例化预设体
         GameObject plane = Instantiate(slotPrefab);
 
+        Texture2D texture = GetTexture(slot.Id, slot.Valid);
+        Renderer renderer = plane.GetComponent<Renderer>();
+        Material material = renderer.material; // 获取当前材质实例
+        material.mainTexture = texture;       // 赋值纹理
+
+
         // 获取 PlaneFromPoints 脚本并设置点
         PlaneFromPoints planeFromPoints = plane.GetComponent<PlaneFromPoints>();
         planeFromPoints.SetPoints(points);
@@ -127,8 +162,6 @@ public class ParkSlotRenderer : MonoBehaviour
         // 确保子对象的局部旋转为零
         plane.transform.localRotation = UnityEngine.Quaternion.identity;
 
-        // 添加mesh 让射线能点击到车位
-        MeshFilter meshFilter = plane.GetComponent<MeshFilter>();
         plane.GetComponent<MeshCollider>().sharedMesh = planeFromPoints.mesh;
 
         plane.name = $"slot-{slot.Id}";
@@ -136,7 +169,7 @@ public class ParkSlotRenderer : MonoBehaviour
         if (custom == true)
         {
             CustomMat.SetColor("_Color1", Color.green);
-            plane.GetComponent<Renderer>().material = CustomMat;
+            renderer.material = CustomMat;
             plane.layer = LayerMask.NameToLayer("Custom Slot");
             plane.name = $"slot-{slot.Id}-custom";
         }
