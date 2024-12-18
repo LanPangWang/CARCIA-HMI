@@ -10,14 +10,15 @@ public class AvmCameraScript : MonoBehaviour
     public GameObject SlotDirButton;
     public GameObject MainCar;
     public Material CustomSlotMat;
+    public Material ParkingCustomSlotMat;
     public GameObject slotContainer;
     public Rigidbody CustomSlotPrefabRigidbody;
     public GameObject Radar;
 
-    public Texture invalidSlotTex;
-    public Texture validSlotTex;
+    public Texture normalTex;
+    public Texture parkingTex;
 
-    private SimulationWorld world;
+    private GameObject CustomSlotCopy; // 渲染在左边的车位
     private MeshCollider SlotCollider; // 当前被选中的模型的collider
     private Camera avmCamera; // 绑定AvmCamera相机
     private GameObject selectedObject; // 当前被选中的模型
@@ -25,13 +26,7 @@ public class AvmCameraScript : MonoBehaviour
     private Vector3 offset; // 点击位置和模型位置的偏移量
     private postProcessTAA postProcess;
     private uint validDir;
-    // private CarInfo oldCarInfo;
-    // private Vector3 oldPosition;
-    private Vector3 basicSlotPose;
-    private Vector3 tgtSlotPose;
     private Vector3 basicRotateButtonLocalPos;
-    private UnityEngine.Quaternion basicSlotRot;
-    private float tgtYaw;
 
     void Start()
     {
@@ -51,21 +46,36 @@ public class AvmCameraScript : MonoBehaviour
         Border.extents = new Vector3(avmCamera.orthographicSize, 1, avmCamera.orthographicSize);
 
         postProcess = MainCamera.GetComponent<postProcessTAA>();
-        // basicCarInfo = StateManager.Instance.carInfoDouble;
-        // currentCarInfo = StateManager.Instance.carInfoDouble;
-        basicSlotPose = CustomSlot.transform.parent.localPosition;
-        basicSlotRot = CustomSlot.transform.parent.localRotation;
-        tgtSlotPose = CustomSlot.transform.parent.localPosition;
-        tgtYaw = 0;
 
         basicRotateButtonLocalPos = SlotRotateButton.transform.localPosition;
+        RenderCustomSlotInLeft();
     }
-    void FixedUpdate() 
+
+    void RenderCustomSlotInLeft()
+    {
+        CustomSlotCopy = Instantiate(CustomSlot);
+        // 设置 CustomSlotCopy 为 CustomSlot 的子对象
+        CustomSlotCopy.transform.SetParent(CustomSlot.transform);
+
+        // 设置图层，避免干扰触控事件
+        CustomSlotCopy.layer = LayerMask.NameToLayer("IgnoreTouch"); // 确保此图层不会被触控检测到
+
+        CustomSlotCopy.layer = LayerMask.NameToLayer("Slots");
+        // 重置位置和旋转，使其与 CustomSlot 保持一致
+        CustomSlotCopy.transform.localPosition = Vector3.zero;
+        CustomSlotCopy.transform.localRotation = UnityEngine.Quaternion.identity;
+        foreach (Transform child in CustomSlotCopy.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    void FixedUpdate()
     {
         bool inParking = StateManager.Instance.inParking;
         if (inParking)
         {
-            if(StateManager.Instance.customSlotId != -1)
+            if (StateManager.Instance.customSlotId != -1)
             {
                 // Debug.Log(StateManager.Instance.customSlotId);
                 try
@@ -74,7 +84,7 @@ public class AvmCameraScript : MonoBehaviour
                     // Debug.Log(customSlotTransform.name);
                     MeshFilter meshFilter = customSlotTransform.gameObject.GetComponent<MeshFilter>();
                     Vector3[] slotPoints = meshFilter.sharedMesh.vertices;
-                    for(int i = 0; i < 4; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         slotPoints[i] = customSlotTransform.TransformVector(slotPoints[i]);
                     }
@@ -166,31 +176,39 @@ public class AvmCameraScript : MonoBehaviour
         // Debug.Log($"{basicCarInfo.x}, {basicCarInfo.y}, {basicCarInfo.heading}");
         if (avmCamera == null || !avmCamera.orthographic)
             return;
-
-        bool inParking = StateManager.Instance.inParking;
-        validDir = StateManager.Instance.ValidCustomSlotDir;
-        // CustomSlot.SetActive(!inParking);
-        if(inParking)
-        {
-            CustomSlotMat.SetTexture("_MainTex", validSlotTex);
-        }
-        else
-        {
-            if (validDir != 0)
-            {
-                // CustomSlotMat.SetColor("_Color1", Color.green);
-                CustomSlotMat.SetTexture("_MainTex", validSlotTex);
-            } 
-            else
-            {
-                CustomSlotMat.SetTexture("_MainTex", invalidSlotTex);
-                // CustomSlotMat.SetColor("_Color1", Color.red);
-            }
-        }
-
+        UpdateCustomSlot();
         HandlerTouch();
         UpdateButton();
         UpdateRadar();
+        UpdateCustomSlotCopy();
+    }
+
+    void UpdateCustomSlotCopy()
+    {
+        bool avmOpen = StateManager.Instance.AvmOpen;
+        CustomSlotCopy.SetActive(avmOpen);
+        CustomSlotCopy.GetComponent<Renderer>().material = CustomSlot.GetComponent<Renderer>().material;
+    }
+
+    void UpdateCustomSlot()
+    {
+        bool inParking = StateManager.Instance.inParking;
+        validDir = StateManager.Instance.ValidCustomSlotDir;
+        // CustomSlot.SetActive(!inParking);
+        if (inParking)
+        {
+            CustomSlot.GetComponent<Renderer>().material = ParkingCustomSlotMat;
+        }
+        else
+        {
+            CustomSlot.GetComponent<Renderer>().material = CustomSlotMat;
+            CustomSlotMat.SetTexture("_MainTex", normalTex);
+            CustomSlotMat.SetColor("_Color2", Color.gray);
+            if (validDir != 0)
+            {
+                CustomSlotMat.SetColor("_Color2", new Color(0x48 / 255f, 0x8B / 255f, 0xFF / 255f));
+            }
+        }
     }
 
     private void OnTouchBegan(Touch touch)
@@ -198,8 +216,14 @@ public class AvmCameraScript : MonoBehaviour
         Vector2 realPosition = CalRealPosition(touch.position);
         Ray ray = avmCamera.ScreenPointToRay(realPosition);
         RaycastHit hit;
-        // 如果射线碰到了带有Collider的物体
-        if (Physics.Raycast(ray, out hit))
+
+        // 创建一个LayerMask，只包含“Custom Slot”Layer
+        // 假设“Custom Slot”Layer的索引是8（你可以通过Unity的Layer设置查看和确认）
+        int customSlotLayerIndex = LayerMask.NameToLayer("Custom Slot");
+        LayerMask customSlotLayerMask = 1 << customSlotLayerIndex;
+
+        // 如果射线碰到了带有Collider且位于“Custom Slot”Layer的物体
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, customSlotLayerMask))
         {
             if (hit.collider != null)
             {
@@ -241,7 +265,8 @@ public class AvmCameraScript : MonoBehaviour
         if (selectedObject.GetInstanceID() == SlotDirButton.GetInstanceID())
         {
             OnDirClick();
-        } else
+        }
+        else
         {
             StateManager.Instance.ChangeCustomSlotDir(1);
         }
@@ -311,8 +336,8 @@ public class AvmCameraScript : MonoBehaviour
         lt += center;
         rb += center;
         rt += center;
-
-        return new Vector3[] { lt, lb, rb, rt };
+        Vector3[] vertices = new Vector3[] { lt, lb, rb, rt };
+        return vertices;
     }
 
     private void OnDirClick()

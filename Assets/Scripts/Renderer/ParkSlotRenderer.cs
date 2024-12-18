@@ -6,8 +6,10 @@ public class ParkSlotRenderer : MonoBehaviour
 {
     public GameObject slotPrefab; // 在Inspector中将你的预设体赋值给这个变量
     public GameObject MainCamera;
+    public GameObject AvmCamera;
     public Material CustomMat;
     public Texture2D invalidTexture;
+    public Texture2D invalidTexture2;
     public Texture2D validTexture;
     public Texture2D lockTexture;
     public Texture2D parkingTexture;
@@ -17,6 +19,12 @@ public class ParkSlotRenderer : MonoBehaviour
     private float yaw = 0;
     private int lockId = -1;
     private RepeatedField<Avaliableslot> avaliableslots;
+    private AvmCameraScript avmScript;
+
+    private void Start()
+    {
+        avmScript = AvmCamera.GetComponent<AvmCameraScript>();
+    }
 
     void Update()
     {
@@ -81,14 +89,17 @@ public class ParkSlotRenderer : MonoBehaviour
     {
         foreach (ParkingSpace slot in slots)
         {
-            if (slot.Src == 4 && StateManager.Instance.inParking)
+            if (slot.Src == 4)
             {
-                StateManager.Instance.customSlotId = (int)slot.Id;
+                if (StateManager.Instance.inParking)
+                {
+                    StateManager.Instance.customSlotId = (int)slot.Id;
+                }
             }
             MakeSlot(slot);
         }
         // 根据yaw角旋转导航线
-        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, -yaw * Mathf.Rad2Deg + 90);
+        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(90, 0, 90);
         gameObject.transform.localRotation = rotation;
     }
 
@@ -105,7 +116,7 @@ public class ParkSlotRenderer : MonoBehaviour
             };
             points.Add(p);
         }
-        Vector3[] ps = Utils.ApplyArrayToCenter(points, center);
+        Vector3[] ps = Utils.ApplyArrayToCenterWidthYaw(points, center, -yaw);
         return ps;
     }
 
@@ -115,6 +126,10 @@ public class ParkSlotRenderer : MonoBehaviour
         if (id == lockId)
         {
             return inParking ? parkingTexture : lockTexture;
+        }
+        else if (inParking)
+        {
+            return invalidTexture2;
         }
         else if (valid)
         {
@@ -130,7 +145,7 @@ public class ParkSlotRenderer : MonoBehaviour
         return invalidTexture;
     }
 
-    void MakeSlot(ParkingSpace slot, bool custom = false)
+    void MakeSlot(ParkingSpace slot)
     {
         Vector3[] points = GetSlotPoints(slot);
 
@@ -166,17 +181,14 @@ public class ParkSlotRenderer : MonoBehaviour
 
         plane.name = $"slot-{slot.Id}";
         // 如果 custom 为 true，设置特殊材质
-        if (custom == true)
-        {
-            CustomMat.SetColor("_Color1", Color.green);
-            renderer.material = CustomMat;
-            plane.layer = LayerMask.NameToLayer("Custom Slot");
-            plane.name = $"slot-{slot.Id}-custom";
-        }
         // 提高平面的位置
         Vector3 position = plane.transform.localPosition;
         position.z = -0.02f; // 略微抬高平面
         plane.transform.localPosition = position;
+        if (slot.Src == 4)
+        {
+            plane.SetActive(false);
+        }
     }
 
     //void MakeSlot1()
