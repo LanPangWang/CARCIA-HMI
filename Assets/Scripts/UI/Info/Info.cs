@@ -5,9 +5,12 @@ using UnityEngine.UIElements;
 public class InteractionScript2 : MonoBehaviour
 {
     public UIDocument uiDocument;
+    public GameObject successPanel;
+
     private Action cb;
     private Button InteractionBtn;
     private bool isButton = false;
+    private bool inSuccess;
 
     private void OnBtnClick()
     {
@@ -105,8 +108,17 @@ public class InteractionScript2 : MonoBehaviour
         }
     }
 
+    void UpdateSuccess()
+    {
+        VisualElement outContainer = uiDocument.rootVisualElement.Q<VisualElement>("OutContainer");
+        outContainer.style.display = inSuccess ? DisplayStyle.None : DisplayStyle.Flex;
+        successPanel.SetActive(inSuccess);
+    }
+
     void Update()
     {
+        inSuccess = StateManager.Instance.pilotState == Constants.PilotStateMap.PARK_SUCCESS;
+        UpdateSuccess();
         UpdateInfo();
         UpdateParkDis();
     }

@@ -58,8 +58,6 @@ public class AvmCameraScript : MonoBehaviour
         CustomSlotCopy.transform.SetParent(CustomSlot.transform);
 
         // 设置图层，避免干扰触控事件
-        CustomSlotCopy.layer = LayerMask.NameToLayer("IgnoreTouch"); // 确保此图层不会被触控检测到
-
         CustomSlotCopy.layer = LayerMask.NameToLayer("Slots");
         // 重置位置和旋转，使其与 CustomSlot 保持一致
         CustomSlotCopy.transform.localPosition = Vector3.zero;
